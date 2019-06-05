@@ -17,9 +17,8 @@ func _ready():
 
 func _process(delta):
 	start_harvest(foodPlace)
-	update_display()
 	consider_starving()
-	update_display()
+	neededFood = ceil(population/5)
 	consider_birth()
 	neededFood = ceil(population/5)
 	update_display()
@@ -53,13 +52,10 @@ func consider_starving():
 	else: # mało jedzenia - ginie 20-30% pop (ale nic nie zjadają, poki co)
 		if randf() < 0.5:
 			population -= max(5, floor(0.3*population))
-			print ("Umiera ", max(5, floor(0.3*population)), " ludzi.")
 			population = max(0, population)
 		else:
 			population -= max(5, floor(0.2*population))
-			print ("Umiera ", max(5, floor(0.2*population)), " ludzi.")
 			population = max(0, population)
-	neededFood = ceil(population/5)
 
 func consider_birth():
 	randomize()
@@ -72,7 +68,6 @@ func consider_birth():
 	else: # mało jedzenia - rodzi się 0-2% pop
 		if randf() < 0.5:
 			population += round(0.02*population)
-	neededFood = ceil(population/5)
 
 func update_display():
 	$Population.text = "Pop: " + str(population)

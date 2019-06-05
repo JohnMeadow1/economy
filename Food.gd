@@ -21,7 +21,7 @@ func _process(delta):
 func generate():
 	randomize()
 	currAmount = 50 * (randi() % 7 + 1) # randi between 50 and 350 with 50 step
-	regenRate = ceil(7 * randf()) + 3 # randf [3,10]
+	regenRate = ceil(4 * randf()) + 1 # randf [1,5]
 
 func update_display():
 	$CurrentAmount.text = "Available: " + str(floor(currAmount))
