@@ -6,6 +6,8 @@ var idlePopulation
 var neededFood
 var gatheredFood
 var radius = 300 #pozniej
+var RAD_SQ = pow(radius, 2)
+var neighbours = []
 
 onready var foodPlace = get_parent().get_node("Food")
 
@@ -16,6 +18,7 @@ func _ready():
 	$Name.text = vilName
 	idlePopulation = 0
 	update_display()
+	detect_neighbours()
 
 func _process(delta):
 	start_harvest(foodPlace)
@@ -75,6 +78,15 @@ func consider_birth():
 	else: # mało jedzenia - rodzi się 0-2% pop
 		if randf() < 0.5:
 			population += round(0.02*population)
+
+func detect_neighbours():
+	for neighbour in get_tree().get_nodes_in_group("resources"):
+		if (neighbour.position - position).length_squared() < RAD_SQ:
+			neighbours.append(neighbour)
+
+func _input(event):
+	if event is InputEventMouseButton and event.pressed and event.button_index == BUTTON_LEFT:
+		print(neighbours)
 
 func update_display():
 	$Population.text = "Pop: " + str(population)

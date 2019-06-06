@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Food.png-3e109b5688da038dc056c4d3016d0346.stex"
+path="res://.import/Village.png-2b924a0683165c6c58d7439237b6fbff.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Food.png"
-dest_files=[ "res://.import/Food.png-3e109b5688da038dc056c4d3016d0346.stex" ]
+source_file="res://Sprites/Village.png"
+dest_files=[ "res://.import/Village.png-2b924a0683165c6c58d7439237b6fbff.stex" ]
 
 [params]
 
