@@ -2,8 +2,9 @@ extends Node2D
 
 var resName = "Food" #pozniej
 var currAmount
-var gatherCost = 4 #pozniej
+var gatherCost = 2 #pozniej
 var regenRate
+var capacity # ilu max ludzi może zbierać
 
 signal harvested
 
@@ -21,12 +22,14 @@ func _process(delta):
 func generate():
 	randomize()
 	currAmount = 50 * (randi() % 7 + 1) # randi between 50 and 350 with 50 step
-	regenRate = ceil(4 * randf()) + 1 # randf [1,5]
+	regenRate = ceil(4 * randf()) + 1   # randf [1,5]
+	capacity = randi() % 10 + 11        # randi [11,20]
 
 func update_display():
 	$CurrentAmount.text = "Available: " + str(floor(currAmount))
 	$GatheringCost.text = "Cost: " + str(gatherCost)
 	$RegenerationRate.text = "Replenishment: " + str(regenRate)
+	$PlaceSize.text = "Capacity: " + str(capacity)
 
 func get_harvested(location, collectors):
 	if !is_connected("harvested", location, "end_harvest"):

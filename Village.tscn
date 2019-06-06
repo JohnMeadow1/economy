@@ -24,22 +24,29 @@ margin_right = 136.0
 margin_bottom = -26.0
 text = "POPULATION"
 
-[node name="Radius" type="Label" parent="."]
+[node name="IdlePopulation" type="Label" parent="."]
 margin_left = 50.0
 margin_top = -20.0
 margin_right = 136.0
 margin_bottom = -6.0
+text = "IDLE POPULATION"
+
+[node name="Radius" type="Label" parent="."]
+margin_left = 50.0
+margin_right = 136.0
+margin_bottom = 14.0
 text = "RADIUS"
 
 [node name="NeededFood" type="Label" parent="."]
 margin_left = 50.0
+margin_top = 20.0
 margin_right = 144.0
-margin_bottom = 14.0
+margin_bottom = 34.0
 text = "NEEDED FOOD"
 
 [node name="GatheredFood" type="Label" parent="."]
 margin_left = 50.0
-margin_top = 20.0
+margin_top = 40.0
 margin_right = 161.0
-margin_bottom = 34.0
+margin_bottom = 54.0
 text = "GATHERED FOOD"

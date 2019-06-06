@@ -2,9 +2,10 @@ extends Node2D
 
 var vilName = "Settlement" #pozniej
 var population
+var idlePopulation
 var neededFood
 var gatheredFood
-var radius = 5 #pozniej
+var radius = 300 #pozniej
 
 onready var foodPlace = get_parent().get_node("Food")
 
@@ -13,6 +14,7 @@ signal harvesting
 func _ready():
 	generate()
 	$Name.text = vilName
+	idlePopulation = 0
 	update_display()
 
 func _process(delta):
@@ -23,13 +25,18 @@ func _process(delta):
 	neededFood = ceil(population/5)
 	update_display()
 
+func _draw():
+	draw_circle(Vector2(0,0), radius, Color(0.55, 0, 0, 0.3))
 
 func start_harvest(location):
 	if !is_connected("harvesting", location, "get_harvested"):
 		connect("harvesting", location, "get_harvested")
 	
-	emit_signal("harvesting", self, population) 
-	print(population, " people collecting food.\n")
+	var sentWorkers = min(min(population, location.capacity), location.currAmount*location.gatherCost)
+	idlePopulation = population - sentWorkers
+	
+	emit_signal("harvesting", self, sentWorkers) 
+	print(sentWorkers, " people collecting food.\n")
 
 func end_harvest(amount):
 	gatheredFood += amount
@@ -71,6 +78,7 @@ func consider_birth():
 
 func update_display():
 	$Population.text = "Pop: " + str(population)
-	$Radius.text = "Rad: " + str(radius)
+	$IdlePopulation.text = "Idle: " + str(idlePopulation)
+	$Radius.text = "Reach: " + str(radius)
 	$NeededFood.text = "Eating: " + str(neededFood)
 	$GatheredFood.text = "Possessing: " + str(gatheredFood)
