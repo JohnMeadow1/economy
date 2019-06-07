@@ -1,9 +1,6 @@
 extends Node2D
 class_name GameResource#, "res://Sprites/Rocks/Gray_Rock.png"
 
-const RESOURCE_GRAIN = preload("res://Sprites/Plants/wheet.png")
-const RESOURCE_WOOD = preload("res://Sprites/Farm/Tree_2_Side.png")
-const RESOURCE_STONE = preload("res://Sprites/Rocks/Gray_Rock.png")
 enum ResourceType{ NO_RESOURCE = -1, RESOURCE_GRAIN, RESOURCE_WOOD, RESOURCE_STONE }
 var ResourceName = ["Food", "Wood", "Stone"]
 var ResourceSprites = ["res://Sprites/Plants/Wheat.png",
