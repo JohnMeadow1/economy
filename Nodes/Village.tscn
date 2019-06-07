@@ -4,6 +4,7 @@
 [ext_resource path="res://Sprites/Farm/House_Iso.png" type="Texture" id=2]
 
 [node name="Node2D" type="Node2D" groups=[
+"selectable",
 "villages",
 ]]
 script = ExtResource( 1 )

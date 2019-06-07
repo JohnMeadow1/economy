@@ -5,6 +5,7 @@
 
 [node name="Node2D" type="Node2D" groups=[
 "resources",
+"selectable",
 ]]
 script = ExtResource( 1 )
 

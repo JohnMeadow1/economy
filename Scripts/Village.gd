@@ -15,6 +15,7 @@ onready var foodPlace = get_parent().get_node("Food")
 signal harvesting
 
 func _ready():
+	randomize()
 	generate()
 	$Name.text = vilName
 	idlePopulation = population
@@ -23,10 +24,10 @@ func _ready():
 	sort_neighbours()
 
 func _process(delta):
-	pass
-
+	if Input.is_action_pressed("print_resources"):
+		globals.debug.text += "RESOURCES\n" +str(neighbours) + "\n"
+		
 func update_village():
-	
 	idlePopulation = population
 	collect_resources()
 	consider_starving()
@@ -81,7 +82,6 @@ func consider_starving():
 			population = max(0, population)
 
 func consider_birth():
-	randomize()
 	if gatheredFood >= neededFood: # dość jedzenia - rodzi się 10-15% pop
 		gatheredFood -= neededFood
 		if randf() < 0.5:
@@ -112,9 +112,6 @@ func get_cheapest_resource(start = 0):
 	print (start+1, " cheapest resource is ", neighbours[start][0], " (", neighbours[start][0].resName, ") with total price = floor(0.01*distanceSQ) + gatherCost = ", neighbours[start][1])
 	return neighbours[start][0]
 
-func _input(event):
-	if Input.is_action_pressed("print_resources"):
-		print(neighbours)
 
 func _draw():
 	draw_circle(Vector2(0,0), radius, Color(0.55, 0, 0, 0.3))

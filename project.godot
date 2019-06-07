@@ -8,9 +8,14 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "Node",
+"class": "GameResource",
+"language": "GDScript",
+"path": "res://Scripts/GameResource.gd"
+} ]
 _global_script_class_icons={
-
+"GameResource": "res://Sprites/Rocks/Gray_Rock.png"
 }
 
 [application]
@@ -18,6 +23,10 @@ _global_script_class_icons={
 config/name="Economicon"
 run/main_scene="res://Scenes/Main.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+globals="*res://globals.gd"
 
 [importer_defaults]
 
