@@ -85,7 +85,7 @@ func detect_neighbours():
 			neighbours.append(neighbour)
 
 func _input(event):
-	if event is InputEventMouseButton and event.pressed and event.button_index == BUTTON_LEFT:
+	if Input.is_action_pressed("print_resources"):
 		print(neighbours)
 
 func update_display():

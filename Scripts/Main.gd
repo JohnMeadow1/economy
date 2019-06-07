@@ -1,6 +1,7 @@
 extends Node2D
 
 var age
+onready var camera = $Camera2D
 
 func _ready():
 	age = 0
