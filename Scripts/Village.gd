@@ -8,6 +8,7 @@ var gatheredFood
 var radius = 300 #pozniej
 var RAD_SQ = pow(radius, 2)
 var neighbours = []
+var neighDstReducedCostSQ = []
 
 onready var foodPlace = get_parent().get_node("Food")
 
@@ -24,7 +25,9 @@ func _process(delta):
 	pass
 
 func update_village():
-	start_harvest(foodPlace)
+	
+	var cheapestResource = find_cheapest_resource()
+	start_harvest(cheapestResource)
 	consider_starving()
 	neededFood = ceil(population/5)
 	consider_birth()
@@ -81,8 +84,21 @@ func consider_birth():
 
 func detect_neighbours():
 	for neighbour in get_tree().get_nodes_in_group("resources"):
-		if (neighbour.position - position).length_squared() < RAD_SQ:
+		var temp = (neighbour.position - position).length_squared()
+		if temp < RAD_SQ:
 			neighbours.append(neighbour)
+			neighDstReducedCostSQ.append(floor(0.01*temp))
+
+func find_cheapest_resource():
+	var temp = neighbours[0].gatherCost + neighDstReducedCostSQ[0]
+	var index = 0
+	for i in range(neighbours.size()):
+		print(i)
+		if temp > neighbours[i].gatherCost + neighDstReducedCostSQ[i]:
+			temp = neighbours[i].gatherCost + neighDstReducedCostSQ[i]
+			index = i
+	print ("Cheapest resource is ", neighbours[index], " (", neighbours[index].resName, ") with total price = floor(0.01*distanceSQ) + gatherCost = ", neighDstReducedCostSQ[index], " + ", neighbours[index].gatherCost, " = ", temp)
+	return neighbours[index]
 
 func _input(event):
 	if Input.is_action_pressed("print_resources"):
