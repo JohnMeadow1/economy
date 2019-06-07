@@ -1,0 +1,24 @@
+[gd_scene format=2]
+
+[node name="HUD" type="CanvasLayer"]
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+margin_right = 1024.0
+margin_bottom = 600.0
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="Container" type="Container" parent="MarginContainer/HBoxContainer"]
+margin_right = 1024.0
+margin_bottom = 600.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="GameAge" type="Label" parent="MarginContainer/HBoxContainer/Container"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "GAME AGE:"

@@ -8,10 +8,11 @@ var velocity = Vector2()
 
 onready var ghost = $Ghost
 onready var camera = $Ghost/Camera2D
+onready var gameAge = $HUD/MarginContainer/HBoxContainer/Container/GameAge
 
 func _ready():
 	age = 0
-	$GameAge.text = "Game Age: " + str(age)
+	gameAge.text = "Game Age: " + str(age)
 	$Timer.wait_time = 0.5
 
 func _physics_process(delta):
@@ -28,7 +29,7 @@ func _on_Timer_timeout():
 
 func update_main():
 	age = age +1
-	$GameAge.text = "Game Age: " + str(age)
+	gameAge.text = "Game Age: " + str(age)
 
 func update_villages():
 	for village in get_tree().get_nodes_in_group("villages"):
