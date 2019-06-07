@@ -1,12 +1,15 @@
 extends Camera2D
 
-var previous_mause_possition =  get_global_mouse_position()
-var previous_camera_position = position
+onready var previous_mouse_possition = get_global_mouse_position()
+onready var previous_camera_position = position
 
-func _process(delta):
-	globals.debug.text += "MOUSE POSITION\nGlobal:" + str(get_global_mouse_position())
-	globals.debug.text += "\nLocal:" + str(get_local_mouse_position())
-	globals.debug.text += "\nViewport:" + str(get_viewport().get_mouse_position()) + "\n"
+func _process(_delta):
+	globals.debug.text += "MOUSE POSITION\nGlobal:" + str(get_global_mouse_position().floor())
+	globals.debug.text += "\nLocal:" + str(get_local_mouse_position().floor())
+	globals.debug.text += "\nViewport:" + str(get_viewport().get_mouse_position().floor()) + "\n"
+#	globals.debug.text += "Prev:" + str(previous_camera_position.floor()) + "\n"
+#	globals.debug.text += "Prev:" + str(previous_mouse_possition.floor()) + "\n"
+#	globals.debug.text += "Prev:" + str(previous_camera_position + previous_mouse_possition - get_local_mouse_position().floor()) + "\n"
 
 func _input(event):
 	""" Mouse picking """
@@ -22,10 +25,8 @@ func handle_mouse_motion_event(event):
 		if globals.selected_node: #something got selected
 			pass
 		else: #nothing selected -> drag camera
-			position = previous_camera_position + previous_mause_possition - get_local_mouse_position() 
-#			previous_mause_possition = get_viewport().get_mouse_position()
+			position = lerp(position,previous_camera_position + previous_mouse_possition - get_local_mouse_position(), 0.5)
 	else: #camera hoverig
-#		previous_mause_possition = get_viewport().get_mouse_position()
 #		globals.selected_node = null
 #		get_object_near_mouse()
 		pass
@@ -40,10 +41,10 @@ func handle_mouse_button_event(event):
 			position += get_local_mouse_position() * 0.1
 		else: #button pressed -> check if got something selected
 			globals.mouse_button_pressed = true
-			previous_mause_possition = get_local_mouse_position()
+			previous_mouse_possition = get_local_mouse_position()
 			previous_camera_position = position
 			globals.selected_node = null
-			get_object_near_mouse()
+#			get_object_near_mouse()
 	else: # button released
 		globals.mouse_button_pressed = false
 		globals.selected_node = null

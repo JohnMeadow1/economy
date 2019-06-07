@@ -1,0 +1,41 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scripts/Resource.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/Farm/Tree_2_Side.png" type="Texture" id=2]
+
+[node name="Resource" type="Node2D"]
+script = ExtResource( 1 )
+availible = 0.0
+harvestable_per_cycle = 0.0
+harvest_cost = 0.0
+_resource_type = 1
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+
+[node name="name" type="Label" parent="."]
+margin_left = -70.0
+margin_top = -40.0
+margin_right = 70.0
+margin_bottom = -26.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Wood"
+align = 1
+valign = 1
+
+[node name="variables" type="Label" parent="."]
+margin_left = 40.0
+margin_top = -20.0
+margin_right = 80.0
+margin_bottom = -6.0
+text = "Available:
+Cost:
+Regen:
+Capacity:"
+
+[node name="values" type="Label" parent="."]
+margin_left = 110.0
+margin_top = -20.0
+margin_right = 150.0
+margin_bottom = -6.0

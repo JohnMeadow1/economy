@@ -1,11 +1,11 @@
+
 extends Node
 """
 Globally Visible Singleton
 """
-# gandle to debug label on HUD
-var debug
 
-# mouse variables
+var debug:Label 
+
 var mouse_button_pressed:bool = false
 var selected_node:Node        = null
 const SELECTION_RANGE         = 20

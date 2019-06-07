@@ -9,13 +9,13 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Node",
+"base": "Node2D",
 "class": "GameResource",
 "language": "GDScript",
-"path": "res://Scripts/GameResource.gd"
+"path": "res://Scripts/base_classes/GameResource.gd"
 } ]
 _global_script_class_icons={
-"GameResource": "res://Sprites/Rocks/Gray_Rock.png"
+"GameResource": ""
 }
 
 [application]
@@ -27,6 +27,10 @@ config/icon="res://icon.png"
 [autoload]
 
 globals="*res://globals.gd"
+
+[debug]
+
+gdscript/warnings/enable=false
 
 [importer_defaults]
 
