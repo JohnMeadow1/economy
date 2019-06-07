@@ -39,7 +39,8 @@ func get_harvested(location, collectors):
 		connect("harvested", location, "end_harvest")
 	
 	var amount = min(collectors/gatherCost, currAmount)
-	emit_signal("harvested", amount) 
+	emit_signal("harvested", self, amount, collectors) 
+	disconnect("harvested", location, "end_harvest")
 	print(amount, " food collected.")
 	currAmount = max(0, currAmount - collectors/gatherCost)
 	update_display()
