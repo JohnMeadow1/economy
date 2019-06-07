@@ -19,10 +19,6 @@ config/name="Economicon"
 run/main_scene="res://Scenes/Main.tscn"
 config/icon="res://icon.png"
 
-[debug]
-
-settings/fps/force_fps=3
-
 [input]
 
 ui_accept={

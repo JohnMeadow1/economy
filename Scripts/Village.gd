@@ -21,15 +21,15 @@ func _ready():
 	detect_neighbours()
 
 func _process(delta):
+	pass
+
+func update_village():
 	start_harvest(foodPlace)
 	consider_starving()
 	neededFood = ceil(population/5)
 	consider_birth()
 	neededFood = ceil(population/5)
 	update_display()
-
-func _draw():
-	draw_circle(Vector2(0,0), radius, Color(0.55, 0, 0, 0.3))
 
 func start_harvest(location):
 	if !is_connected("harvesting", location, "get_harvested"):
@@ -87,6 +87,9 @@ func detect_neighbours():
 func _input(event):
 	if Input.is_action_pressed("print_resources"):
 		print(neighbours)
+
+func _draw():
+	draw_circle(Vector2(0,0), radius, Color(0.55, 0, 0, 0.3))
 
 func update_display():
 	$Population.text = "Pop: " + str(population)

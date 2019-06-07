@@ -11,6 +11,9 @@ script = ExtResource( 1 )
 position = Vector2( 510, 300 )
 current = true
 
+[node name="Timer" type="Timer" parent="."]
+autostart = true
+
 [node name="Village" parent="." instance=ExtResource( 2 )]
 position = Vector2( 266, 129 )
 
@@ -21,3 +24,4 @@ text = "GAME AGE"
 
 [node name="Food" parent="." instance=ExtResource( 3 )]
 position = Vector2( 503, 136 )
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
