@@ -19,33 +19,32 @@ func _input(event):
 
 func handle_mouse_motion_event(event):
 	if globals.mouse_button_pressed:
-		if globals.selected_node:
+		if globals.selected_node: #something got selected
 			pass
-		else:
+		else: #nothing selected -> drag camera
 			position = previous_camera_position + previous_mause_possition - get_local_mouse_position() 
 #			previous_mause_possition = get_viewport().get_mouse_position()
-	else:
+	else: #camera hoverig
 #		previous_mause_possition = get_viewport().get_mouse_position()
 #		globals.selected_node = null
 #		get_object_near_mouse()
 		pass
 
 func handle_mouse_button_event(event):
-	if event.pressed:
+	if event.pressed: 
 		if event.button_index == BUTTON_WHEEL_UP:
 			zoom -= globals.ZOOM_SPEED
 			position += get_local_mouse_position() * 0.1
 		elif event.button_index == BUTTON_WHEEL_DOWN:
 			zoom += globals.ZOOM_SPEED
 			position += get_local_mouse_position() * 0.1
-		else:
+		else: #button pressed -> check if got something selected
 			globals.mouse_button_pressed = true
 			previous_mause_possition = get_local_mouse_position()
 			previous_camera_position = position
 			globals.selected_node = null
 			get_object_near_mouse()
-
-	else:
+	else: # button released
 		globals.mouse_button_pressed = false
 		globals.selected_node = null
 

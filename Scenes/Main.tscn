@@ -47,6 +47,7 @@ position = Vector2( 503, 136 )
 position = Vector2( 468, 290 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 470, 220 )
 current = true
 script = ExtResource( 5 )
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
