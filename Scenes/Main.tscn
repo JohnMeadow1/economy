@@ -32,5 +32,11 @@ drag_margin_v_enabled = false
 script = ExtResource( 5 )
 
 [node name="Resource" parent="." instance=ExtResource( 6 )]
-_resource_type = 0
+availible = 100.0
+harvestable_per_cycle = 5.0
+harvest_cost = 2.0
+regenerates_per_cycle = 1.0
+regeneration_cycle = 1.0
+worker_capacity = 11
+_resource_type = 2
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

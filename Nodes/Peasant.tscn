@@ -20,7 +20,8 @@ tracks/0/keys = {
 }
 
 [node name="Peasant" type="Sprite"]
-position = Vector2( 430, 407 )
+position = Vector2( 0, -32 )
+scale = Vector2( 2, 2 )
 texture = ExtResource( 1 )
 hframes = 8
 frame = 2

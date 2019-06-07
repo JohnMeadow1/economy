@@ -3,21 +3,24 @@
 [ext_resource path="res://Scripts/Resource.gd" type="Script" id=1]
 [ext_resource path="res://Sprites/Farm/Tree_2_Side.png" type="Texture" id=2]
 
-[node name="Resource" type="Node2D"]
+[node name="Resource" type="Node2D" groups=[
+"resource",
+]]
 script = ExtResource( 1 )
 availible = 0.0
 harvestable_per_cycle = 0.0
-harvest_cost = 0.0
+regeneration_cycle = 0.0
 _resource_type = 1
 
 [node name="Sprite" type="Sprite" parent="."]
+scale = Vector2( 2, 2 )
 texture = ExtResource( 2 )
 
 [node name="name" type="Label" parent="."]
 margin_left = -70.0
-margin_top = -40.0
+margin_top = -50.0
 margin_right = 70.0
-margin_bottom = -26.0
+margin_bottom = -36.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "Wood"
@@ -39,3 +42,7 @@ margin_left = 110.0
 margin_top = -20.0
 margin_right = 150.0
 margin_bottom = -6.0
+text = "0 (-0/s)
+0
+0
+1/1"
