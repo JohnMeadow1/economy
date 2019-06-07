@@ -1,20 +1,30 @@
 extends Node2D
 
 var age
-onready var camera = $Camera2D
+
+const WALK_SPEED = 400
+const ZOOM_SPEED = Vector2(0.02, 0.02)
+var velocity = Vector2()
+
+onready var ghost = $Ghost
+onready var camera = $Ghost/Camera2D
 
 func _ready():
 	age = 0
 	$GameAge.text = "Game Age: " + str(age)
+	$Timer.wait_time = 0.5
 
-func _process(delta):
-	pass
+func _physics_process(delta):
+	
+	velocity.x =  WALK_SPEED * (int(Input.is_action_pressed("right")) - int(Input.is_action_pressed("left")))
+	velocity.y =  WALK_SPEED * (int(Input.is_action_pressed("down")) - int(Input.is_action_pressed("up")))
+	camera.zoom += ZOOM_SPEED * (int(Input.is_action_pressed("zoom_out")) - int(Input.is_action_pressed("zoom_in")))
+	ghost.move_and_slide(velocity)
 
 func _on_Timer_timeout():
 	update_main()
 	update_villages()
 	update_resources()
-
 
 func update_main():
 	age = age +1
