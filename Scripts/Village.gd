@@ -106,6 +106,11 @@ func _input(event):
 
 func _draw():
 	draw_circle(Vector2(0,0), radius, Color(0.55, 0, 0, 0.3))
+	for resource in get_tree().get_nodes_in_group("resources"):
+		if resource in neighbours:
+			draw_line(Vector2(0,0), resource.position - position, Color(0, 1, 0, 1), 3.0)
+		else:
+			draw_line(Vector2(0,0), resource.position - position, Color(1, 0, 0, 1), 3.0)
 
 func update_display():
 	$Population.text = "Pop: " + str(population)
