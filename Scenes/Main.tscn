@@ -41,4 +41,7 @@ position = Vector2( 266, 129 )
 
 [node name="Food" parent="." instance=ExtResource( 4 )]
 position = Vector2( 503, 136 )
+
+[node name="Food2" parent="." instance=ExtResource( 4 )]
+position = Vector2( 468, 290 )
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

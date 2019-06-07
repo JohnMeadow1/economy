@@ -8,7 +8,7 @@ var gatheredFood
 var radius = 300 #pozniej
 var RAD_SQ = pow(radius, 2)
 var neighbours = []
-var neighDstReducedCostSQ = []
+#var neighDstReducedCostSQ = []
 
 onready var foodPlace = get_parent().get_node("Food")
 
@@ -17,35 +17,45 @@ signal harvesting
 func _ready():
 	generate()
 	$Name.text = vilName
-	idlePopulation = 0
+	idlePopulation = population
 	update_display()
 	detect_neighbours()
+	sort_neighbours()
 
 func _process(delta):
 	pass
 
 func update_village():
 	
-	var cheapestResource = find_cheapest_resource()
-	start_harvest(cheapestResource)
+	idlePopulation = population
+	collect_resources()
 	consider_starving()
 	neededFood = ceil(population/5)
 	consider_birth()
 	neededFood = ceil(population/5)
 	update_display()
 
+func collect_resources():
+	var index = 0
+	while(idlePopulation > 0 and index < neighbours.size()):
+		print("Starting ", index+1, " harvest of ", get_parent().age, " year.")
+		start_harvest(get_cheapest_resource(index))
+		index += 1
+
 func start_harvest(location):
 	if !is_connected("harvesting", location, "get_harvested"):
 		connect("harvesting", location, "get_harvested")
 	
-	var sentWorkers = min(min(population, location.capacity), location.currAmount*location.gatherCost)
-	idlePopulation = population - sentWorkers
+	var sentWorkers = min(min(idlePopulation, location.capacity), location.currAmount*location.gatherCost)
+	idlePopulation -= sentWorkers
 	
 	emit_signal("harvesting", self, sentWorkers) 
-	print(sentWorkers, " people collecting food.\n")
+	disconnect("harvesting", location, "get_harvested")
+	print(sentWorkers, " people collecting at", location , ".\n")
 
-func end_harvest(amount):
+func end_harvest(location, amount, sentWorkers):
 	gatheredFood += amount
+	idlePopulation += sentWorkers
 	update_display()
 
 func generate():
@@ -82,23 +92,25 @@ func consider_birth():
 		if randf() < 0.5:
 			population += round(0.02*population)
 
-func detect_neighbours():
+func detect_neighbours(): # array of pairs (Reosurce Node, distance + gather cost)
 	for neighbour in get_tree().get_nodes_in_group("resources"):
 		var temp = (neighbour.position - position).length_squared()
 		if temp < RAD_SQ:
-			neighbours.append(neighbour)
-			neighDstReducedCostSQ.append(floor(0.01*temp))
+			var pair = [neighbour, floor(0.01*temp) + neighbour.gatherCost]
+			neighbours.append(pair)
 
-func find_cheapest_resource():
-	var temp = neighbours[0].gatherCost + neighDstReducedCostSQ[0]
-	var index = 0
-	for i in range(neighbours.size()):
-		print(i)
-		if temp > neighbours[i].gatherCost + neighDstReducedCostSQ[i]:
-			temp = neighbours[i].gatherCost + neighDstReducedCostSQ[i]
-			index = i
-	print ("Cheapest resource is ", neighbours[index], " (", neighbours[index].resName, ") with total price = floor(0.01*distanceSQ) + gatherCost = ", neighDstReducedCostSQ[index], " + ", neighbours[index].gatherCost, " = ", temp)
-	return neighbours[index]
+class MyCustomSorter:
+    static func sort(a, b):
+        if a[1] < b[1]:
+            return true
+        return false
+
+func sort_neighbours():
+	neighbours.sort_custom(MyCustomSorter, "sort")
+
+func get_cheapest_resource(start = 0):
+	print (start+1, " cheapest resource is ", neighbours[start][0], " (", neighbours[start][0].resName, ") with total price = floor(0.01*distanceSQ) + gatherCost = ", neighbours[start][1])
+	return neighbours[start][0]
 
 func _input(event):
 	if Input.is_action_pressed("print_resources"):
