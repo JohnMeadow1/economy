@@ -3,8 +3,10 @@ extends Camera2D
 var previous_mause_possition =  get_global_mouse_position()
 var previous_camera_position = position
 
-#func _process(delta):
-#	globals.debug.text += "MOUSE:\n" + str(get_local_mouse_position()) + "\n"
+func _process(delta):
+	globals.debug.text += "MOUSE POSITION\nGlobal:" + str(get_global_mouse_position())
+	globals.debug.text += "\nLocal:" + str(get_local_mouse_position())
+	globals.debug.text += "\nViewport:" + str(get_viewport().get_mouse_position()) + "\n"
 
 func _input(event):
 	""" Mouse picking """
