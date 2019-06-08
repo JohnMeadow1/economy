@@ -14,9 +14,10 @@ func _ready():
 	generate()
 	$name.text = SettlementNames[settlement_size]
 	population_idle = population
-	update_display()
 	detect_neighbours()
 	sort_neighbours()
+	create_cost_labels()
+	update_display()
 	sprite.material = sprite.material.duplicate() #NOTE ?
 
 
@@ -117,6 +118,28 @@ func detect_neighbours(): # array of pairs (Reosurce Node, distance + gather cos
 			neighbours.append(pair)
 
 
+func create_cost_labels():
+	var node = Node2D.new()
+	node.name = "CostLabels"
+#	get_tree().get_root().call_deferred("add_child", node)
+	add_child(node)
+	for resource in get_tree().get_nodes_in_group("resource"):
+		var label = Label.new()
+		label.name = resource.name
+		label.text = str((resource.position - position).length())
+		label.rect_position = 0.5*(resource.position - position)
+		node.add_child(label)
+
+
+func update_cost_labels(node):
+	for resource in get_tree().get_nodes_in_group("resource"):
+		var tmp = get_node(node).find_node(resource.name)
+		# dlaczego null
+		print(tmp)
+#		tmp.text = str((resource.position - position).length())
+#		tmp.rect_position = 0.5*(resource.position - position)
+
+
 func neighbours_to_str():
 	var temp: String = ""
 	for neighbour in neighbours:
@@ -157,3 +180,4 @@ func update_display():
 	$values.text = str(population_idle) +"/"+ str(population) +"\n"
 	$values.text += str(floor(stockpile_food))+"\n"
 	$values.text += str(consumption_food)+"/s\n"
+	update_cost_labels("CostLabels")
