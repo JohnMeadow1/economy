@@ -9,7 +9,9 @@ var radius = 300 #pozniej
 var RAD_SQ = pow(radius, 2)
 var neighbours = []
 
-var cycle: float = rand_range(0.0, 1.0)
+var cycle: float = rand_range(0.0, 1.0) #NOTE po co losować startowy cykl?
+# (pewnie po to, by wioski nie chodziły równo, ale dlaczego to ważne?)
+# (pewnie dlatego, żeby nie było problemów z kolejnością obsługiwania czy coś)
 #var neighDstReducedCostSQ = []
 
 func _ready():
@@ -24,11 +26,20 @@ func _ready():
 
 
 func _process(delta):
+	
+	if Input.is_action_pressed("print_resources"):
+		globals.debug.text += "\n" + str(self) + " RESOURCES\n" + neighbours_to_str() + "\n"
+	
 	cycle += delta
 	if cycle > CYCLE_DURATION:
 		cycle -= CYCLE_DURATION
 		update_village()
 
+func neighbours_to_str():
+	var temp: String = ""
+	for neighbour in neighbours:
+		temp += str(neighbour) + "\n"
+	return temp
 
 func update_village():
 	collect_resources()
@@ -52,9 +63,9 @@ func collect_resources():
 		index += 1
 
 
-func delegate_workers( location:ResourceLocation ):
+func delegate_workers(location: ResourceLocation):
 	if location.availible > 1:
-		if location.workers<location.worker_capacity:
+		if location.workers < location.worker_capacity:
 			var worker_allocation = location.worker_capacity - location.workers
 			worker_allocation = min(worker_allocation, population_idle)
 			population_idle  -= worker_allocation
@@ -63,7 +74,7 @@ func delegate_workers( location:ResourceLocation ):
 		population_idle  += location.workers
 		location.workers = 0
 		
-func transport_resources( location:ResourceLocation ):
+func transport_resources(location: ResourceLocation):
 	if location.stockpile > 0:
 		#FIXME  Transport is not happening if all workers harvest
 		var transport_cost = (position.distance_to(location.position) * 0.01)
@@ -108,6 +119,7 @@ func consider_birth():
 
 
 func detect_neighbours(): # array of pairs (Reosurce Node, distance + gather cost)
+	neighbours.clear()
 	for resource in get_tree().get_nodes_in_group("resource"):
 		var distance = (resource.position - position).length_squared()
 		if distance < RAD_SQ:

@@ -11,7 +11,7 @@ shader_param/outline_color = Color( 0, 1, 0, 1 )
 
 [node name="House" type="Node2D" groups=[
 "selectable",
-"villages",
+"village",
 ]]
 script = ExtResource( 1 )
 population = 5
