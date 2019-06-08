@@ -1,10 +1,9 @@
 extends Node2D
 
-var age = 0
-
-var velocity = Vector2()
-
 onready var gameAge = $HUD/Margin/HBoxContainer/Container/GameAge
+
+var age = 0
+var velocity = Vector2()
 
 func _ready():
 	globals.debug = $HUD/TextureRect/Label

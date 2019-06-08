@@ -19,12 +19,13 @@ func _ready():
 	detect_neighbours()
 	sort_neighbours()
 	sprite.material = sprite.material.duplicate()
+
+
 func _process(delta):
 	cycle+=delta
 	if cycle>1.0:
 		cycle -= 1.0
 		update_village()
-
 
 
 func update_village():
@@ -35,6 +36,8 @@ func update_village():
 	consumption_food = ceil(population/5)
 	update_display()
 	pass
+
+
 func collect_resources():
 	var index = 0
 	population_idle += population_transporting
@@ -45,7 +48,8 @@ func collect_resources():
 		transport_resources(get_cheapest_resource(index))
 #		start_harvest(get_cheapest_resource(index))
 		index += 1
-		
+
+
 func delegate_workers( location:ResourceLocation ):
 	if location.availible > 1:
 		if location.workers<location.worker_capacity:
@@ -66,10 +70,12 @@ func transport_resources( location:ResourceLocation ):
 		population_idle -= population_transporting
 		stockpile_food += population_transporting/transport_cost
 		location.stockpile -= population_transporting/transport_cost
-	
+
+
 func generate():
 	population = randi() % 100 + 1 # randi between 1 and 100
 	stockpile_food = randi() % 150 + 251
+
 
 func consider_starving():
 	if stockpile_food >= consumption_food: # dość jedzenia - ginie 2-3% pop
@@ -86,6 +92,7 @@ func consider_starving():
 			population -= max(5, floor(0.2*population))
 			population = max(0, population)
 
+
 func consider_birth():
 	if stockpile_food >= consumption_food: # dość jedzenia - rodzi się 10-15% pop
 		stockpile_food -= consumption_food
@@ -97,6 +104,7 @@ func consider_birth():
 		if randf() < 0.5:
 			population += round(0.02*population)
 
+
 func detect_neighbours(): # array of pairs (Reosurce Node, distance + gather cost)
 	for neighbour in get_tree().get_nodes_in_group("resource"):
 		var distance = (neighbour.position - position).length_squared()
@@ -104,18 +112,22 @@ func detect_neighbours(): # array of pairs (Reosurce Node, distance + gather cos
 			var pair = [neighbour, floor(0.01*distance) + neighbour.harvest_cost]
 			neighbours.append(pair)
 
+
 class MyCustomSorter:
 	static func sort(a, b):
 		if a[1] < b[1]:
 			return true
 		return false
 
+
 func sort_neighbours():
 	neighbours.sort_custom(MyCustomSorter, "sort")
+
 
 func get_cheapest_resource(start = 0):
 #	print (start+1, " cheapest resource is ", neighbours[start][0], " (", neighbours[start][0].resName, ") with total price = floor(0.01*distanceSQ) + gatherCost = ", neighbours[start][1])
 	return neighbours[start][0]
+
 
 func _draw():
 	draw_circle(Vector2(0,0), radius, Color(0.55, 0, 0, 0.3))
@@ -124,6 +136,7 @@ func _draw():
 			draw_line(Vector2(0,0), resource.position - position, Color(0, 1, 0, 1), 3.0)
 		else:
 			draw_line(Vector2(0,0), resource.position - position, Color(1, 0, 0, 1), 3.0)
+
 
 func update_display():
 	$values.text = str(population_idle) +"/"+ str(population) +"\n"
