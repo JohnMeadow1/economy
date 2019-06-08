@@ -44,6 +44,10 @@ globals="*res://globals.gd"
 
 gdscript/warnings/enable=false
 
+[editor_plugins]
+
+enabled=PoolStringArray( "todo" )
+
 [importer_defaults]
 
 texture={
