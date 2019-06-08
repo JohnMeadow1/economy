@@ -1,14 +1,16 @@
 extends "res://Scripts/base_classes/Dwelling.gd"
 class_name House
 
+onready var sprite = $Sprite
+
+const CYCLE_DURATION = 1.0
+
 var radius = 300 #pozniej
 var RAD_SQ = pow(radius, 2)
 var neighbours = []
 
-var cycle:float = rand_range(0.0,1.0)
+var cycle: float = rand_range(0.0, 1.0)
 #var neighDstReducedCostSQ = []
-
-onready var sprite = $Sprite
 
 func _ready():
 	randomize()
@@ -22,9 +24,9 @@ func _ready():
 
 
 func _process(delta):
-	cycle+=delta
-	if cycle>1.0:
-		cycle -= 1.0
+	cycle += delta
+	if cycle > CYCLE_DURATION:
+		cycle -= CYCLE_DURATION
 		update_village()
 
 
