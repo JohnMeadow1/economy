@@ -22,6 +22,7 @@ func _input(event):
 	
 	for village in get_tree().get_nodes_in_group("village"):
 		village.detect_neighbours()
+		village.update()
 
 func handle_mouse_motion_event(event):
 	if globals.mouse_button_pressed:
