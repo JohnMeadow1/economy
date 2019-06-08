@@ -20,18 +20,17 @@ func _process(delta):
 	cycle+=delta
 	if cycle>1.0:
 		cycle -= 1.0
-		collect_resources()
-		update_display()
+		update_village()
+
 
 
 func update_village():
-#	idlePopulation = population
-#	collect_resources()
-#	consider_starving()
-#	neededFood = ceil(population/5)
-#	consider_birth()
-#	neededFood = ceil(population/5)
-#	update_display()
+	collect_resources()
+	consider_starving()
+	consumption_food = ceil(population/5)
+	consider_birth()
+	consumption_food = ceil(population/5)
+	update_display()
 	pass
 func collect_resources():
 	var index = 0
@@ -126,4 +125,4 @@ func _draw():
 func update_display():
 	$values.text = str(population_idle) +"/"+ str(population) +"\n"
 	$values.text += str(floor(stockpile_food))+"\n"
-	$values.text += str(consumption_food)
+	$values.text += str(consumption_food)+"/s\n"
