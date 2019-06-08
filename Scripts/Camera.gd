@@ -19,16 +19,14 @@ func _input(event):
 
 	if event is InputEventMouseButton:
 		handle_mouse_button_event(event)
-	
-	for village in get_tree().get_nodes_in_group("village"):
-		village.detect_neighbours()
-		village.update()
 
 func handle_mouse_motion_event(event):
 	if globals.mouse_button_pressed:
 		if globals.selected_node: #something is selected
 			globals.selected_node.position = get_global_mouse_position().floor()
-			pass
+			for village in get_tree().get_nodes_in_group("village"):
+				village.detect_neighbours()
+				village.update()
 		else: #nothing selected -> drag camera
 			position = lerp(position,previous_camera_position + previous_mouse_possition - get_local_mouse_position(), 0.5)
 	else: #camera hoverig
@@ -47,11 +45,12 @@ func handle_mouse_button_event(event):
 			globals.mouse_button_pressed = true
 			previous_mouse_possition = get_local_mouse_position()
 			previous_camera_position = position
+
 #			get_object_near_mouse()
 	else: # button released
 		globals.mouse_button_pressed = false
 		globals.selected_node = null
-
+			
 func get_object_near_mouse():
 	var is_hoover = false
 	for node in get_tree().get_nodes_in_group("selectable"):

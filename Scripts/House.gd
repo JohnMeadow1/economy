@@ -18,7 +18,7 @@ func _ready():
 	sort_neighbours()
 	create_cost_labels()
 	update_display()
-	sprite.material = sprite.material.duplicate() #NOTE ?
+	sprite.material = sprite.material.duplicate() #NOTE Robi duplikat shadera, zeby każdy kto z niego kożysta miał własny unikatowy. inaczej podświetlały by sięwsdzystkie obiekty z niego korzystające.
 
 
 func _process(delta):
@@ -133,11 +133,9 @@ func create_cost_labels():
 
 func update_cost_labels(node):
 	for resource in get_tree().get_nodes_in_group("resource"):
-		var tmp = get_node(node).find_node(resource.name)
-		# dlaczego null
-		print(tmp)
-#		tmp.text = str((resource.position - position).length())
-#		tmp.rect_position = 0.5*(resource.position - position)
+		var label_node = get_node(node+"/"+resource.name) as Label
+		label_node.text = str((resource.position - position).length())
+		label_node.rect_position = 0.5*(resource.position - position)
 
 
 func neighbours_to_str():
