@@ -1,7 +1,13 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Scripts/ResourceLocation.gd" type="Script" id=1]
-[ext_resource path="res://Sprites/Plants/Wheat.png" type="Texture" id=2]
+[ext_resource path="res://Shaders/outline.shader" type="Shader" id=2]
+[ext_resource path="res://Sprites/Plants/Wheat.png" type="Texture" id=3]
+
+[sub_resource type="ShaderMaterial" id=1]
+shader = ExtResource( 2 )
+shader_param/width = 0.0
+shader_param/outline_color = Color( 0, 1, 0, 1 )
 
 [node name="ResourceLocation" type="Node2D" groups=[
 "resource",
@@ -11,8 +17,9 @@ script = ExtResource( 1 )
 stockpile = 0.0
 
 [node name="Sprite" type="Sprite" parent="."]
+material = SubResource( 1 )
 scale = Vector2( 2, 2 )
-texture = ExtResource( 2 )
+texture = ExtResource( 3 )
 
 [node name="name" type="Label" parent="."]
 margin_left = -70.0

@@ -1,17 +1,25 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Scripts/House.gd" type="Script" id=1]
-[ext_resource path="res://Sprites/Farm/House_Iso.png" type="Texture" id=2]
+[ext_resource path="res://Shaders/outline.shader" type="Shader" id=2]
+[ext_resource path="res://Sprites/Farm/House_Iso.png" type="Texture" id=3]
+
+[sub_resource type="ShaderMaterial" id=1]
+shader = ExtResource( 2 )
+shader_param/width = null
+shader_param/outline_color = Color( 0, 1, 0, 1 )
 
 [node name="House" type="Node2D" groups=[
 "selectable",
 "villages",
 ]]
 script = ExtResource( 1 )
+population = 5
 
 [node name="Sprite" type="Sprite" parent="."]
+material = SubResource( 1 )
 scale = Vector2( 2, 2 )
-texture = ExtResource( 2 )
+texture = ExtResource( 3 )
 
 [node name="name" type="Label" parent="."]
 margin_left = -18.0
@@ -37,5 +45,7 @@ margin_left = 160.0
 margin_top = -40.0
 margin_right = 279.0
 margin_bottom = 25.0
-text = "values
+text = "0/5
+0
+1/s
 "

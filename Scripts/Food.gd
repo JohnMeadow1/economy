@@ -5,14 +5,14 @@ var currAmount
 var gatherCost = 2 #pozniej
 var regenRate
 var capacity # ilu max ludzi może zbierać
-
+onready var sprite = $Sprite
 signal harvested
 
 func _ready():
 	generate()
 	$Name.text = resName
 	update_display()
-	
+	sprite.material = sprite.material #make shader unique
 
 func _process(_delta):
 	pass

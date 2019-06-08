@@ -1,5 +1,5 @@
 extends Node2D
-class_name Dwelling
+class_name Dwelling, "res://Sprites/Farm/House_Mini.png"
 
 enum SettlementType{ ABANDONED, SETTLEMENT, VILLAGE, TOWN }
 var SettlementNames = ["ABANDONED", "SETTLEMENT", "VILLAGE", "TOWN"]

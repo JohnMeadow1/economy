@@ -5,6 +5,7 @@ class_name ResourceLocation
 
 onready var name_label:Label = $name
 onready var resource_name:String = name_label.text setget _set_resource_name, _get_resource_name
+onready var sprite = $Sprite
 
 export(ResourceType) var _resource_type:int = 0 setget _set_resource_type
 
@@ -14,7 +15,8 @@ func _ready():
 	update_display()
 	harvest_cost = max(1,harvest_cost)
 	cycle = rand_range(0,cycle_length)
-
+	sprite.material = sprite.material.duplicate()
+	
 func _set_resource_name(value):
 	resource_name = value
 	if has_node("name"):

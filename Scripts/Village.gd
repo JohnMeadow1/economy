@@ -9,7 +9,7 @@ var radius = 300 #pozniej
 var RAD_SQ = pow(radius, 2)
 var neighbours = []
 #var neighDstReducedCostSQ = []
-
+onready var sprite = $Sprite
 onready var foodPlace = get_parent().get_node("Food")
 
 signal harvesting
@@ -22,7 +22,9 @@ func _ready():
 	update_display()
 	detect_neighbours()
 	sort_neighbours()
-
+	sprite.material = sprite.material.duplicate() #make shader unique
+	
+	
 func _process(delta):
 	if Input.is_action_pressed("print_resources"):
 		globals.debug.text += "RESOURCES\n" +str(neighbours) + "\n"

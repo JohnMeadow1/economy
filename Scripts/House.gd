@@ -1,4 +1,5 @@
-extends Dwelling
+extends "res://Scripts/base_classes/Dwelling.gd"
+class_name House
 
 var radius = 300 #pozniej
 var RAD_SQ = pow(radius, 2)
@@ -6,6 +7,8 @@ var neighbours = []
 
 var cycle:float = rand_range(0.0,1.0)
 #var neighDstReducedCostSQ = []
+
+onready var sprite = $Sprite
 
 func _ready():
 	randomize()
@@ -15,7 +18,7 @@ func _ready():
 	update_display()
 	detect_neighbours()
 	sort_neighbours()
-
+	sprite.material = sprite.material.duplicate()
 func _process(delta):
 	cycle+=delta
 	if cycle>1.0:

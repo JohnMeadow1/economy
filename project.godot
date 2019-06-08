@@ -20,13 +20,19 @@ _global_script_classes=[ {
 "path": "res://Scripts/base_classes/GameResource.gd"
 }, {
 "base": "Node2D",
+"class": "House",
+"language": "GDScript",
+"path": "res://Scripts/House.gd"
+}, {
+"base": "Node2D",
 "class": "ResourceLocation",
 "language": "GDScript",
 "path": "res://Scripts/ResourceLocation.gd"
 } ]
 _global_script_class_icons={
-"Dwelling": "",
+"Dwelling": "res://Sprites/Farm/House_Mini.png",
 "GameResource": "res://Sprites/Rocks/Gray_Rock_Mini.png",
+"House": "",
 "ResourceLocation": ""
 }
 

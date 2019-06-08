@@ -29,8 +29,7 @@ func handle_mouse_motion_event(event):
 			position = lerp(position,previous_camera_position + previous_mouse_possition - get_local_mouse_position(), 0.5)
 	else: #camera hoverig
 #		globals.selected_node = null
-#		get_object_near_mouse()
-		pass
+		get_object_near_mouse()
 
 func handle_mouse_button_event(event):
 	if event.pressed: 
@@ -44,14 +43,18 @@ func handle_mouse_button_event(event):
 			globals.mouse_button_pressed = true
 			previous_mouse_possition = get_local_mouse_position()
 			previous_camera_position = position
-			globals.selected_node = null
-			get_object_near_mouse()
+#			get_object_near_mouse()
 	else: # button released
 		globals.mouse_button_pressed = false
 		globals.selected_node = null
 
 func get_object_near_mouse():
+	var is_hoover = false
 	for node in get_tree().get_nodes_in_group("selectable"):
 		if get_global_mouse_position().distance_to(node.position) < globals.SELECTION_RANGE:
+			is_hoover = true
 			globals.selected_node = node
-
+			node.sprite.material.set("shader_param/width", 1.0)
+	if !is_hoover and globals.selected_node :
+		globals.selected_node.sprite.material.set("shader_param/width", 0.0)
+		globals.selected_node = null
