@@ -5,14 +5,9 @@ onready var sprite = $Sprite
 
 const CYCLE_DURATION = 1.0
 
-var radius = 300 #pozniej
 var RAD_SQ = pow(radius, 2)
 var neighbours = []
-
-var cycle: float = rand_range(0.0, 1.0) #NOTE po co losować startowy cykl?
-# (pewnie po to, by wioski nie chodziły równo, ale dlaczego to ważne?)
-# (pewnie dlatego, żeby nie było problemów z kolejnością obsługiwania czy coś)
-#var neighDstReducedCostSQ = []
+var cycle: float = 0.0
 
 func _ready():
 	randomize()
@@ -22,11 +17,11 @@ func _ready():
 	update_display()
 	detect_neighbours()
 	sort_neighbours()
-	sprite.material = sprite.material.duplicate()
+	sprite.material = sprite.material.duplicate() #NOTE ?
 
 
 func _process(delta):
-	
+	#HACK output docelowo w kamerze dla podświetlanego domku
 	if Input.is_action_pressed("print_resources"):
 		globals.debug.text += "\n" + str(self) + " RESOURCES\n" + neighbours_to_str() + "\n"
 	
@@ -35,11 +30,6 @@ func _process(delta):
 		cycle -= CYCLE_DURATION
 		update_village()
 
-func neighbours_to_str():
-	var temp: String = ""
-	for neighbour in neighbours:
-		temp += str(neighbour) + "\n"
-	return temp
 
 func update_village():
 	collect_resources()
@@ -125,6 +115,13 @@ func detect_neighbours(): # array of pairs (Reosurce Node, distance + gather cos
 		if distance < RAD_SQ:
 			var pair = [resource, floor(0.01*distance) + resource.harvest_cost]
 			neighbours.append(pair)
+
+
+func neighbours_to_str():
+	var temp: String = ""
+	for neighbour in neighbours:
+		temp += str(neighbour) + "\n"
+	return temp
 
 
 class MyCustomSorter:
