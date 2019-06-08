@@ -1,8 +1,9 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://Scripts/Village.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/not_needed/Village.gd" type="Script" id=1]
 [ext_resource path="res://Shaders/outline_shadermaterial.tres" type="Material" id=2]
 [ext_resource path="res://Sprites/Farm/House_Iso.png" type="Texture" id=3]
+
 
 [node name="Node2D" type="Node2D" groups=[
 "selectable",
