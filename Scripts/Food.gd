@@ -12,7 +12,7 @@ func _ready():
 	generate()
 	$Name.text = resName
 	update_display()
-	sprite.material = sprite.material #make shader unique
+	sprite.material = sprite.material.duplicate()  #make shader unique
 
 func _process(_delta):
 	pass

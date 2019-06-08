@@ -57,4 +57,5 @@ func get_object_near_mouse():
 			node.sprite.material.set("shader_param/width", 1.0)
 	if !is_hoover and globals.selected_node :
 		globals.selected_node.sprite.material.set("shader_param/width", 0.0)
+		globals.selected_node.update()
 		globals.selected_node = null
