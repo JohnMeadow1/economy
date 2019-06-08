@@ -93,7 +93,7 @@ func consider_birth():
 			population += round(0.02*population)
 
 func detect_neighbours(): # array of pairs (Reosurce Node, distance + gather cost)
-	for neighbour in get_tree().get_nodes_in_group("resources"):
+	for neighbour in get_tree().get_nodes_in_group("resource"):
 		var temp = (neighbour.position - position).length_squared()
 		if temp < RAD_SQ:
 			var pair = [neighbour, floor(0.01*temp) + neighbour.gatherCost]
@@ -115,7 +115,7 @@ func get_cheapest_resource(start = 0):
 
 func _draw():
 	draw_circle(Vector2(0,0), radius, Color(0.55, 0, 0, 0.3))
-	for resource in get_tree().get_nodes_in_group("resources"):
+	for resource in get_tree().get_nodes_in_group("resource"):
 		if resource in neighbours:
 			draw_line(Vector2(0,0), resource.position - position, Color(0, 1, 0, 1), 3.0)
 		else:
