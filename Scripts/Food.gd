@@ -14,7 +14,7 @@ func _ready():
 	update_display()
 	
 
-func _process(delta):
+func _process(_delta):
 	pass
 
 func update_resource():

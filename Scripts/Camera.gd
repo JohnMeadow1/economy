@@ -22,7 +22,8 @@ func _input(event):
 
 func handle_mouse_motion_event(event):
 	if globals.mouse_button_pressed:
-		if globals.selected_node: #something got selected
+		if globals.selected_node: #something is selected
+			globals.selected_node.position = get_global_mouse_position().floor()
 			pass
 		else: #nothing selected -> drag camera
 			position = lerp(position,previous_camera_position + previous_mouse_possition - get_local_mouse_position(), 0.5)
@@ -44,7 +45,7 @@ func handle_mouse_button_event(event):
 			previous_mouse_possition = get_local_mouse_position()
 			previous_camera_position = position
 			globals.selected_node = null
-#			get_object_near_mouse()
+			get_object_near_mouse()
 	else: # button released
 		globals.mouse_button_pressed = false
 		globals.selected_node = null

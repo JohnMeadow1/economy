@@ -10,12 +10,24 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Node2D",
+"class": "Dwelling",
+"language": "GDScript",
+"path": "res://Scripts/base_classes/Dwelling.gd"
+}, {
+"base": "Node2D",
 "class": "GameResource",
 "language": "GDScript",
 "path": "res://Scripts/base_classes/GameResource.gd"
+}, {
+"base": "Node2D",
+"class": "ResourceLocation",
+"language": "GDScript",
+"path": "res://Scripts/ResourceLocation.gd"
 } ]
 _global_script_class_icons={
-"GameResource": ""
+"Dwelling": "",
+"GameResource": "res://Sprites/Rocks/Gray_Rock_Mini.png",
+"ResourceLocation": ""
 }
 
 [application]
