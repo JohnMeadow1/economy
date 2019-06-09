@@ -5,8 +5,8 @@
 [ext_resource path="res://Scripts/Camera.gd" type="Script" id=3]
 [ext_resource path="res://Nodes/House.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Nodes/ResourceLocation.tscn" type="PackedScene" id=5]
-[ext_resource path="res://Scenes/Jamma_13.tres" type="DynamicFont" id=6]
-[ext_resource path="res://Scenes/Bandwidth_13.tres" type="DynamicFont" id=7]
+[ext_resource path="res://Fonts/Jamma_13.tres" type="DynamicFont" id=6]
+[ext_resource path="res://Fonts/Bandwidth_13.tres" type="DynamicFont" id=7]
 
 [node name="Main" type="Node2D"]
 script = ExtResource( 1 )
