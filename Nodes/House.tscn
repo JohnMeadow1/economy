@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Scripts/House.gd" type="Script" id=1]
 [ext_resource path="res://Shaders/outline.shader" type="Shader" id=2]
@@ -10,6 +10,13 @@
 shader = ExtResource( 2 )
 shader_param/width = null
 shader_param/outline_color = Color( 0, 1, 0, 1 )
+
+[sub_resource type="Gradient" id=2]
+offsets = PoolRealArray( 0.993548, 1 )
+colors = PoolColorArray( 0, 0, 0, 0.235294, 0, 0, 0, 0.235294 )
+
+[sub_resource type="GradientTexture" id=3]
+gradient = SubResource( 2 )
 
 [node name="House" type="Node2D" groups=[
 "selectable",
@@ -37,8 +44,8 @@ align = 1
 [node name="variables" type="Label" parent="."]
 margin_left = 50.0
 margin_top = -40.0
-margin_right = 150.0
-margin_bottom = 8.0
+margin_right = 178.0
+margin_bottom = 14.0
 custom_fonts/font = ExtResource( 4 )
 text = "idle population:
 food:
@@ -47,10 +54,18 @@ consumption:"
 [node name="values" type="Label" parent="."]
 margin_left = 189.0
 margin_top = -40.0
-margin_right = 213.0
+margin_right = 219.0
 margin_bottom = 33.0
 custom_fonts/font = ExtResource( 5 )
 text = "0/5
 0
 1/s
 "
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+margin_left = 40.0
+margin_top = -50.0
+margin_right = 80.0
+margin_bottom = -10.0
+rect_scale = Vector2( 5.13624, 1.83057 )
+texture = SubResource( 3 )

@@ -126,15 +126,16 @@ func create_cost_labels():
 	for resource in get_tree().get_nodes_in_group("resource"):
 		var label = Label.new()
 		label.name = resource.name
-		label.text = str((resource.position - position).length())
+		label.text = str(stepify((resource.position - position).length(), 0.01))
 		label.rect_position = 0.5*(resource.position - position)
+		label.add_font_override("font",load("res://Fonts/Jamma_13.tres"))
 		node.add_child(label)
 
 
 func update_cost_labels(node):
 	for resource in get_tree().get_nodes_in_group("resource"):
 		var label_node = get_node(node+"/"+resource.name) as Label
-		label_node.text = str((resource.position - position).length())
+		label_node.text = str(stepify((resource.position - position).length(), 0.01))
 		label_node.rect_position = 0.5*(resource.position - position)
 
 
