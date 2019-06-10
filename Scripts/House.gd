@@ -18,7 +18,7 @@ func _ready():
 	sort_neighbours()
 	create_cost_labels()
 	update_display()
-	sprite.material = sprite.material.duplicate() #NOTE Robi duplikat shadera, zeby każdy kto z niego kożysta miał własny unikatowy. inaczej podświetlały by sięwsdzystkie obiekty z niego korzystające.
+	sprite.material = sprite.material.duplicate()
 
 
 func _process(delta):
