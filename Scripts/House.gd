@@ -1,24 +1,56 @@
+tool
 extends "res://Scripts/base_classes/Dwelling.gd"
 class_name House
 
+
+onready var name_label:Label = $name
+onready var house_name:String = name_label.text setget _set_house_name, _get_house_name
 onready var sprite = $Sprite
 
+
+export(SettlementType) var _settlement_type:int = 0 setget _set_settlement_type
+
+
 const CYCLE_DURATION = 1.0
+
 
 var RAD_SQ = pow(radius, 2)
 var neighbours = []
 var cycle: float = 0.0
 
+
 func _ready():
 	randomize()
 	generate()
-	$name.text = SettlementNames[settlement_size] + "_" + str(get_index())
+	$name.text = SettlementName[settlement_size] + "_" + str(get_index())
 	population_idle = population
 	detect_neighbours()
 	sort_neighbours()
 	create_cost_labels()
 	update_display()
 	sprite.material = sprite.material.duplicate()
+
+
+func _set_house_name(value):
+	house_name = value
+	if has_node("name"):
+		$name.text = value
+
+
+func _get_house_name():
+	return house_name
+
+
+func _set_settlement_type(value):
+	_settlement_type = value
+	if value >= 0:
+		self.house_name = SettlementName[value]
+		if has_node("Sprite"):
+			$Sprite.texture = load(SettlementSprites[value])
+	else:
+		self.house_name = "null settlement"
+		if has_node("Sprite"):
+			$Sprite.texture = load("res://Sprites/No_Resource.png")
 
 
 func _process(delta):

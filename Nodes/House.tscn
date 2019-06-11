@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Scripts/House.gd" type="Script" id=1]
 [ext_resource path="res://Shaders/outline.shader" type="Shader" id=2]
-[ext_resource path="res://Sprites/Farm/House_Iso.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Town/Church_3.png" type="Texture" id=3]
 [ext_resource path="res://Fonts/Jamma_13.tres" type="DynamicFont" id=4]
 [ext_resource path="res://Fonts/Bandwidth_13.tres" type="DynamicFont" id=5]
 
@@ -24,6 +24,7 @@ gradient = SubResource( 2 )
 ]]
 script = ExtResource( 1 )
 population = 5
+_settlement_type = 1
 
 [node name="Sprite" type="Sprite" parent="."]
 material = SubResource( 1 )
@@ -38,7 +39,7 @@ margin_bottom = -56.0
 grow_horizontal = 2
 grow_vertical = 2
 custom_fonts/font = ExtResource( 4 )
-text = "NAME"
+text = "SETTLEMENT"
 align = 1
 
 [node name="variables" type="Label" parent="."]
@@ -58,8 +59,8 @@ margin_top = -40.0
 margin_right = 219.0
 margin_bottom = 33.0
 custom_fonts/font = ExtResource( 5 )
-text = "0/5
-3/2
+text = "2/5
+0/0
 0
 1/s
 "

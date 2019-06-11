@@ -1,13 +1,15 @@
 tool
-#extends GameResource
 extends "res://Scripts/base_classes/GameResource.gd"
 class_name ResourceLocation
+
 
 onready var name_label:Label = $name
 onready var resource_name:String = name_label.text setget _set_resource_name, _get_resource_name
 onready var sprite = $Sprite
 
+
 export(ResourceType) var _resource_type:int = 0 setget _set_resource_type
+
 
 func _ready():
 	randomize()
@@ -16,18 +18,21 @@ func _ready():
 	harvest_cost = max(1,harvest_cost)
 	cycle = rand_range(0,cycle_length)
 	sprite.material = sprite.material.duplicate()
-	
+
+
 func _set_resource_name(value):
 	resource_name = value
 	if has_node("name"):
 		$name.text = value
 
+
 func _get_resource_name():
 	return resource_name
 
+
 func _set_resource_type(value):
 	_resource_type = value
-	if value>=0:
+	if value >= 0:
 		self.resource_name = ResourceName[value]
 		if has_node("Sprite"):
 			$Sprite.texture = load(ResourceSprites[value])
@@ -44,26 +49,29 @@ func _physics_process(delta):
 			cycle -= cycle_length
 			harvest()
 			update_display()
-			
+
+
 func harvest():
 	available_fluctuations = available
 	stockpile_fluctuations = previous_stockpile-stockpile
 	previous_stockpile = stockpile
 	available += regenerates_per_cycle
 	var hervested = workers / harvest_cost + auto_harvest
-	hervested = min( hervested, harvestable_per_cycle)   #limit by max harvestable
-	hervested = min( hervested, available)               #limit by max available
-	hervested = min( hervested, stockpile_max-stockpile) #limit by max storage
+	hervested = min(hervested, harvestable_per_cycle)   #limit by max harvestable
+	hervested = min(hervested, available)               #limit by max available
+	hervested = min(hervested, stockpile_max-stockpile) #limit by max storage
 	stockpile += hervested
 	available -= hervested
 	available_fluctuations -= available
 	
 	update_depletion(hervested)
 
+
 func update_depletion(hervested):
 	harvest_cost += available_fluctuations * 0.1
 	harvest_cost = clamp(harvest_cost, 1, harvest_cost_max)
-	
+
+
 func update_display():
 	$values.text = str(round(available))
 	if available_fluctuations <0: $values.text += " (+"+str(-round(available_fluctuations*10)/10)+"/s)\n"
@@ -75,8 +83,8 @@ func update_display():
 	if stockpile_fluctuations <0: $values.text += " (+"+str(-round(stockpile_fluctuations*10)/10)+"/s)\n"
 	else: $values.text += " ("+str(-round(stockpile_fluctuations*10)/10)+"/s)\n"
 
+
 func generate():
 	available = 50 * (randi() % 7 + 1)              # randi between 50 and 350 with 50 step
 	regenerates_per_cycle = ceil(4 * randf()) + 1   # randf [1,5]
 	worker_capacity = randi() % 10 + 11             # randi [11,20]
-
