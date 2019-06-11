@@ -12,7 +12,7 @@ var cycle: float = 0.0
 func _ready():
 	randomize()
 	generate()
-	$name.text = SettlementNames[settlement_size]
+	$name.text = SettlementNames[settlement_size] + "_" + str(get_index())
 	population_idle = population
 	detect_neighbours()
 	sort_neighbours()
@@ -145,12 +145,13 @@ func consider_birth():
 			population += round(0.02*population)
 
 
-func detect_neighbours(): # array of pairs (Reosurce Node, distance + gather cost)
+func detect_neighbours(): # array of pairs (Reosurce Node, distance + harvest cost)
 	neighbours.clear()
 	for resource in get_tree().get_nodes_in_group("resource"):
-		var distance = (resource.position - position).length_squared()
-		if distance < RAD_SQ:
-			var pair = [resource, floor(0.01*distance) + resource.harvest_cost]
+#		var distance = (resource.position - position).length_squared()
+#		var distance = position.distance_squared_to(resource.position)
+		if position.distance_squared_to(resource.position) < RAD_SQ:
+			var pair = [resource, floor(position.distance_to(resource.position)) + resource.harvest_cost]
 			neighbours.append(pair)
 
 
@@ -175,7 +176,7 @@ func update_cost_labels(node):
 		label_node.rect_position = 0.5*(resource.position - position)
 
 
-func neighbours_to_str():
+func neighbours_info():
 	var temp: String = ""
 	for neighbour in neighbours:
 		temp += str(neighbour) + "\n"
@@ -220,7 +221,7 @@ func update_display():
 
 
 func on_hoover_info():
-	globals.debug.text += "\n" + str(self) + " RESOURCES\n" + neighbours_to_str() + "\n"
+	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
 	globals.debug.text += "\nGolden law: " + str(population - population_idle) + " = " + str(population_collecting + total_population_transporting_this_cycle) + "\n"
-	globals.debug.text += "\nNeeded this: " + str(population_needed_for_transport_this_cycle) + "\n"
-	globals.debug.text += "\nNeeded next: " + str(population_needed_for_transport_next_cycle) + "\n"
+	globals.debug.text += "\nPop needed this cycle: " + str(population_needed_for_transport_this_cycle) + "\n"
+	globals.debug.text += "\nPop Needed next cycle: " + str(population_needed_for_transport_next_cycle) + "\n"
