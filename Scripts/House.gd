@@ -37,8 +37,8 @@ func _process(delta):
 
 func update_village():
 	collect_resources()
-#	consider_starving()
-#	consider_birth()
+	consider_starving()
+	consider_birth()
 	consumption_food = ceil(population/5)
 	update_display()
 	pass
@@ -47,10 +47,6 @@ func update_village():
 func collect_resources():
 	var index = 0
 	population_idle += total_population_transporting_this_cycle #here this cycle refers to previous cycle
-	# z powodu starving/birth to wyzej nie bedzie dzialac, hmm
-#	population_idle = population
-#	for neighbour in neighbours:
-#		population_idle -= neighbour[0].workers
 	
 	total_population_transporting_this_cycle = 0
 	population_needed_for_transport_this_cycle = population_needed_for_transport_next_cycle
@@ -61,7 +57,6 @@ func collect_resources():
 		transport_resources(get_cheapest_resource(index))
 		index += 1
 	population_reserved_for_transport = 0 # rezerwowanie jest podczas delegate na potrzeby transport tego cyklu
-	# złote prawo, powinno byc zachowane w kazdym cyklu: collecting + total_transporting = pop - idle_pop
 
 
 func convert_harvesters_to_transporters(location: ResourceLocation):
@@ -102,7 +97,6 @@ func delegate_workers(location: ResourceLocation):
 
 func transport_resources(location: ResourceLocation):
 	if location.stockpile > 0:
-		#FIXME  Transport is not happening if all workers harvest
 		var transport_cost = (position.distance_to(location.position) * 0.01)
 		var workers_needed_for_max_transport = floor(location.stockpile * transport_cost)
 		
@@ -121,32 +115,39 @@ func generate():
 	population = randi() % 100 + 1 # randi between 1 and 100
 	stockpile_food = randi() % 150 + 251
 
-
+#HACK ludzie pracy nie umierają
 func consider_starving():
-	if stockpile_food >= consumption_food: # dość jedzenia - ginie 2-3% pop
+	if stockpile_food >= consumption_food: # dość jedzenia
 		stockpile_food -= consumption_food
 		if randf() < 0.5:
-			population -= round(0.03*population)
+			population -= round(0.15*population_idle)
+			population_idle -= round(0.15*population_idle)
 		else:
-			population -= round(0.02*population)
-	else: # mało jedzenia - ginie 20-30% pop (ale nic nie zjadają, poki co)
+			population -= round(0.1*population_idle)
+			population_idle -= round(0.1*population_idle)
+	else: # za mało jedzenia, ale nic nie zjadają
 		if randf() < 0.5:
-			population -= max(5, floor(0.3*population))
-			population = max(0, population)
+			population -= floor(0.7*population_idle)
+			population_idle -=  floor(0.7*population_idle)
+#			population = max(0, population)
 		else:
-			population -= max(5, floor(0.2*population))
-			population = max(0, population)
+			population -= floor(0.4*population_idle)
+			population_idle -= floor(0.4*population_idle)
+#			population = max(0, population)
 
 
 func consider_birth():
 	if stockpile_food >= consumption_food: # dość jedzenia - rodzi się 10-15% pop
 		stockpile_food -= consumption_food
 		if randf() < 0.5:
+			population_idle += max(1, floor(0.1*population))
 			population += max(1, floor(0.1*population))
 		else:
+			population_idle += max(1, floor(0.15*population))
 			population += max(1, floor(0.15*population))
 	else: # mało jedzenia - rodzi się 0-2% pop
 		if randf() < 0.5:
+			population_idle += round(0.02*population)
 			population += round(0.02*population)
 
 
