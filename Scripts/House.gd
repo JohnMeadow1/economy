@@ -183,6 +183,7 @@ func neighbours_info():
 	return temp
 
 
+"""Sort 2-dimensional array by 2nd value"""
 class MyCustomSorter:
 	static func sort(a, b):
 		if a[1] < b[1]:
