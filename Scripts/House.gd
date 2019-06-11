@@ -22,12 +22,6 @@ func _ready():
 
 
 func _process(delta):
-	#HACK output docelowo w kamerze dla podświetlanego domku
-	if Input.is_action_pressed("print_resources"):
-		globals.debug.text += "\n" + str(self) + " RESOURCES\n" + neighbours_to_str() + "\n"
-		globals.debug.text += "\nGolden law: " + str(population - population_idle) + " = " + str(population_collecting + total_population_transporting_this_cycle) + "\n"
-		globals.debug.text += "\nNeeded this: " + str(population_needed_for_transport_this_cycle) + "\n"
-		globals.debug.text += "\nNeeded next: " + str(population_needed_for_transport_next_cycle) + "\n"
 	
 	cycle += delta
 	if cycle > CYCLE_DURATION:
@@ -223,3 +217,10 @@ func update_display():
 	$values.text += str(floor(stockpile_food))+"\n"
 	$values.text += str(consumption_food)+"/s\n"
 	update_cost_labels("CostLabels")
+
+
+func on_hoover_info():
+	globals.debug.text += "\n" + str(self) + " RESOURCES\n" + neighbours_to_str() + "\n"
+	globals.debug.text += "\nGolden law: " + str(population - population_idle) + " = " + str(population_collecting + total_population_transporting_this_cycle) + "\n"
+	globals.debug.text += "\nNeeded this: " + str(population_needed_for_transport_this_cycle) + "\n"
+	globals.debug.text += "\nNeeded next: " + str(population_needed_for_transport_next_cycle) + "\n"
