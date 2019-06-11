@@ -25,6 +25,9 @@ func _process(delta):
 	#HACK output docelowo w kamerze dla podświetlanego domku
 	if Input.is_action_pressed("print_resources"):
 		globals.debug.text += "\n" + str(self) + " RESOURCES\n" + neighbours_to_str() + "\n"
+		globals.debug.text += "\nGolden law: " + str(population - population_idle) + " = " + str(population_collecting + total_population_transporting_this_cycle) + "\n"
+		globals.debug.text += "\nNeeded this: " + str(population_needed_for_transport_this_cycle) + "\n"
+		globals.debug.text += "\nNeeded next: " + str(population_needed_for_transport_next_cycle) + "\n"
 	
 	cycle += delta
 	if cycle > CYCLE_DURATION:
@@ -34,9 +37,8 @@ func _process(delta):
 
 func update_village():
 	collect_resources()
-	consider_starving()
-	consumption_food = ceil(population/5)
-	consider_birth()
+#	consider_starving()
+#	consider_birth()
 	consumption_food = ceil(population/5)
 	update_display()
 	pass
@@ -44,36 +46,75 @@ func update_village():
 
 func collect_resources():
 	var index = 0
-	population_idle += population_transporting
-	population_transporting = 0
+	population_idle += total_population_transporting_this_cycle #here this cycle refers to previous cycle
+	# z powodu starving/birth to wyzej nie bedzie dzialac, hmm
+#	population_idle = population
+#	for neighbour in neighbours:
+#		population_idle -= neighbour[0].workers
+	
+	total_population_transporting_this_cycle = 0
+	population_needed_for_transport_this_cycle = population_needed_for_transport_next_cycle
+	population_needed_for_transport_next_cycle = 0
 	while(population_idle > 0 and index < neighbours.size()):
 #		print("Starting ", index+1, " harvest of ", get_parent().age, " year.")
 		delegate_workers(get_cheapest_resource(index))
 		transport_resources(get_cheapest_resource(index))
-#		start_harvest(get_cheapest_resource(index))
 		index += 1
+	population_reserved_for_transport = 0 # rezerwowanie jest podczas delegate na potrzeby transport tego cyklu
+	# złote prawo, powinno byc zachowane w kazdym cyklu: collecting + total_transporting = pop - idle_pop
+
+
+func convert_harvesters_to_transporters(location: ResourceLocation):
+	if population_needed_for_transport_this_cycle > 0:
+		if location.workers > 0:
+			if location.workers >= population_needed_for_transport_this_cycle:
+				location.workers -= population_needed_for_transport_this_cycle
+				population_collecting -= population_needed_for_transport_this_cycle
+				# wliczam needed do idle, ale zapamiętuje jako reserved
+				population_idle += population_needed_for_transport_this_cycle
+				population_reserved_for_transport += population_needed_for_transport_this_cycle
+				population_needed_for_transport_this_cycle = 0
+			else:
+				population_needed_for_transport_this_cycle -= location.workers
+				population_collecting -= location.workers
+				population_idle += location.workers
+				population_reserved_for_transport += location.workers
+				location.workers = 0
 
 
 func delegate_workers(location: ResourceLocation):
-	if location.availible > 1:
-		if location.workers < location.worker_capacity:
-			var worker_allocation = location.worker_capacity - location.workers
-			worker_allocation = min(worker_allocation, population_idle)
-			population_idle  -= worker_allocation
-			location.workers += worker_allocation
-	else:
-		population_idle  += location.workers
-		location.workers = 0
-		
+	convert_harvesters_to_transporters(location)
+	
+	if population_needed_for_transport_this_cycle == 0:
+		if location.available > 1:
+			if location.workers < location.worker_capacity:
+				var worker_allocation = location.worker_capacity - location.workers
+				#zarezerwowanych nie wysylam do pracy
+				worker_allocation = min(worker_allocation, population_idle - population_reserved_for_transport)
+				population_idle  -= worker_allocation
+				location.workers += worker_allocation
+				population_collecting += worker_allocation
+				#TODO Send animated workers from house to location with distance/cycle_dur speed
+		elif location.workers != 0:
+			population_collecting -= location.workers
+			population_idle  += location.workers
+			location.workers = 0
+
 func transport_resources(location: ResourceLocation):
 	if location.stockpile > 0:
 		#FIXME  Transport is not happening if all workers harvest
 		var transport_cost = (position.distance_to(location.position) * 0.01)
-		var worker_needed_for_max_transport = floor(location.stockpile * transport_cost )
-		population_transporting = min(worker_needed_for_max_transport, population_idle)
-		population_idle -= population_transporting
+		var workers_needed_for_max_transport = floor(location.stockpile * transport_cost)
+		
+		population_transporting = min(workers_needed_for_max_transport, population_idle)
+		total_population_transporting_this_cycle += population_transporting
+		population_idle -= population_transporting #niepewne okolice
+		population_reserved_for_transport = max(0, population_reserved_for_transport - population_transporting)
 		stockpile_food += population_transporting/transport_cost
 		location.stockpile -= population_transporting/transport_cost
+		
+		population_needed_for_transport_next_cycle += workers_needed_for_max_transport
+		population_needed_for_transport_next_cycle -= population_transporting
 
 
 func generate():
@@ -177,6 +218,7 @@ func _draw():
 
 func update_display():
 	$values.text = str(population_idle) +"/"+ str(population) +"\n"
+	$values.text += str(population_collecting) +"/"+ str(total_population_transporting_this_cycle)+"\n"
 	$values.text += str(floor(stockpile_food))+"\n"
 	$values.text += str(consumption_food)+"/s\n"
 	update_cost_labels("CostLabels")

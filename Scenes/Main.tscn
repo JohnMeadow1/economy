@@ -19,11 +19,10 @@ drag_margin_v_enabled = false
 script = ExtResource( 3 )
 
 [node name="House" parent="." instance=ExtResource( 4 )]
-position = Vector2( 290, 100 )
+position = Vector2( 256, 43 )
 
 [node name="Resource" parent="." instance=ExtResource( 5 )]
-position = Vector2( 260, 240 )
-availible = 100.0
+position = Vector2( 360, 410 )
 harvestable_per_cycle = 5.0
 regenerates_per_cycle = 0.1
 stockpile_max = 100.0
@@ -31,15 +30,15 @@ worker_capacity = 10
 
 [node name="Resource2" parent="." instance=ExtResource( 5 )]
 position = Vector2( 520, 154 )
-availible = 100.0
+available = 200.0
 harvestable_per_cycle = 5.0
 regenerates_per_cycle = 0.1
 stockpile_max = 100.0
+stockpile = 100.0
 worker_capacity = 10
 
 [node name="Resource3" parent="." instance=ExtResource( 5 )]
 position = Vector2( 10, 410 )
-availible = 100.0
 harvestable_per_cycle = 5.0
 stockpile_max = 100.0
 worker_capacity = 10

@@ -46,28 +46,28 @@ func _physics_process(delta):
 			update_display()
 			
 func harvest():
-	availible_fluctuations = availible
-	stockpile_fluctuations = previosu_stockpile-stockpile
-	previosu_stockpile = stockpile
-	availible += regenerates_per_cycle
+	available_fluctuations = available
+	stockpile_fluctuations = previous_stockpile-stockpile
+	previous_stockpile = stockpile
+	available += regenerates_per_cycle
 	var hervested = workers / harvest_cost + auto_harvest
 	hervested = min( hervested, harvestable_per_cycle)   #limit by max harvestable
-	hervested = min( hervested, availible)               #limit by max availible
+	hervested = min( hervested, available)               #limit by max available
 	hervested = min( hervested, stockpile_max-stockpile) #limit by max storage
 	stockpile += hervested
-	availible -= hervested
-	availible_fluctuations -= availible
+	available -= hervested
+	available_fluctuations -= available
 	
 	update_depletion(hervested)
 
 func update_depletion(hervested):
-	harvest_cost += availible_fluctuations * 0.1
+	harvest_cost += available_fluctuations * 0.1
 	harvest_cost = clamp(harvest_cost, 1, harvest_cost_max)
 	
 func update_display():
-	$values.text = str(round(availible))
-	if availible_fluctuations <0: $values.text += " (+"+str(-round(availible_fluctuations*10)/10)+"/s)\n"
-	else: $values.text += " ("+str(-round(availible_fluctuations*10)/10)+"/s)\n"
+	$values.text = str(round(available))
+	if available_fluctuations <0: $values.text += " (+"+str(-round(available_fluctuations*10)/10)+"/s)\n"
+	else: $values.text += " ("+str(-round(available_fluctuations*10)/10)+"/s)\n"
 	$values.text += str(round(harvest_cost*100)/100)+"\n"
 	$values.text += str(regenerates_per_cycle)+"\n"
 	$values.text += str(workers)+"/"+str(worker_capacity)+"\n"
@@ -76,7 +76,7 @@ func update_display():
 	else: $values.text += " ("+str(-round(stockpile_fluctuations*10)/10)+"/s)\n"
 
 func generate():
-	availible = 50 * (randi() % 7 + 1)              # randi between 50 and 350 with 50 step
+	available = 50 * (randi() % 7 + 1)              # randi between 50 and 350 with 50 step
 	regenerates_per_cycle = ceil(4 * randf()) + 1   # randf [1,5]
 	worker_capacity = randi() % 10 + 11             # randi [11,20]
 
