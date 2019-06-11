@@ -22,7 +22,7 @@ var cycle: float = 0.0
 func _ready():
 	randomize()
 	generate()
-	$name.text = SettlementName[settlement_size] + "_" + str(get_index())
+	self.house_name += "_" + str(get_index())
 	population_idle = population
 	detect_neighbours()
 	sort_neighbours()

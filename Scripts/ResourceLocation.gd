@@ -14,6 +14,7 @@ export(ResourceType) var _resource_type:int = 0 setget _set_resource_type
 func _ready():
 	randomize()
 #	generate()
+	self.resource_name += "_" + str(get_index())
 	update_display()
 	harvest_cost = max(1,harvest_cost)
 	cycle = rand_range(0,cycle_length)
