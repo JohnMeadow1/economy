@@ -22,7 +22,7 @@ script = ExtResource( 3 )
 position = Vector2( 256, 43 )
 population = 70
 population_idle = 70
-stockpile_food = 40.0
+stockpile_food = 90.0
 
 [node name="Resource" parent="." instance=ExtResource( 5 )]
 position = Vector2( 360, 410 )

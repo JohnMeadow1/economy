@@ -87,20 +87,26 @@ func collect_resources():
 
 func convert_harvesters_to_transporters(location: ResourceLocation):
 	if population_needed_for_transport_this_cycle > 0:
-		if location.workers_total > 0:##
-			if location.workers_total >= population_needed_for_transport_this_cycle:##
-				location.workers_total -= population_needed_for_transport_this_cycle##
+		var workers = neighbours[find_neighbour_idx(location)][2] # var workers dla przejrzystości
+		#edycja: zastępuję location.workers_total przez workers
+		if workers > 0:##
+			if workers >= population_needed_for_transport_this_cycle:##
+				workers -= population_needed_for_transport_this_cycle##
+				neighbours[find_neighbour_idx(location)][2] -= population_needed_for_transport_this_cycle
+				location.workers_total -= population_needed_for_transport_this_cycle
 				population_collecting -= population_needed_for_transport_this_cycle
 				# wliczam needed do idle, ale zapamiętuje jako reserved
 				population_idle += population_needed_for_transport_this_cycle
 				population_reserved_for_transport += population_needed_for_transport_this_cycle
 				population_needed_for_transport_this_cycle = 0
 			else:
-				population_needed_for_transport_this_cycle -= location.workers_total##
-				population_collecting -= location.workers_total##
-				population_idle += location.workers_total##
-				population_reserved_for_transport += location.workers_total##
-				location.workers_total = 0##
+				population_needed_for_transport_this_cycle -= workers##
+				population_collecting -= workers##
+				population_idle += workers##
+				population_reserved_for_transport += workers##
+				location.workers_total -= workers
+#				workers = 0##
+				neighbours[find_neighbour_idx(location)][2] = 0
 
 
 func delegate_workers(location: ResourceLocation):
@@ -114,13 +120,14 @@ func delegate_workers(location: ResourceLocation):
 				worker_allocation = min(worker_allocation, population_idle - population_reserved_for_transport)
 				population_idle  -= worker_allocation
 				location.workers_total += worker_allocation
-				##
+				neighbours[find_neighbour_idx(location)][2] += worker_allocation##
 				population_collecting += worker_allocation
 				#TODO Send animated workers from house to location with distance/cycle_dur speed
-		elif location.workers_total != 0:##
-			population_collecting -= location.workers_total##
-			population_idle  += location.workers_total##
-			location.workers_total = 0##
+		elif neighbours[find_neighbour_idx(location)][2] != 0:##
+			population_collecting -= neighbours[find_neighbour_idx(location)][2]##
+			population_idle += neighbours[find_neighbour_idx(location)][2]##
+			location.workers_total -= neighbours[find_neighbour_idx(location)][2]##
+			neighbours[find_neighbour_idx(location)][2] = 0##
 
 func transport_resources(location: ResourceLocation):
 	if location.stockpile > 0:
@@ -138,9 +145,17 @@ func transport_resources(location: ResourceLocation):
 		population_needed_for_transport_next_cycle -= population_transporting
 
 
+func find_neighbour_idx(location: ResourceLocation):
+	for idx in range(neighbours.size()):
+		if neighbours[idx][0] == location:
+			return idx
+	return -1 #HACK jak sobie radzimy z takimi sytuacjami, skoro w godocie nie ma (z tego co wiem) catch exception
+
+
 func generate():
 	population = randi() % 100 + 1 # randi between 1 and 100
 	stockpile_food = randi() % 150 + 251
+
 
 #HACK ludzie pracy nie umierają
 func consider_starving():
@@ -178,14 +193,15 @@ func consider_birth():
 			population += round(0.02*population)
 
 
-func detect_neighbours(): # array of pairs (Reosurce Node, distance)
+func detect_neighbours(): # array of triples (Reosurce Node, distance, amount of this settlement workers)
 	neighbours.clear()
 	for resource in get_tree().get_nodes_in_group("resource"):
 #		var distance = (resource.position - position).length_squared()
 #		var distance = position.distance_squared_to(resource.position)
 		if position.distance_squared_to(resource.position) < RAD_SQ:
-			var pair = [resource, position.distance_to(resource.position)]
-			neighbours.append(pair)
+			#HACK przesuwanie wioski poza zasięg surowca w trakcie wydobywania go prowadzi do błędów (bo zerujemy workerow)
+			var triple = [resource, position.distance_to(resource.position), 0]
+			neighbours.append(triple)
 
 
 func create_cost_labels():
@@ -216,12 +232,12 @@ func neighbours_info():
 		index += 1
 		temp += str(index) + ". " + str(neighbour[0].resource_name) + "\n"
 		temp += "Tansport cost = " + str(neighbour[1] * 0.01) + "\n"
-#		temp += "Transport cost = " + str(position.distance_to(location.position) * 0.01))
+		temp += "Our workers here = " + str(neighbour[2]) + "/" + str(neighbour[0].workers_total)
 		temp += "\n"
 	return temp
 
 
-"""Sort 2-dimensional array by 2nd value"""
+"""Sort (2+)-dimensional array by 2nd value"""
 class MyCustomSorter:
 	static func sort(a, b):
 		if a[1] < b[1]:
@@ -250,7 +266,7 @@ func _draw():
 		else:
 			draw_line(Vector2(0,0), resource.position - position, Color(1, 0, 0, 1), 3.0)
 
-
+"""Actualize settlement info displayed on scene; called by update_village"""
 func update_display():
 	$values.text = str(population_idle) +"/"+ str(population) +"\n"
 	$values.text += str(population_collecting) +"/"+ str(total_population_transporting_this_cycle)+"\n"
@@ -262,7 +278,7 @@ func update_display():
 
 
 func on_hover_info():
-	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info()
+	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
 	globals.debug.text += "Golden law: " + str(population - population_idle) + " = " + str(population_collecting + total_population_transporting_this_cycle) + "\n"
 	globals.debug.text += "Pop needed this cycle: " + str(population_needed_for_transport_this_cycle) + "\n"
 	globals.debug.text += "Pop Needed next cycle: " + str(population_needed_for_transport_next_cycle) + "\n"
