@@ -3,8 +3,8 @@ extends "res://Scripts/base_classes/GameResource.gd"
 class_name ResourceLocation
 
 
-onready var name_label:Label = $name
-onready var resource_name:String = name_label.text setget _set_resource_name, _get_resource_name
+onready var name_label: Label = $name
+onready var resource_name: String = name_label.text setget _set_resource_name, _get_resource_name
 onready var sprite = $Sprite
 
 

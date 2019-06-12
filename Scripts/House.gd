@@ -3,8 +3,8 @@ extends "res://Scripts/base_classes/Dwelling.gd"
 class_name House
 
 
-onready var name_label:Label = $name
-onready var house_name:String = name_label.text setget _set_house_name, _get_house_name
+onready var name_label: Label = $name
+onready var house_name: String = name_label.text setget _set_house_name, _get_house_name
 onready var sprite = $Sprite
 
 
@@ -14,8 +14,8 @@ export(SettlementType) var _settlement_type:int = 0 setget _set_settlement_type
 const CYCLE_DURATION = 1.0
 
 
-var RAD_SQ = pow(radius, 2)
-var neighbours = []
+var RAD_SQ: int = -1
+var neighbours: Array = []
 var cycle: float = 0.0
 
 
@@ -23,6 +23,7 @@ func _ready():
 	randomize()
 #	generate()
 #	self.house_name += "_" + str(get_index())
+	RAD_SQ = pow(radius, 2)
 	population_idle = population
 	detect_neighbours()
 	sort_neighbours()
@@ -194,14 +195,21 @@ func consider_birth():
 
 
 func detect_neighbours(): # array of triples (Reosurce Node, distance, amount of this settlement workers)
-	neighbours.clear()
+#	neighbours.clear()
 	for resource in get_tree().get_nodes_in_group("resource"):
-#		var distance = (resource.position - position).length_squared()
-#		var distance = position.distance_squared_to(resource.position)
+		var resource_idx = find_neighbour_idx(resource)
 		if position.distance_squared_to(resource.position) < RAD_SQ:
-			#HACK przesuwanie wioski poza zasięg surowca w trakcie wydobywania go prowadzi do błędów (bo zerujemy workerow)
-			var triple = [resource, position.distance_to(resource.position), 0]
-			neighbours.append(triple)
+			if resource_idx == -1: # jest a zasięgu, nie ma w tablicy -> dodaj
+				var triple = [resource, position.distance_to(resource.position), 0]
+				neighbours.append(triple)
+		else:
+			if resource_idx != -1: # jest w tablicy, nie ma w zasięgu -> usuń i zabij pracowników, którym uciekł dom
+				population_collecting -= neighbours[resource_idx][2]
+#				population_idle += neighbours[resource_idx][2] # umieraja, wiec zamiast ich zwracac obnizam pop
+				population -= neighbours[resource_idx][2]
+				resource.workers_total -= neighbours[resource_idx][2]
+#				neighbours[resource_idx][2] = 0 # niepotrzebne
+				neighbours.remove(resource_idx)
 
 
 func create_cost_labels():
@@ -225,6 +233,13 @@ func update_cost_labels(node):
 		label_node.rect_position = 0.5*(resource.position - position)
 
 
+func calculate_workers_share(our_workers: int, total_workers: int):
+	if total_workers != 0:
+		return str(stepify(100*(float(our_workers)/total_workers), 0.01)) + "%"
+	else:
+		return "0%"
+
+
 func neighbours_info():
 	var temp: String = ""
 	var index: int = 0
@@ -232,8 +247,8 @@ func neighbours_info():
 		index += 1
 		temp += str(index) + ". " + str(neighbour[0].resource_name) + "\n"
 		temp += "Tansport cost = " + str(neighbour[1] * 0.01) + "\n"
-		temp += "Our workers here = " + str(neighbour[2]) + "/" + str(neighbour[0].workers_total)
-		temp += "\n"
+		temp += "Occupying " + str(neighbour[2]) + " out of " + str(neighbour[0].worker_capacity) + " worker slots.\n"
+		temp += "Our workers share = " + calculate_workers_share(neighbour[2], neighbour[0].workers_total) + "\n"
 	return temp
 
 
