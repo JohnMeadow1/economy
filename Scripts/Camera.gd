@@ -7,8 +7,8 @@ func _process(_delta):
 	globals.debug.text += "MOUSE POSITION\nGlobal:" + str(get_global_mouse_position().floor())
 	globals.debug.text += "\nLocal:" + str(get_local_mouse_position().floor())
 	globals.debug.text += "\nViewport:" + str(get_viewport().get_mouse_position().floor()) + "\n"
-	if globals.selected_node != null and globals.selected_node.has_method("on_hoover_info"):
-		globals.selected_node.on_hoover_info()
+	if globals.selected_node != null and globals.selected_node.has_method("on_hover_info"):
+		globals.selected_node.on_hover_info()
 #	globals.debug.text += "Prev:" + str(previous_camera_position.floor()) + "\n"
 #	globals.debug.text += "Prev:" + str(previous_mouse_possition.floor()) + "\n"
 #	globals.debug.text += "Prev:" + str(previous_camera_position + previous_mouse_possition - get_local_mouse_position().floor()) + "\n"
@@ -55,13 +55,13 @@ func handle_mouse_button_event(event):
 		globals.selected_node = null
 			
 func get_object_near_mouse():
-	var is_hoover = false
+	var is_hovering = false
 	for node in get_tree().get_nodes_in_group("selectable"):
 		if get_global_mouse_position().distance_to(node.position) < globals.SELECTION_RANGE:
-			is_hoover = true
+			is_hovering = true
 			globals.selected_node = node
 			node.sprite.material.set("shader_param/width", 1.0)
-	if !is_hoover and globals.selected_node :
+	if !is_hovering and globals.selected_node :
 		globals.selected_node.sprite.material.set("shader_param/width", 0.0)
 		globals.selected_node.update()
 		globals.selected_node = null

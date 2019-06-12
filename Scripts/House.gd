@@ -87,20 +87,20 @@ func collect_resources():
 
 func convert_harvesters_to_transporters(location: ResourceLocation):
 	if population_needed_for_transport_this_cycle > 0:
-		if location.workers > 0:
-			if location.workers >= population_needed_for_transport_this_cycle:
-				location.workers -= population_needed_for_transport_this_cycle
+		if location.workers_total > 0:##
+			if location.workers_total >= population_needed_for_transport_this_cycle:##
+				location.workers_total -= population_needed_for_transport_this_cycle##
 				population_collecting -= population_needed_for_transport_this_cycle
 				# wliczam needed do idle, ale zapamiętuje jako reserved
 				population_idle += population_needed_for_transport_this_cycle
 				population_reserved_for_transport += population_needed_for_transport_this_cycle
 				population_needed_for_transport_this_cycle = 0
 			else:
-				population_needed_for_transport_this_cycle -= location.workers
-				population_collecting -= location.workers
-				population_idle += location.workers
-				population_reserved_for_transport += location.workers
-				location.workers = 0
+				population_needed_for_transport_this_cycle -= location.workers_total##
+				population_collecting -= location.workers_total##
+				population_idle += location.workers_total##
+				population_reserved_for_transport += location.workers_total##
+				location.workers_total = 0##
 
 
 func delegate_workers(location: ResourceLocation):
@@ -108,18 +108,19 @@ func delegate_workers(location: ResourceLocation):
 	
 	if population_needed_for_transport_this_cycle == 0:
 		if location.available > 1:
-			if location.workers < location.worker_capacity:
-				var worker_allocation = location.worker_capacity - location.workers
+			if location.workers_total < location.worker_capacity:
+				var worker_allocation = location.worker_capacity - location.workers_total
 				#zarezerwowanych nie wysylam do pracy
 				worker_allocation = min(worker_allocation, population_idle - population_reserved_for_transport)
 				population_idle  -= worker_allocation
-				location.workers += worker_allocation
+				location.workers_total += worker_allocation
+				##
 				population_collecting += worker_allocation
 				#TODO Send animated workers from house to location with distance/cycle_dur speed
-		elif location.workers != 0:
-			population_collecting -= location.workers
-			population_idle  += location.workers
-			location.workers = 0
+		elif location.workers_total != 0:##
+			population_collecting -= location.workers_total##
+			population_idle  += location.workers_total##
+			location.workers_total = 0##
 
 func transport_resources(location: ResourceLocation):
 	if location.stockpile > 0:
@@ -183,7 +184,8 @@ func detect_neighbours(): # array of pairs (Reosurce Node, distance + harvest co
 #		var distance = (resource.position - position).length_squared()
 #		var distance = position.distance_squared_to(resource.position)
 		if position.distance_squared_to(resource.position) < RAD_SQ:
-			var pair = [resource, floor(position.distance_to(resource.position)) + resource.harvest_cost]
+			#FIXME resource.harvest_cost fluctuations are not updating when occuring (every detect_neighbours() call only)
+			var pair = [resource, stepify(position.distance_to(resource.position) + resource.harvest_cost, 0.1)]
 			neighbours.append(pair)
 
 
@@ -195,7 +197,7 @@ func create_cost_labels():
 	for resource in get_tree().get_nodes_in_group("resource"):
 		var label = Label.new()
 		label.name = resource.name
-		label.text = str(stepify((resource.position - position).length(), 0.01))
+		label.text = str(stepify(position.distance_to(resource.position), 0.1))
 		label.rect_position = 0.5*(resource.position - position)
 		label.add_font_override("font",load("res://Fonts/Jamma_13.tres"))
 		node.add_child(label)
@@ -204,14 +206,17 @@ func create_cost_labels():
 func update_cost_labels(node):
 	for resource in get_tree().get_nodes_in_group("resource"):
 		var label_node = get_node(node+"/"+resource.name) as Label
-		label_node.text = str(stepify((resource.position - position).length(), 0.01))
+		label_node.text = str(stepify(position.distance_to(resource.position), 0.1))
 		label_node.rect_position = 0.5*(resource.position - position)
 
 
 func neighbours_info():
 	var temp: String = ""
+	var index: int = 0
 	for neighbour in neighbours:
-		temp += str(neighbour) + "\n"
+		index += 1
+		temp += str(index) + ". " + str(neighbour[0].resource_name) + " dist + harvest cost = "
+		temp += str(neighbour[1]) + "\n"
 	return temp
 
 
@@ -253,8 +258,8 @@ func update_display():
 	update_cost_labels("CostLabels")
 
 
-func on_hoover_info():
+func on_hover_info():
 	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
-	globals.debug.text += "\nGolden law: " + str(population - population_idle) + " = " + str(population_collecting + total_population_transporting_this_cycle) + "\n"
-	globals.debug.text += "\nPop needed this cycle: " + str(population_needed_for_transport_this_cycle) + "\n"
-	globals.debug.text += "\nPop Needed next cycle: " + str(population_needed_for_transport_next_cycle) + "\n"
+	globals.debug.text += "Golden law: " + str(population - population_idle) + " = " + str(population_collecting + total_population_transporting_this_cycle) + "\n"
+	globals.debug.text += "Pop needed this cycle: " + str(population_needed_for_transport_this_cycle) + "\n"
+	globals.debug.text += "Pop Needed next cycle: " + str(population_needed_for_transport_next_cycle) + "\n"
