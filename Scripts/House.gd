@@ -54,7 +54,6 @@ func _set_settlement_type(value):
 
 
 func _process(delta):
-	
 	cycle += delta
 	if cycle > CYCLE_DURATION:
 		cycle -= CYCLE_DURATION
@@ -62,10 +61,11 @@ func _process(delta):
 
 
 func update_village():
-	collect_resources()
-	consider_starving()
-	consider_birth()
-	consumption_food = ceil(population/5)
+	if !Engine.is_editor_hint(): # do not calculate in editor
+		collect_resources()
+		consider_starving()
+		consider_birth()
+		consumption_food = ceil(population/5)
 	update_display()
 	pass
 
@@ -154,12 +154,12 @@ func consider_starving():
 			population_idle -= round(0.1*population_idle)
 	else: # za mało jedzenia, ale nic nie zjadają
 		if randf() < 0.5:
-			population -= floor(0.7*population_idle)
-			population_idle -=  floor(0.7*population_idle)
+			population -= min(population_idle, max(1, floor(0.7*population_idle)))
+			population_idle -= min(population_idle, max(1, floor(0.7*population_idle)))
 #			population = max(0, population)
 		else:
-			population -= floor(0.4*population_idle)
-			population_idle -= floor(0.4*population_idle)
+			population -= min(population_idle, max(1, floor(0.4*population_idle)))
+			population_idle -= min(population_idle, max(1, floor(0.4*population_idle)))
 #			population = max(0, population)
 
 

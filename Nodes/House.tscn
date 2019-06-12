@@ -23,7 +23,7 @@ gradient = SubResource( 2 )
 "village",
 ]]
 script = ExtResource( 1 )
-population = 5
+population = 80
 _settlement_type = 1
 
 [node name="Sprite" type="Sprite" parent="."]
@@ -59,7 +59,7 @@ margin_top = -40.0
 margin_right = 219.0
 margin_bottom = 33.0
 custom_fonts/font = ExtResource( 5 )
-text = "2/5
+text = "1/5
 0/0
 0
 1/s
