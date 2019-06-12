@@ -22,7 +22,7 @@ var cycle: float = 0.0
 func _ready():
 	randomize()
 #	generate()
-	self.house_name += "_" + str(get_index())
+#	self.house_name += "_" + str(get_index())
 	population_idle = population
 	detect_neighbours()
 	sort_neighbours()
@@ -34,7 +34,7 @@ func _ready():
 func _set_house_name(value):
 	house_name = value
 	if has_node("name"):
-		$name.text = value
+		$name.text = value + "_" + str(get_index())
 
 
 func _get_house_name():
@@ -65,7 +65,7 @@ func update_village():
 		collect_resources()
 		consider_starving()
 		consider_birth()
-		consumption_food = max (1, ceil(population/5))
+		consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają
 	update_display()
 	pass
 
@@ -257,6 +257,8 @@ func update_display():
 	$values.text += str(floor(stockpile_food))+"\n"
 	$values.text += str(consumption_food)+"/s\n"
 	update_cost_labels("CostLabels")
+	_set_settlement_type(clamp(population/50, 0, 3)) # population/50 to dzielenie intów, więc powinno obciąć: 0-49 to 0
+	# 50-99 to 1, 100-149 to 2 i 150+ to 3
 
 
 func on_hover_info():
