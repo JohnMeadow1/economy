@@ -65,7 +65,7 @@ func update_village():
 		collect_resources()
 		consider_starving()
 		consider_birth()
-		consumption_food = ceil(population/5)
+		consumption_food = max (1, ceil(population/5))
 	update_display()
 	pass
 
