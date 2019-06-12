@@ -126,8 +126,8 @@ func transport_resources(location: ResourceLocation):
 	if location.stockpile > 0:
 		var transport_cost = (position.distance_to(location.position) * 0.01)
 		var workers_needed_for_max_transport = floor(location.stockpile * transport_cost)
+		var population_transporting = min(workers_needed_for_max_transport, population_idle)
 		
-		population_transporting = min(workers_needed_for_max_transport, population_idle)
 		total_population_transporting_this_cycle += population_transporting
 		population_idle -= population_transporting #niepewne okolice
 		population_reserved_for_transport = max(0, population_reserved_for_transport - population_transporting)
@@ -178,14 +178,13 @@ func consider_birth():
 			population += round(0.02*population)
 
 
-func detect_neighbours(): # array of pairs (Reosurce Node, distance + harvest cost)
+func detect_neighbours(): # array of pairs (Reosurce Node, distance)
 	neighbours.clear()
 	for resource in get_tree().get_nodes_in_group("resource"):
 #		var distance = (resource.position - position).length_squared()
 #		var distance = position.distance_squared_to(resource.position)
 		if position.distance_squared_to(resource.position) < RAD_SQ:
-			#FIXME resource.harvest_cost fluctuations are not updating when occuring (every detect_neighbours() call only)
-			var pair = [resource, stepify(position.distance_to(resource.position) + resource.harvest_cost, 0.1)]
+			var pair = [resource, position.distance_to(resource.position)]
 			neighbours.append(pair)
 
 
@@ -215,8 +214,10 @@ func neighbours_info():
 	var index: int = 0
 	for neighbour in neighbours:
 		index += 1
-		temp += str(index) + ". " + str(neighbour[0].resource_name) + " dist + harvest cost = "
-		temp += str(neighbour[1]) + "\n"
+		temp += str(index) + ". " + str(neighbour[0].resource_name) + "\n"
+		temp += "Tansport cost = " + str(neighbour[1] * 0.01) + "\n"
+#		temp += "Transport cost = " + str(position.distance_to(location.position) * 0.01))
+		temp += "\n"
 	return temp
 
 
@@ -259,7 +260,7 @@ func update_display():
 
 
 func on_hover_info():
-	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
+	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info()
 	globals.debug.text += "Golden law: " + str(population - population_idle) + " = " + str(population_collecting + total_population_transporting_this_cycle) + "\n"
 	globals.debug.text += "Pop needed this cycle: " + str(population_needed_for_transport_this_cycle) + "\n"
 	globals.debug.text += "Pop Needed next cycle: " + str(population_needed_for_transport_next_cycle) + "\n"

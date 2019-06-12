@@ -16,7 +16,7 @@ export(int) var radius: int      = 300
 
 
 var population_idle: int         = 0
-var population_transporting: int = 0
+#var population_transporting: int = 0 # local for transport_resources func
 var population_collecting: int   = 0
 var consumption_food: float      = 0.0
 var stockpile_food: float        = 0.0
