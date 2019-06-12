@@ -20,7 +20,9 @@ script = ExtResource( 3 )
 
 [node name="House" parent="." instance=ExtResource( 4 )]
 position = Vector2( 256, 43 )
-population = 71
+population = 70
+population_idle = 70
+stockpile_food = 40.0
 
 [node name="Resource" parent="." instance=ExtResource( 5 )]
 position = Vector2( 360, 410 )
@@ -32,7 +34,7 @@ worker_capacity = 10
 
 [node name="Resource2" parent="." instance=ExtResource( 5 )]
 position = Vector2( 520, 154 )
-available = 200.0
+available = 30.0
 harvestable_per_cycle = 5.0
 regenerates_per_cycle = 0.1
 stockpile_max = 100.0

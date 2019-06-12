@@ -21,7 +21,7 @@ var cycle: float = 0.0
 
 func _ready():
 	randomize()
-	generate()
+#	generate()
 	self.house_name += "_" + str(get_index())
 	population_idle = population
 	detect_neighbours()
