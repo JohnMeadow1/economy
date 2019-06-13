@@ -6,14 +6,14 @@
 [ext_resource path="res://Fonts/Jamma_13.tres" type="DynamicFont" id=4]
 [ext_resource path="res://Fonts/Bandwidth_13.tres" type="DynamicFont" id=5]
 
-[sub_resource type="Gradient" id=2]
+[sub_resource type="Gradient" id=1]
 offsets = PoolRealArray( 1, 1 )
 colors = PoolColorArray( 0, 0, 0, 0.196078, 0, 0, 0, 0.196078 )
 
-[sub_resource type="GradientTexture" id=3]
-gradient = SubResource( 2 )
+[sub_resource type="GradientTexture" id=2]
+gradient = SubResource( 1 )
 
-[sub_resource type="ShaderMaterial" id=4]
+[sub_resource type="ShaderMaterial" id=3]
 shader = ExtResource( 2 )
 shader_param/width = null
 shader_param/outline_color = Color( 0, 1, 0, 1 )
@@ -33,10 +33,10 @@ margin_top = -50.0
 margin_right = 80.0
 margin_bottom = -10.0
 rect_scale = Vector2( 5.13624, 2.31057 )
-texture = SubResource( 3 )
+texture = SubResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="."]
-material = SubResource( 4 )
+material = SubResource( 3 )
 scale = Vector2( 2, 2 )
 texture = ExtResource( 3 )
 

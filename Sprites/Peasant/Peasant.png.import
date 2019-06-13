@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Pesant.png-09a45b4ff4bc02d1946ca3a826f82420.stex"
+path="res://.import/Peasant.png-13350da21220807b3a28f54c92f3475f.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Peasant/Pesant.png"
-dest_files=[ "res://.import/Pesant.png-09a45b4ff4bc02d1946ca3a826f82420.stex" ]
+source_file="res://Sprites/Peasant/Peasant.png"
+dest_files=[ "res://.import/Peasant.png-13350da21220807b3a28f54c92f3475f.stex" ]
 
 [params]
 

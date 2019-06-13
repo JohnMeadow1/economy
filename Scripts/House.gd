@@ -3,6 +3,7 @@ extends "res://Scripts/base_classes/Dwelling.gd"
 class_name House
 
 
+onready var peasant = load("res://Nodes/Peasant.tscn")
 onready var name_label: Label = $name
 onready var house_name: String = name_label.text setget _set_house_name, _get_house_name
 onready var sprite = $Sprite
@@ -12,6 +13,7 @@ export(SettlementType) var _settlement_type:int = 0 setget _set_settlement_type
 
 
 const CYCLE_DURATION = 1.0
+const SPAWN_DELAY = 0.05
 
 
 var RAD_SQ: int = -1
@@ -137,6 +139,7 @@ func transport_resources(location: ResourceLocation):
 		var population_transporting = min(workers_needed_for_max_transport, population_idle)
 		
 		total_population_transporting_this_cycle += population_transporting
+		send_peasants(location.position, population_transporting)
 		population_idle -= population_transporting #niepewne okolice
 		population_reserved_for_transport = max(0, population_reserved_for_transport - population_transporting)
 		stockpile_food += population_transporting/transport_cost
@@ -192,6 +195,16 @@ func consider_birth():
 		if randf() < 0.5:
 			population_idle += round(0.02*population)
 			population += round(0.02*population)
+
+
+func send_peasants(where: Vector2, how_much: int = 1):
+	how_much = min(how_much, floor(float(CYCLE_DURATION)/SPAWN_DELAY))
+	for i in range(how_much):
+		yield(get_tree().create_timer(SPAWN_DELAY), "timeout")
+		var peasant_instance = peasant.instance()
+		peasant_instance.position = Vector2(0, 0)
+		peasant_instance.destination = (where - position)
+		add_child(peasant_instance)
 
 
 func detect_neighbours(): # array of triples (Reosurce Node, distance, amount of this settlement workers)
@@ -280,6 +293,7 @@ func _draw():
 			draw_line(Vector2(0,0), resource.position - position, Color(0, 1, 0, 1), 3.0)
 		else:
 			draw_line(Vector2(0,0), resource.position - position, Color(1, 0, 0, 1), 3.0)
+
 
 """Actualize settlement info displayed on scene; called by update_village"""
 func update_display():
