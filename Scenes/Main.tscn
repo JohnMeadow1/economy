@@ -25,14 +25,14 @@ population_idle = 70
 stockpile_food = 90.0
 
 [node name="House2" parent="." instance=ExtResource( 4 )]
-position = Vector2( 480, 400 )
+position = Vector2( 460, 380 )
 population = 90
 radius = 250
 population_idle = 90
 stockpile_food = 500.0
 
 [node name="Resource" parent="." instance=ExtResource( 5 )]
-position = Vector2( 360, 410 )
+position = Vector2( 258, 470 )
 available = 100.0
 harvestable_per_cycle = 5.0
 regenerates_per_cycle = 0.1
@@ -41,7 +41,7 @@ stockpile = 30.0
 worker_capacity = 10
 
 [node name="Resource2" parent="." instance=ExtResource( 5 )]
-position = Vector2( 520, 154 )
+position = Vector2( 470, 140 )
 available = 3000.0
 harvestable_per_cycle = 5.0
 regenerates_per_cycle = 0.1
@@ -50,7 +50,7 @@ stockpile = 0.134821
 worker_capacity = 90
 
 [node name="Resource3" parent="." instance=ExtResource( 5 )]
-position = Vector2( 90, 242.5 )
+position = Vector2( 30, 170 )
 available = 999.0
 harvestable_per_cycle = 5.0
 stockpile_max = 100.0
