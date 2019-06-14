@@ -6,17 +6,17 @@
 [ext_resource path="res://Fonts/Jamma_13.tres" type="DynamicFont" id=4]
 [ext_resource path="res://Fonts/Bandwidth_13.tres" type="DynamicFont" id=5]
 
-[sub_resource type="Gradient" id=1]
-offsets = PoolRealArray( 1, 1 )
-colors = PoolColorArray( 0, 0, 0, 0.196078, 0, 0, 0, 0.196078 )
-
-[sub_resource type="GradientTexture" id=2]
-gradient = SubResource( 1 )
-
-[sub_resource type="ShaderMaterial" id=3]
+[sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 2 )
 shader_param/width = null
 shader_param/outline_color = Color( 0, 1, 0, 1 )
+
+[sub_resource type="Gradient" id=2]
+offsets = PoolRealArray( 1, 1 )
+colors = PoolColorArray( 0, 0, 0, 0.196078, 0, 0, 0, 0.196078 )
+
+[sub_resource type="GradientTexture" id=3]
+gradient = SubResource( 2 )
 
 [node name="House" type="Node2D" groups=[
 "selectable",
@@ -27,16 +27,8 @@ population = 80
 population_idle = 80
 _settlement_type = 1
 
-[node name="Background" type="NinePatchRect" parent="."]
-margin_left = 40.0
-margin_top = -50.0
-margin_right = 80.0
-margin_bottom = -10.0
-rect_scale = Vector2( 5.13624, 2.31057 )
-texture = SubResource( 2 )
-
 [node name="Sprite" type="Sprite" parent="."]
-material = SubResource( 3 )
+material = SubResource( 1 )
 scale = Vector2( 2, 2 )
 texture = ExtResource( 3 )
 
@@ -51,22 +43,32 @@ custom_fonts/font = ExtResource( 4 )
 text = "SETTLEMENT_0"
 align = 1
 
-[node name="variables" type="Label" parent="."]
+[node name="InfoTable" type="Node2D" parent="."]
+
+[node name="Background" type="NinePatchRect" parent="InfoTable"]
+margin_left = 40.0
+margin_top = -50.0
+margin_right = 80.0
+margin_bottom = -10.0
+rect_scale = Vector2( 5.13624, 2.31057 )
+texture = SubResource( 3 )
+
+[node name="variables" type="Label" parent="InfoTable"]
 margin_left = 50.0
 margin_top = -40.0
 margin_right = 178.0
-margin_bottom = 14.0
+margin_bottom = 33.0
 custom_fonts/font = ExtResource( 4 )
 text = "Idle population:
 Coll/trans pop:
 Food:
 Consumption:"
 
-[node name="values" type="Label" parent="."]
+[node name="values" type="Label" parent="InfoTable"]
 margin_left = 189.0
 margin_top = -40.0
-margin_right = 219.0
-margin_bottom = 33.0
+margin_right = 229.0
+margin_bottom = 52.0
 custom_fonts/font = ExtResource( 5 )
 text = "80/80
 0/0

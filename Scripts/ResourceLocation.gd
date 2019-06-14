@@ -74,15 +74,15 @@ func update_depletion(hervested):
 
 
 func update_display():
-	$values.text = str(round(available))
-	if available_fluctuations <0: $values.text += " (+"+str(-round(available_fluctuations*10)/10)+"/s)\n"
-	else: $values.text += " ("+str(-round(available_fluctuations*10)/10)+"/s)\n"
-	$values.text += str(round(harvest_cost*100)/100)+"\n"
-	$values.text += str(regenerates_per_cycle)+"\n"
-	$values.text += str(workers_total)+"/"+str(worker_capacity)+"\n"
-	$values.text += str(round(stockpile))+"/"+str(stockpile_max)
-	if stockpile_fluctuations <0: $values.text += " (+"+str(-round(stockpile_fluctuations*10)/10)+"/s)\n"
-	else: $values.text += " ("+str(-round(stockpile_fluctuations*10)/10)+"/s)\n"
+	$InfoTable/values.text = str(round(available))
+	if available_fluctuations <0: $InfoTable/values.text += " (+"+str(-round(available_fluctuations*10)/10)+"/s)\n"
+	else: $InfoTable/values.text += " ("+str(-round(available_fluctuations*10)/10)+"/s)\n"
+	$InfoTable/values.text += str(round(harvest_cost*100)/100)+"\n"
+	$InfoTable/values.text += str(regenerates_per_cycle)+"\n"
+	$InfoTable/values.text += str(workers_total)+"/"+str(worker_capacity)+"\n"
+	$InfoTable/values.text += str(round(stockpile))+"/"+str(stockpile_max)
+	if stockpile_fluctuations <0: $InfoTable/values.text += " (+"+str(-round(stockpile_fluctuations*10)/10)+"/s)\n"
+	else: $InfoTable/values.text += " ("+str(-round(stockpile_fluctuations*10)/10)+"/s)\n"
 
 
 func generate():

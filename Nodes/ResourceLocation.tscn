@@ -6,6 +6,11 @@
 [ext_resource path="res://Fonts/Jamma_11.tres" type="DynamicFont" id=4]
 [ext_resource path="res://Fonts/Bandwidth_11.tres" type="DynamicFont" id=5]
 
+[sub_resource type="ShaderMaterial" id=3]
+shader = ExtResource( 2 )
+shader_param/width = 0.0
+shader_param/outline_color = Color( 0, 1, 0, 1 )
+
 [sub_resource type="Gradient" id=1]
 offsets = PoolRealArray( 1 )
 colors = PoolColorArray( 0, 0, 0, 0.196078 )
@@ -13,24 +18,12 @@ colors = PoolColorArray( 0, 0, 0, 0.196078 )
 [sub_resource type="GradientTexture" id=2]
 gradient = SubResource( 1 )
 
-[sub_resource type="ShaderMaterial" id=3]
-shader = ExtResource( 2 )
-shader_param/width = 0.0
-shader_param/outline_color = Color( 0, 1, 0, 1 )
-
 [node name="ResourceLocation" type="Node2D" groups=[
 "resource",
 "selectable",
 ]]
 script = ExtResource( 1 )
 stockpile = 0.0
-
-[node name="Background" type="NinePatchRect" parent="."]
-margin_left = 30.0
-margin_top = -30.0
-margin_right = 240.0
-margin_bottom = 72.0
-texture = SubResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="."]
 material = SubResource( 3 )
@@ -45,15 +38,23 @@ margin_bottom = -36.0
 grow_horizontal = 2
 grow_vertical = 2
 custom_fonts/font = ExtResource( 4 )
-text = "Food_0"
+text = "Food"
 align = 1
 valign = 1
 
-[node name="variables" type="Label" parent="."]
-margin_left = 40.0
-margin_top = -20.0
-margin_right = 80.0
-margin_bottom = -6.0
+[node name="InfoTable" type="Node2D" parent="."]
+position = Vector2( 40, -30 )
+
+[node name="Background" type="NinePatchRect" parent="InfoTable"]
+margin_left = -10.0
+margin_top = -10.0
+margin_right = 180.0
+margin_bottom = 92.0
+texture = SubResource( 2 )
+
+[node name="variables" type="Label" parent="InfoTable"]
+margin_right = 70.0
+margin_bottom = 82.0
 custom_fonts/font = ExtResource( 4 )
 text = "Available:
 Cost:
@@ -61,11 +62,10 @@ Regen:
 Capacity:
 Stockpile:"
 
-[node name="values" type="Label" parent="."]
-margin_left = 130.0
-margin_top = -20.0
-margin_right = 218.0
-margin_bottom = 91.0
+[node name="values" type="Label" parent="InfoTable"]
+margin_left = 80.0
+margin_right = 168.0
+margin_bottom = 111.0
 custom_fonts/font = ExtResource( 5 )
 text = "10 (-0/s)
 1

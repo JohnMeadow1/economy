@@ -297,10 +297,10 @@ func _draw():
 
 """Actualize settlement info displayed on scene; called by update_village"""
 func update_display():
-	$values.text = str(population_idle) +"/"+ str(population) +"\n"
-	$values.text += str(population_collecting) +"/"+ str(total_population_transporting_this_cycle)+"\n"
-	$values.text += str(floor(stockpile_food))+"\n"
-	$values.text += str(consumption_food)+"/s\n"
+	$InfoTable/values.text = str(population_idle) +"/"+ str(population) +"\n"
+	$InfoTable/values.text += str(population_collecting) +"/"+ str(total_population_transporting_this_cycle)+"\n"
+	$InfoTable/values.text += str(floor(stockpile_food))+"\n"
+	$InfoTable/values.text += str(consumption_food)+"/s\n"
 	update_cost_labels("CostLabels")
 	_set_settlement_type(clamp(population/50, 0, 3)) # population/50 to dzielenie intów, więc powinno obciąć: 0-49 to 0
 	# 50-99 to 1, 100-149 to 2 i 150+ to 3
