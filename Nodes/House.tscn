@@ -40,7 +40,7 @@ margin_bottom = -56.0
 grow_horizontal = 2
 grow_vertical = 2
 custom_fonts/font = ExtResource( 4 )
-text = "SETTLEMENT_0"
+text = "SETTLEMENT"
 align = 1
 
 [node name="InfoTable" type="Node2D" parent="."]
