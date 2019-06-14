@@ -202,8 +202,12 @@ func send_peasants(where: Vector2, how_much: int = 1):
 	for i in range(how_much):
 		yield(get_tree().create_timer(SPAWN_DELAY), "timeout")
 		var peasant_instance = peasant.instance()
-		peasant_instance.position = Vector2(0, 0)
+		peasant_instance.position = Vector2.ZERO
 		peasant_instance.destination = (where - position)
+		var angle_rad = Vector2.RIGHT.angle_to(peasant_instance.destination)
+		peasant_instance.rotation = angle_rad
+		if angle_rad > 0.5 * PI and angle_rad < 1.5 * PI:
+			peasant_instance.get_node("Sprite").set_flip_v(true)
 		add_child(peasant_instance)
 
 
