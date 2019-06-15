@@ -11,12 +11,13 @@ func _ready():
 	$Sprite/AnimationPlayer.play("run")
 
 func _physics_process(delta):
-	position += destination * delta #for "sening peasants" in one cycle they need to have velocity ~ distance_to_run
-	if position.distance_to(destination) < 5:
-		if !returning:
+	position += destination * delta #for "sending peasants" in one cycle they need to have velocity ~ distance_to_run
+	if !returning:
+		if position.distance_to(destination) < 5:
 			destination = -destination
 			returning = true
-		else:
+	else:
+		if position.distance_to(Vector2.ZERO) < 5:
 			queue_free()
 
 #func move_towards(pos: Vector2):
