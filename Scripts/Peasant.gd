@@ -15,6 +15,7 @@ func _physics_process(delta):
 	if !returning:
 		if position.distance_to(destination) < 5:
 			destination = -destination
+			$Sprite.set_flip_h(true)
 			returning = true
 	else:
 		if position.distance_to(Vector2.ZERO) < 5:
