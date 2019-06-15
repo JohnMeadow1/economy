@@ -11,13 +11,17 @@ onready var sprite = $Sprite
 export(ResourceType) var _resource_type:int = 0 setget _set_resource_type
 
 
+var CYCLE_DURATION: float = -1.0
+
+
 func _ready():
+	CYCLE_DURATION = get_parent().CYCLE_DURATION
 	randomize()
 #	generate()
 	self.resource_name += "_" + str(get_index())
 	update_display()
 	harvest_cost = max(1, harvest_cost)
-	cycle = rand_range(0, cycle_length)
+#	cycle = rand_range(0, cycle_length)
 	sprite.material = sprite.material.duplicate()
 
 
@@ -31,7 +35,7 @@ func _get_resource_name():
 	return resource_name
 
 
-func _set_resource_type(value):
+func _set_resource_type(value: int):
 	_resource_type = value
 	if value >= 0:
 		self.resource_name = ResourceName[value]
@@ -43,7 +47,7 @@ func _set_resource_type(value):
 			$Sprite.texture = load("res://Sprites/No_Resource.png")
 
 
-func set_resource_size(availabl):
+func set_resource_size(availabl: float):
 	var sc = clamp(availabl/300, 1, 2.5) # 1 ~ 300-, 2 ~ 600, 2.5 ~ 750+
 	$Sprite.scale = Vector2(sc, sc)
 
@@ -51,15 +55,15 @@ func set_resource_size(availabl):
 func _physics_process(delta):
 	if !Engine.is_editor_hint(): # do not calculate in editor
 		cycle += delta
-		if cycle > cycle_length:
-			cycle -= cycle_length
+		if cycle > CYCLE_DURATION:
+			cycle -= CYCLE_DURATION
 			harvest()
 			update_display()
 
 
 func harvest():
 	available_fluctuations = available
-	stockpile_fluctuations = previous_stockpile-stockpile
+	stockpile_fluctuations = previous_stockpile - stockpile
 	previous_stockpile = stockpile
 	available += regenerates_per_cycle
 	var hervested = workers_total / harvest_cost + auto_harvest
@@ -81,14 +85,15 @@ func update_depletion(hervested):
 func update_display():
 	$InfoTable/values.text = str(round(available))
 	set_resource_size(available)
-	if available_fluctuations <0: $InfoTable/values.text += " (+"+str(-round(available_fluctuations*10)/10)+"/s)\n"
-	else: $InfoTable/values.text += " ("+str(-round(available_fluctuations*10)/10)+"/s)\n"
-	$InfoTable/values.text += str(round(harvest_cost*100)/100)+"\n"
-	$InfoTable/values.text += str(regenerates_per_cycle)+"\n"
-	$InfoTable/values.text += str(workers_total)+"/"+str(worker_capacity)+"\n"
-	$InfoTable/values.text += str(round(stockpile))+"/"+str(stockpile_max)
-	if stockpile_fluctuations <0: $InfoTable/values.text += " (+"+str(-round(stockpile_fluctuations*10)/10)+"/s)\n"
-	else: $InfoTable/values.text += " ("+str(-round(stockpile_fluctuations*10)/10)+"/s)\n"
+#	if available < 1: _set_resource_type(-1) # pomysl: opróżnione się zerują
+	if available_fluctuations < 0: $InfoTable/values.text += " (+" + str(-round(available_fluctuations*10)/10) + "/s)\n"
+	else: $InfoTable/values.text += " (" + str(-round(available_fluctuations*10)/10) + "/s)\n"
+	$InfoTable/values.text += str(round(harvest_cost*100)/100) + "\n"
+	$InfoTable/values.text += str(regenerates_per_cycle) + "\n"
+	$InfoTable/values.text += str(workers_total) + "/" + str(worker_capacity) + "\n"
+	$InfoTable/values.text += str(round(stockpile)) + "/" + str(stockpile_max)
+	if stockpile_fluctuations <0: $InfoTable/values.text += " (+" + str(-round(stockpile_fluctuations*10)/10) + "/s)\n"
+	else: $InfoTable/values.text += " (" + str(-round(stockpile_fluctuations*10)/10) + "/s)\n"
 
 func generate():
 	available = 50 * (randi() % 7 + 1)              # randi between 50 and 350 with 50 step

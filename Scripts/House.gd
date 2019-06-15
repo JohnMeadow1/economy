@@ -12,16 +12,17 @@ onready var sprite = $Sprite
 export(SettlementType) var _settlement_type:int = 0 setget _set_settlement_type
 
 
-const CYCLE_DURATION = 1.0
 const SPAWN_DELAY = 0.05
 
 
+var CYCLE_DURATION: float = -1.0
 var RAD_SQ: int = -1
 var neighbours: Array = []
 var cycle: float = 0.0
 
 
 func _ready():
+	CYCLE_DURATION = get_parent().CYCLE_DURATION
 	randomize()
 #	generate()
 #	self.house_name += "_" + str(get_index())

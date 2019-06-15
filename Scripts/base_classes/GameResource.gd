@@ -15,7 +15,6 @@ export(float) var harvest_cost: float          = 1.0
 export(float) var harvest_cost_max: float      = 10.0
 export(float) var auto_harvest: float          = 0.0
 export(float) var regenerates_per_cycle: float = 0.0
-export(float) var cycle_length: float          = 1.0
 export(float) var stockpile_max: float         = 10.0
 export(float) var stockpile: float             = 1.0
 export(int) var worker_capacity: int           = 1
