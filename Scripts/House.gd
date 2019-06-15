@@ -22,7 +22,7 @@ var cycle: float = 0.0
 
 
 func _ready():
-	CYCLE_DURATION = get_parent().CYCLE_DURATION
+	CYCLE_DURATION = get_node("/root/Main").CYCLE_DURATION
 	randomize()
 #	generate()
 #	self.house_name += "_" + str(get_index())
@@ -198,7 +198,7 @@ func consider_birth():
 
 
 func send_peasants(where: Vector2, how_much: int = 1):
-	how_much = min(how_much, floor(float(CYCLE_DURATION)/SPAWN_DELAY))
+	how_much = min(how_much, floor(0.5*float(CYCLE_DURATION)/SPAWN_DELAY))
 	for i in range(how_much):
 		yield(get_tree().create_timer(SPAWN_DELAY), "timeout")
 		var peasant_instance = peasant.instance()

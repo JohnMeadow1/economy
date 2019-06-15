@@ -15,7 +15,7 @@ var CYCLE_DURATION: float = -1.0
 
 
 func _ready():
-	CYCLE_DURATION = get_parent().CYCLE_DURATION
+	CYCLE_DURATION = get_node("/root/Main").CYCLE_DURATION
 	randomize()
 #	generate()
 	self.resource_name += "_" + str(get_index())

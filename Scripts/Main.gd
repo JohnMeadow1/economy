@@ -15,8 +15,6 @@ var velocity = Vector2()
 func _ready():
 	globals.debug = $HUD/TextureRect/Label
 	gameAge.text = "Game Age: " + str(age)
-	if has_node("Timer"):
-		$Timer.wait_time = 0.5
 
 
 func _process(_delta):

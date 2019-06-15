@@ -33,7 +33,7 @@ stockpile_food = 500.0
 
 [node name="Resource" parent="." instance=ExtResource( 5 )]
 position = Vector2( 258, 470 )
-available = 100.0
+available = 200.0
 harvestable_per_cycle = 5.0
 regenerates_per_cycle = 0.1
 stockpile_max = 100.0
@@ -42,7 +42,7 @@ worker_capacity = 10
 
 [node name="Resource2" parent="." instance=ExtResource( 5 )]
 position = Vector2( 470, 140 )
-available = 3000.0
+available = 2000.0
 harvestable_per_cycle = 5.0
 regenerates_per_cycle = 0.1
 stockpile_max = 100.0
@@ -51,7 +51,7 @@ worker_capacity = 90
 
 [node name="Resource3" parent="." instance=ExtResource( 5 )]
 position = Vector2( 30, 170 )
-available = 999.0
+available = 750.0
 harvestable_per_cycle = 5.0
 stockpile_max = 100.0
 stockpile = 20.0
