@@ -16,8 +16,8 @@ func _ready():
 #	generate()
 	self.resource_name += "_" + str(get_index())
 	update_display()
-	harvest_cost = max(1,harvest_cost)
-	cycle = rand_range(0,cycle_length)
+	harvest_cost = max(1, harvest_cost)
+	cycle = rand_range(0, cycle_length)
 	sprite.material = sprite.material.duplicate()
 
 
@@ -41,6 +41,11 @@ func _set_resource_type(value):
 		self.resource_name = "null resource"
 		if has_node("Sprite"):
 			$Sprite.texture = load("res://Sprites/No_Resource.png")
+
+
+func set_resource_size(availabl):
+	var sc = clamp(availabl/300, 1, 2.5) # 1 ~ 300-, 2 ~ 600, 2.5 ~ 750+
+	$Sprite.scale = Vector2(sc, sc)
 
 
 func _physics_process(delta):
@@ -75,6 +80,7 @@ func update_depletion(hervested):
 
 func update_display():
 	$InfoTable/values.text = str(round(available))
+	set_resource_size(available)
 	if available_fluctuations <0: $InfoTable/values.text += " (+"+str(-round(available_fluctuations*10)/10)+"/s)\n"
 	else: $InfoTable/values.text += " ("+str(-round(available_fluctuations*10)/10)+"/s)\n"
 	$InfoTable/values.text += str(round(harvest_cost*100)/100)+"\n"
@@ -83,7 +89,6 @@ func update_display():
 	$InfoTable/values.text += str(round(stockpile))+"/"+str(stockpile_max)
 	if stockpile_fluctuations <0: $InfoTable/values.text += " (+"+str(-round(stockpile_fluctuations*10)/10)+"/s)\n"
 	else: $InfoTable/values.text += " ("+str(-round(stockpile_fluctuations*10)/10)+"/s)\n"
-
 
 func generate():
 	available = 50 * (randi() % 7 + 1)              # randi between 50 and 350 with 50 step

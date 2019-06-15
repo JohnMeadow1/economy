@@ -125,7 +125,6 @@ func delegate_workers(location: ResourceLocation):
 				location.workers_total += worker_allocation
 				neighbours[find_neighbour_idx(location)][2] += worker_allocation##
 				population_collecting += worker_allocation
-				#TODO Send animated workers from house to location with distance/cycle_dur speed
 		elif neighbours[find_neighbour_idx(location)][2] != 0:##
 			population_collecting -= neighbours[find_neighbour_idx(location)][2]##
 			population_idle += neighbours[find_neighbour_idx(location)][2]##
