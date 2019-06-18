@@ -1,15 +1,15 @@
 extends Node2D
 
 
-onready var gameAge = $HUD/Margin/HBoxContainer/Container/GameAge
+onready var gameAge: Label = $HUD/Margin/HBoxContainer/Container/GameAge
 
 
-const CYCLE_DURATION = 1.0
+const CYCLE_DURATION: float = 1.0
 
 
-var age = 0
+var age: int = 0
 var timer = 0
-var velocity = Vector2()
+var velocity: Vector2 = Vector2()
 
 
 func _ready():

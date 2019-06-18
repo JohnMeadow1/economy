@@ -12,13 +12,12 @@ onready var sprite = $Sprite
 export(SettlementType) var _settlement_type:int = 0 setget _set_settlement_type
 
 
-const SPAWN_DELAY = 0.05
+const SPAWN_DELAY: float = 0.035
 
 
 var CYCLE_DURATION: float = -1.0
 var RAD_SQ: int = -1
 var neighbours: Array = []
-var cycle: float = 0.0
 
 
 func _ready():
@@ -58,18 +57,18 @@ func _set_settlement_type(value):
 
 
 func _process(delta):
-	cycle += delta
-	if cycle > CYCLE_DURATION:
-		cycle -= CYCLE_DURATION
-		update_village()
+	if !Engine.is_editor_hint():
+		cycle += delta
+		if cycle > CYCLE_DURATION:
+			cycle -= CYCLE_DURATION
+			update_village()
 
 
 func update_village():
-	if !Engine.is_editor_hint(): # do not calculate in editor
-		collect_resources()
-		consider_starving()
-		consider_birth()
-		consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają
+	collect_resources()
+	consider_starving()
+	consider_birth()
+	consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają
 	update_display()
 	pass
 

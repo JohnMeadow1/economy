@@ -23,3 +23,4 @@ var population_needed_for_transport_next_cycle: int = 0
 var population_reserved_for_transport: int          = 0
 var total_population_transporting_this_cycle: int   = 0
 var consumption_food: float                         = 0.0
+var cycle: float                                    = 0.0

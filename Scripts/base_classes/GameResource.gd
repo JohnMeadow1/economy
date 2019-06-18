@@ -3,10 +3,10 @@ class_name GameResource, "res://Sprites/Rocks/Gray_Rock_Mini.png"
 
 
 enum ResourceType {NO_RESOURCE = -1, GRAIN, WOOD, STONE}
-var ResourceName = ["Food", "Wood", "Stone"]
-var ResourceSprites = ["res://Sprites/Plants/Wheat.png",
-                       "res://Sprites/Farm/Tree_2_Side.png",
-                       "res://Sprites/Rocks/Gray_Rock.png"]
+var ResourceName: Array    = ["Food", "Wood", "Stone"]
+var ResourceSprites: Array = ["res://Sprites/Plants/Wheat.png",
+                              "res://Sprites/Farm/Tree_2_Side.png",
+                              "res://Sprites/Rocks/Gray_Rock.png"]
 
 
 export(float) var available: float             = 10.0
