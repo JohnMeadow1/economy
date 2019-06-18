@@ -232,6 +232,7 @@ func detect_neighbours(): # array of triples (Reosurce Node, distance, amount of
 func create_cost_labels():
 	var node = Node2D.new()
 	node.name = "CostLabels"
+	node.z_index = 1
 #	get_tree().get_root().call_deferred("add_child", node)
 	add_child(node)
 	for resource in get_tree().get_nodes_in_group("resource"):
