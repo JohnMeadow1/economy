@@ -21,7 +21,8 @@ var neighbours: Array = []
 
 
 func _ready():
-	CYCLE_DURATION = get_node("/root/Main").CYCLE_DURATION
+	if !Engine.is_editor_hint():
+		CYCLE_DURATION = get_node("/root/Main").CYCLE_DURATION
 	randomize()
 #	generate()
 #	self.house_name += "_" + str(get_index())
@@ -133,9 +134,9 @@ func delegate_workers(location: ResourceLocation):
 
 func transport_resources(location: ResourceLocation):
 	if location.stockpile > 0:
-		var transport_cost = (position.distance_to(location.position) * 0.01)
-		var workers_needed_for_max_transport = floor(location.stockpile * transport_cost)
-		var population_transporting = min(workers_needed_for_max_transport, population_idle)
+		var transport_cost: float = (position.distance_to(location.position) * 0.01)
+		var workers_needed_for_max_transport: int = int(floor(location.stockpile * transport_cost)) # czemu nie ceil?
+		var population_transporting: int = min(workers_needed_for_max_transport, population_idle)
 		
 		total_population_transporting_this_cycle += population_transporting
 		send_peasants(location.position, population_transporting)
@@ -148,9 +149,9 @@ func transport_resources(location: ResourceLocation):
 		population_needed_for_transport_next_cycle -= population_transporting
 
 
-func find_neighbour_idx(location: ResourceLocation):
+func find_neighbour_idx(location: ResourceLocation) -> int:
 	for idx in range(neighbours.size()):
-		if neighbours[idx][0] == location:
+		if neighbours[idx][0] == location: #statyczne typowanie w godocie nie pozwala ustalać typów wewnątrztablicowych
 			return idx
 	return -1 #HACK jak sobie radzimy z takimi sytuacjami, skoro w godocie nie ma (z tego co wiem) catch exception
 
@@ -280,8 +281,8 @@ func sort_neighbours():
 	neighbours.sort_custom(MyCustomSorter, "sort")
 
 
-func get_cheapest_resource(start = 0):
-#	print (start+1, " cheapest resource is ", neighbours[start][0], " (", neighbours[start][0].resName, ") with total price = floor(0.01*distanceSQ) + gatherCost = ", neighbours[start][1])
+"""Return 'start'st/nd/rd/th cheapest resource, starting from 'start' index in sorted neighbours array"""
+func get_cheapest_resource(start = 0) -> Node2D:
 	return neighbours[start][0]
 
 

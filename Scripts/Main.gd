@@ -4,7 +4,7 @@ extends Node2D
 onready var gameAge: Label = $HUD/Margin/HBoxContainer/Container/GameAge
 
 
-const CYCLE_DURATION: float = 1.0
+const CYCLE_DURATION: float = 1.5
 
 
 var age: int = 0
