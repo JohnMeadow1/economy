@@ -151,10 +151,10 @@ func transport_resources(location: ResourceLocation):
 
 func find_neighbour_idx(location: ResourceLocation) -> int:
 	for idx in range(neighbours.size()):
-		if neighbours[idx][0] == location: #statyczne typowanie w godocie nie pozwala ustalać typów wewnątrztablicowych
+		if (neighbours[idx][0] as ResourceLocation) == location: #statyczne typowanie w godocie nie pozwala ustalać typów wewnątrztablicowych
 			return idx
 	return -1 #HACK jak sobie radzimy z takimi sytuacjami, skoro w godocie nie ma (z tego co wiem) catch exception
-
+	#NOTE no właśnie nie wiem.
 
 func generate():
 	population = randi() % 100 + 1 # randi between 1 and 100
@@ -217,6 +217,7 @@ func detect_neighbours(): # array of triples (Reosurce Node, distance, amount of
 		var resource_idx = find_neighbour_idx(resource)
 		if position.distance_squared_to(resource.position) < RAD_SQ:
 			if resource_idx == -1: # jest a zasięgu, nie ma w tablicy -> dodaj
+				#NOTE czym jest trzeci element tablicy ustawiony na 0 ?
 				var triple = [resource, position.distance_to(resource.position), 0]
 				neighbours.append(triple)
 		else:

@@ -4,15 +4,11 @@ onready var previous_mouse_possition = get_global_mouse_position()
 onready var previous_camera_position = position
 
 func _process(_delta):
-	globals.debug.text += "MOUSE POSITION\nGlobal:" + str(get_global_mouse_position().floor())
+	globals.debug.text += "MOUSE POSITION (Camera.gd)\nGlobal:" + str(get_global_mouse_position().floor())
 	globals.debug.text += "\nLocal:" + str(get_local_mouse_position().floor())
 	globals.debug.text += "\nViewport:" + str(get_viewport().get_mouse_position().floor()) + "\n"
 	if globals.selected_node != null and globals.selected_node.has_method("on_hover_info"):
 		globals.selected_node.on_hover_info()
-#	globals.debug.text += "Prev:" + str(previous_camera_position.floor()) + "\n"
-#	globals.debug.text += "Prev:" + str(previous_mouse_possition.floor()) + "\n"
-#	globals.debug.text += "Prev:" + str(previous_camera_position + previous_mouse_possition - get_local_mouse_position().floor()) + "\n"
-
 func _input(event):
 	""" Mouse picking """
 
