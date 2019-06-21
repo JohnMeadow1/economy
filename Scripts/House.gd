@@ -27,7 +27,9 @@ func _ready():
 #	generate()
 #	self.house_name += "_" + str(get_index())
 	RAD_SQ = pow(radius, 2)
+	POPULATION_by_age.resize(100)
 	#HACK albo i nie hack, nie wiem czy tak chcemy: fill start POPULATION_by_age based on total "population" 
+	fill_POPULATION_by_age(population)
 	population_idle = population
 	detect_neighbours()
 	sort_neighbours()
@@ -279,6 +281,29 @@ class MyCustomSorter:
 		if a[1] < b[1]:
 			return true
 		return false
+
+
+""" mean = mean human age, deviation in years too"""
+func fill_POPULATION_by_age(pop, mean = 30, deviation = 5): # 68% [25, 35] 95% [20, 40], 99.7% [15, 45]
+	var temp
+	for i in range(pop):
+		temp = gaussian(mean, deviation)
+		POPULATION_by_age[int(clamp(temp, 0, 100))] += 1
+
+
+func gaussian(mean, deviation):
+	var x1 = null
+	var x2 = null
+	var w = null
+	
+	while true:
+		x1 = rand_range(0, 2) - 1
+		x2 = rand_range(0, 2) - 1
+		w = x1*x1 + x2*x2
+		if 0 < w && w < 1:
+			break
+	w = sqrt(-2 * log(w)/w)
+	return round(mean + deviation * x1 * w)
 
 
 func sort_neighbours():
