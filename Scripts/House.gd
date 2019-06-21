@@ -27,6 +27,7 @@ func _ready():
 #	generate()
 #	self.house_name += "_" + str(get_index())
 	RAD_SQ = pow(radius, 2)
+	#HACK albo i nie hack, nie wiem czy tak chcemy: fill start POPULATION_by_age based on total "population" 
 	population_idle = population
 	detect_neighbours()
 	sort_neighbours()
@@ -151,10 +152,10 @@ func transport_resources(location: ResourceLocation):
 
 func find_neighbour_idx(location: ResourceLocation) -> int:
 	for idx in range(neighbours.size()):
-		if (neighbours[idx][0] as ResourceLocation) == location: #statyczne typowanie w godocie nie pozwala ustalać typów wewnątrztablicowych
+		if (neighbours[idx][0] as ResourceLocation) == location:
 			return idx
-	return -1 #HACK jak sobie radzimy z takimi sytuacjami, skoro w godocie nie ma (z tego co wiem) catch exception
-	#NOTE no właśnie nie wiem.
+	return -1
+
 
 func generate():
 	population = randi() % 100 + 1 # randi between 1 and 100
@@ -166,19 +167,19 @@ func consider_starving():
 	if stockpile_food >= consumption_food: # dość jedzenia
 		stockpile_food -= consumption_food
 		if randf() < 0.5:
-			population -= round(0.15*population_idle)
-			population_idle -= round(0.15*population_idle)
+			population -= round(0.15 * population_idle)
+			population_idle -= round(0.15 * population_idle)
 		else:
-			population -= round(0.1*population_idle)
-			population_idle -= round(0.1*population_idle)
+			population -= round(0.1 * population_idle)
+			population_idle -= round(0.1 * population_idle)
 	else: # za mało jedzenia, ale nic nie zjadają
 		if randf() < 0.5:
-			population -= min(population_idle, max(1, floor(0.7*population_idle)))
-			population_idle -= min(population_idle, max(1, floor(0.7*population_idle)))
+			population -= min(population_idle, max(1, floor(0.7 * population_idle)))
+			population_idle -= min(population_idle, max(1, floor(0.7 * population_idle)))
 #			population = max(0, population)
 		else:
-			population -= min(population_idle, max(1, floor(0.4*population_idle)))
-			population_idle -= min(population_idle, max(1, floor(0.4*population_idle)))
+			population -= min(population_idle, max(1, floor(0.4 * population_idle)))
+			population_idle -= min(population_idle, max(1, floor(0.4 * population_idle)))
 #			population = max(0, population)
 
 
@@ -186,19 +187,19 @@ func consider_birth():
 	if stockpile_food >= consumption_food: # dość jedzenia - rodzi się 10-15% pop
 		stockpile_food -= consumption_food
 		if randf() < 0.5:
-			population_idle += max(1, floor(0.1*population))
+			population_idle += max(1, floor(0.1 * population))
 			population += max(1, floor(0.1*population))
 		else:
-			population_idle += max(1, floor(0.15*population))
-			population += max(1, floor(0.15*population))
+			population_idle += max(1, floor(0.15 * population))
+			population += max(1, floor(0.15 * population))
 	else: # mało jedzenia - rodzi się 0-2% pop
 		if randf() < 0.5:
-			population_idle += round(0.02*population)
-			population += round(0.02*population)
+			population_idle += round(0.02 * population)
+			population += round(0.02 * population)
 
 
 func send_peasants(where: Vector2, how_much: int = 1):
-	how_much = min(how_much, floor(0.5*float(CYCLE_DURATION)/SPAWN_DELAY))
+	how_much = min(how_much, floor(0.5 * float(CYCLE_DURATION)/SPAWN_DELAY))
 	for i in range(how_much):
 		yield(get_tree().create_timer(SPAWN_DELAY), "timeout")
 		var peasant_instance = peasant.instance()
@@ -218,6 +219,7 @@ func detect_neighbours(): # array of triples (Reosurce Node, distance, amount of
 		if position.distance_squared_to(resource.position) < RAD_SQ:
 			if resource_idx == -1: # jest a zasięgu, nie ma w tablicy -> dodaj
 				#NOTE czym jest trzeci element tablicy ustawiony na 0 ?
+				#NOTE jest napisane 6 linijek wyżej: ilość pracowników tej wioski wydobywających w danym sąsiedzie
 				var triple = [resource, position.distance_to(resource.position), 0]
 				neighbours.append(triple)
 		else:
@@ -254,7 +256,7 @@ func update_cost_labels(node):
 
 func calculate_workers_share(our_workers: int, total_workers: int):
 	if total_workers != 0:
-		return str(stepify(100*(float(our_workers)/total_workers), 0.01)) + "%"
+		return str(stepify(100 * (float(our_workers)/total_workers), 0.01)) + "%"
 	else:
 		return "0%"
 
