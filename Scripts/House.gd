@@ -27,7 +27,9 @@ func _ready():
 #	generate()
 #	self.house_name += "_" + str(get_index())
 	RAD_SQ = pow(radius, 2)
-	POPULATION_by_age.resize(100)
+	POPULATION_by_age.resize(0)
+	for i in range(100):
+		POPULATION_by_age.push_back(0)
 	#HACK albo i nie hack, nie wiem czy tak chcemy: fill start POPULATION_by_age based on total "population" 
 	fill_POPULATION_by_age(population)
 	population_idle = population
@@ -297,7 +299,7 @@ func gaussian(mean, deviation):
 	var w = null
 	
 	while true:
-		x1 = rand_range(0, 2) - 1
+		x1 = rand_range(0, 2) - 1 # [-1, 1]
 		x2 = rand_range(0, 2) - 1
 		w = x1*x1 + x2*x2
 		if 0 < w && w < 1:
