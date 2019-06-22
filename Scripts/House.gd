@@ -72,9 +72,11 @@ func _process(delta):
 
 func update_village():
 	collect_resources()
-	consider_starving()
-	consider_birth()
+	consider_aging()
+#	consider_starving()
+#	consider_birth()
 	consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają
+	consider_aging()
 	update_display()
 	pass
 
@@ -200,6 +202,14 @@ func consider_birth():
 		if randf() < 0.5:
 			population_idle += round(0.02 * population)
 			population += round(0.02 * population)
+
+
+func consider_aging(): #NOTE kiedy powinni się starzeć? przed/po rodzeniu/umieraniu? Zakladam przed obydwoma
+	var temp = 0
+	for i in range (99, 0, -1): # i = 99; i > 0; i--
+		POPULATION_by_age[i] = POPULATION_by_age[i-1]
+	POPULATION_by_age[0] = 0
+	update()
 
 
 func send_peasants(where: Vector2, how_much: int = 1):
@@ -328,6 +338,19 @@ func _draw():
 			draw_line(Vector2(0,0), resource.position - position, Color(0, 1, 0, 1), 3.0)
 		else:
 			draw_line(Vector2(0,0), resource.position - position, Color(1, 0, 0, 1), 3.0)
+		draw_population_chart()
+
+
+func draw_population_chart():
+	var start_x  = 0
+	var end_x    = 100
+	var start_y  = 110
+	var end_y    = 60
+	draw_line(Vector2(start_x, start_y) , Vector2(end_x, start_y) , Color.white, 1.0) # OX
+	draw_line(Vector2(start_x, start_y) , Vector2(start_x, end_y) , Color.white, 1.0) # OY
+	for i in range(99):
+		draw_line(Vector2(start_x + i, start_y - POPULATION_by_age[i]),\
+		          Vector2(start_x + i + 1, start_y - POPULATION_by_age[i+1]) , Color.white, 1)
 
 
 """Actualize settlement info displayed on scene; called by update_village"""
@@ -343,6 +366,7 @@ func update_display():
 
 func on_hover_info():
 	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
-	globals.debug.text += "Golden law: " + str(population - population_idle) + " = " + str(population_collecting + total_population_transporting_this_cycle) + "\n"
+	globals.debug.text += "Golden law: " + str(population - population_idle) + " = "\
+	                          + str(population_collecting + total_population_transporting_this_cycle) + "\n"
 	globals.debug.text += "Pop needed this cycle: " + str(population_needed_for_transport_this_cycle) + "\n"
 	globals.debug.text += "Pop Needed next cycle: " + str(population_needed_for_transport_next_cycle) + "\n"
