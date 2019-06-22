@@ -338,10 +338,12 @@ func _draw():
 			draw_line(Vector2(0,0), resource.position - position, Color(0, 1, 0, 1), 3.0)
 		else:
 			draw_line(Vector2(0,0), resource.position - position, Color(1, 0, 0, 1), 3.0)
-		draw_population_chart()
+		# BUG OX and OY are rendered partially invisible after few update calls (best depicted with zoom > 2)
+		draw_population_chart(2) # zoom parameter 
 
 
-func draw_population_chart():
+"""Called by _draw"""
+func draw_population_chart(zoom: int = 1):
 	var start_x  = 0
 	var end_x    = 100
 	var start_y  = 110
@@ -349,8 +351,8 @@ func draw_population_chart():
 	draw_line(Vector2(start_x, start_y) , Vector2(end_x, start_y) , Color.white, 1.0) # OX
 	draw_line(Vector2(start_x, start_y) , Vector2(start_x, end_y) , Color.white, 1.0) # OY
 	for i in range(99):
-		draw_line(Vector2(start_x + i, start_y - POPULATION_by_age[i]),\
-		          Vector2(start_x + i + 1, start_y - POPULATION_by_age[i+1]) , Color.white, 1)
+		draw_line(Vector2(start_x + zoom*i, start_y - zoom*POPULATION_by_age[i]),\
+		          Vector2(start_x + zoom*i + zoom*1, start_y - zoom*POPULATION_by_age[i+1]) , Color.white, 1)
 
 
 """Actualize settlement info displayed on scene; called by update_village"""
