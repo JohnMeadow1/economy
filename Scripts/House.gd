@@ -206,6 +206,7 @@ func consider_birth():
 
 func consider_aging(): #NOTE kiedy powinni się starzeć? przed/po rodzeniu/umieraniu? Zakladam przed obydwoma
 	var temp = 0
+	population -= POPULATION_by_age[99]
 	for i in range (99, 0, -1): # i = 99; i > 0; i--
 		POPULATION_by_age[i] = POPULATION_by_age[i-1]
 	POPULATION_by_age[0] = 0
