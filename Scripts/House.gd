@@ -28,6 +28,7 @@ func _ready():
 #	self.house_name += "_" + str(get_index())
 	RAD_SQ = pow(radius, 2)
 	prepare_population_arrays()
+#	woip population_birth_multiplier = clamp(FOOD/FOOD_REQ, 0.5, 0.15) + clamp(HOUSING - HOUSING_REQ, 0, 1)
 	#HACK nie wiem czy tak chcemy: fill start POPULATION_by_age based on total "population" 
 	fill_POPULATION_by_age(population)
 	population_idle = population
@@ -71,7 +72,7 @@ func _process(delta):
 func update_village():
 	collect_resources()
 	consider_aging()
-#	consider_starving()
+	consider_starving()
 #	consider_birth()
 	consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają
 	consider_aging()
@@ -92,6 +93,26 @@ func collect_resources():
 		transport_resources(get_cheapest_resource(index))
 		index += 1
 	population_reserved_for_transport = 0 # rezerwowanie jest podczas delegate na potrzeby transport tego cyklu
+
+
+func delegate_workers(location: ResourceLocation):
+	convert_harvesters_to_transporters(location)
+	
+	if population_needed_for_transport_this_cycle == 0:
+		if location.available > 1:
+			if location.workers_total < location.worker_capacity:
+				var worker_allocation = location.worker_capacity - location.workers_total
+				#zarezerwowanych nie wysylam do pracy
+				worker_allocation = min(worker_allocation, population_idle - population_reserved_for_transport)
+				population_idle  -= worker_allocation
+				location.workers_total += worker_allocation
+				neighbours[find_neighbour_idx(location)][2] += worker_allocation##
+				population_collecting += worker_allocation
+		elif neighbours[find_neighbour_idx(location)][2] != 0:##
+			population_collecting -= neighbours[find_neighbour_idx(location)][2]##
+			population_idle += neighbours[find_neighbour_idx(location)][2]##
+			location.workers_total -= neighbours[find_neighbour_idx(location)][2]##
+			neighbours[find_neighbour_idx(location)][2] = 0##
 
 
 func convert_harvesters_to_transporters(location: ResourceLocation):
@@ -117,25 +138,6 @@ func convert_harvesters_to_transporters(location: ResourceLocation):
 #				workers = 0##
 				neighbours[find_neighbour_idx(location)][2] = 0
 
-
-func delegate_workers(location: ResourceLocation):
-	convert_harvesters_to_transporters(location)
-	
-	if population_needed_for_transport_this_cycle == 0:
-		if location.available > 1:
-			if location.workers_total < location.worker_capacity:
-				var worker_allocation = location.worker_capacity - location.workers_total
-				#zarezerwowanych nie wysylam do pracy
-				worker_allocation = min(worker_allocation, population_idle - population_reserved_for_transport)
-				population_idle  -= worker_allocation
-				location.workers_total += worker_allocation
-				neighbours[find_neighbour_idx(location)][2] += worker_allocation##
-				population_collecting += worker_allocation
-		elif neighbours[find_neighbour_idx(location)][2] != 0:##
-			population_collecting -= neighbours[find_neighbour_idx(location)][2]##
-			population_idle += neighbours[find_neighbour_idx(location)][2]##
-			location.workers_total -= neighbours[find_neighbour_idx(location)][2]##
-			neighbours[find_neighbour_idx(location)][2] = 0##
 
 func transport_resources(location: ResourceLocation):
 	if location.stockpile > 0:
@@ -167,6 +169,18 @@ func generate():
 
 
 #HACK ludzie pracy nie umierają
+# gdyby mieli umierać to ~:
+#dla wydobycia
+#for neighbour in neighbours:
+#	if neighbour[2] > 0:
+#	neighbour[2] -= dead #tu i niżej max(0, value)
+#	neighbour[0].workers -= dead
+#	neighbour[0].workers_total -= dead
+#	population -= dead
+#	population_collecting -= dead #chyba
+
+#dla zbieractwa
+
 func consider_starving():
 	if stockpile_food >= consumption_food: # dość jedzenia
 		stockpile_food -= consumption_food
@@ -229,7 +243,7 @@ func prepare_population_arrays():
 	prepare_array(POPULATION_by_age, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 #	prepare_array(POPULATION_food_req, 0.0, 0.7, 1.0, 1.0, 0.7, 0.5, 0.4, 0.3, 0.3, 0.3)
 #	prepare_array(POPULATION_work_eff, 0.3, 0.6, 1.0, 1.0, 0.8, 0.5, 0.4, 0.3, 0.3, 0.3)
-#	prepare_array(POPULATION_death_rate, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+	prepare_array(POPULATION_death_rate, 0.3, 0.04, 0.03, 0.03, 0.05, 0.06, 0.07, 0.13, 0.14, 0.15) #NOTE Sumują się do 1, tak ma być? 
 #	prepare_array(POPULATION_male_ratio, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5) # jak i kiedy modyfikowane
 	
 #	prepare_array(POPULATION_birth_rate, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
