@@ -27,14 +27,14 @@ var consumption_food: float                         = 0.0
 var cycle: float                                    = 0.0
 
 #NOTE each array holds specific data per age range (from 1 to 100 years old)
-var POPULATION_by_age: PoolIntArray       = []
-var POPULATION_food_req: PoolRealArray    = []
-var POPULATION_work_eff: PoolRealArray    = []
-var POPULATION_death_rate: PoolRealArray  = []
-var POPULATION_male_ratio: PoolRealArray  = []
+var POPULATION_by_age: Array           = []
+var POPULATION_food_req: Array         = []
+var POPULATION_work_eff: Array         = []
+var POPULATION_death_rate: Array       = []
+var POPULATION_male_ratio: Array       = []
 
-var POPULATION_birth_rate: PoolRealArray  = [] 
-var population_birth_multiplier: float    = 1.0
+var POPULATION_birth_rate: Array       = [] 
+var population_birth_multiplier: float = 1.0
 
-var POPULATION_housing_req: PoolRealArray = []
-var housing: float = 10.0
+var POPULATION_housing_req: Array      = []
+var housing: float                     = 10.0
