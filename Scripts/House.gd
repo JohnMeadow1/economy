@@ -27,10 +27,8 @@ func _ready():
 #	generate()
 #	self.house_name += "_" + str(get_index())
 	RAD_SQ = pow(radius, 2)
-	POPULATION_by_age.resize(0)
-	for i in range(100):
-		POPULATION_by_age.push_back(0)
-	#HACK albo i nie hack, nie wiem czy tak chcemy: fill start POPULATION_by_age based on total "population" 
+	prepare_population_arrays()
+	#HACK nie wiem czy tak chcemy: fill start POPULATION_by_age based on total "population" 
 	fill_POPULATION_by_age(population)
 	population_idle = population
 	detect_neighbours()
@@ -225,6 +223,41 @@ func send_peasants(where: Vector2, how_much: int = 1):
 		if angle_rad > 0.5 * PI and angle_rad < 1.5 * PI:
 			peasant_instance.get_node("Sprite").set_flip_v(true)
 		add_child(peasant_instance)
+
+
+func prepare_population_arrays():
+	prepare_array(POPULATION_by_age, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+#	prepare_array(POPULATION_food_req, 0.0, 0.7, 1.0, 1.0, 0.7, 0.5, 0.4, 0.3, 0.3, 0.3)
+#	prepare_array(POPULATION_work_eff, 0.3, 0.6, 1.0, 1.0, 0.8, 0.5, 0.4, 0.3, 0.3, 0.3)
+#	prepare_array(POPULATION_death_rate, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+#	prepare_array(POPULATION_male_ratio, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5) # jak i kiedy modyfikowane
+	
+#	prepare_array(POPULATION_birth_rate, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+#	prepare_array(POPULATION_housing_req, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+
+
+func prepare_array(array, v1_10, v11_20, v21_30, v31_40, v41_50, v51_60, v61_70, v71_80, v81_90, v91_100):
+	array.resize(0)
+	for i in range(0, 10): # od [0] = 1 do [9] = 10
+		array.push_back(v1_10)
+	for i in range(10, 20): # wiek 11 - 20
+		array.push_back(v11_20)
+	for i in range(20, 30): # wiek 21 - 30
+		array.push_back(v21_30)
+	for i in range(30, 40): # wiek 31 - 40
+		array.push_back(v31_40)
+	for i in range(40, 50): # etc
+		array.push_back(v41_50)
+	for i in range(50, 60):
+		array.push_back(v51_60)
+	for i in range(60, 70):
+		array.push_back(v61_70)
+	for i in range(70, 90):
+		array.push_back(v71_80)
+	for i in range(80, 90):
+		array.push_back(v81_90)
+	for i in range(90, 100):
+		array.push_back(v91_100)
 
 
 func detect_neighbours(): # array of triples (Reosurce Node, distance, amount of this settlement workers)
