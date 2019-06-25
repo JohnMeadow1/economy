@@ -29,7 +29,6 @@ func _ready():
 	RAD_SQ = pow(radius, 2)
 	prepare_population_arrays()
 #	woip population_birth_multiplier = clamp(FOOD/FOOD_REQ, 0.5, 0.15) + clamp(HOUSING - HOUSING_REQ, 0, 1)
-	#HACK nie wiem czy tak chcemy: fill start POPULATION_by_age based on total "population" 
 	fill_POPULATION_by_age(population)
 	population_idle = population
 	detect_neighbours()
@@ -71,7 +70,7 @@ func _process(delta):
 
 func update_village():
 	collect_resources()
-	consider_aging()
+	population_idle += total_population_transporting_this_cycle #return transporters to idle pool
 	consider_starving()
 #	consider_birth()
 	consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają
@@ -82,7 +81,6 @@ func update_village():
 
 func collect_resources():
 	var index = 0
-	population_idle += total_population_transporting_this_cycle #here this cycle refers to previous cycle
 	
 	total_population_transporting_this_cycle = 0
 	population_needed_for_transport_this_cycle = population_needed_for_transport_next_cycle
@@ -174,12 +172,9 @@ func generate():
 #for neighbour in neighbours:
 #	if neighbour[2] > 0:
 #	neighbour[2] -= dead #tu i niżej max(0, value)
-#	neighbour[0].workers -= dead
 #	neighbour[0].workers_total -= dead
 #	population -= dead
 #	population_collecting -= dead #chyba
-
-#dla zbieractwa
 
 func consider_starving():
 	if stockpile_food >= consumption_food: # dość jedzenia
@@ -218,6 +213,12 @@ func consider_birth():
 
 func consider_aging(): #NOTE kiedy powinni się starzeć? przed/po rodzeniu/umieraniu? Zakladam przed obydwoma
 	var temp = 0
+#	if population_idle >= POPULATION_by_age[99]:
+#		population_idle -= POPULATION_by_age[99]
+#	else:
+#			#kill (POPULATION_by_age[99] - population_idle) harvesters if we got that many(100% should have)
+#			population_idle = 0 
+	#NOTE Kto umarł? idle czy collector? Skąd wiedzieć?
 	population -= POPULATION_by_age[99]
 	for i in range (99, 0, -1): # i = 99; i > 0; i--
 		POPULATION_by_age[i] = POPULATION_by_age[i-1]
@@ -243,7 +244,7 @@ func prepare_population_arrays():
 	prepare_array(POPULATION_by_age, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 #	prepare_array(POPULATION_food_req, 0.0, 0.7, 1.0, 1.0, 0.7, 0.5, 0.4, 0.3, 0.3, 0.3)
 #	prepare_array(POPULATION_work_eff, 0.3, 0.6, 1.0, 1.0, 0.8, 0.5, 0.4, 0.3, 0.3, 0.3)
-	prepare_array(POPULATION_death_rate, 0.3, 0.04, 0.03, 0.03, 0.05, 0.06, 0.07, 0.13, 0.14, 0.15) #NOTE Sumują się do 1, tak ma być? 
+	prepare_array(POPULATION_death_rate, 0.3, 0.04, 0.03, 0.03, 0.05, 0.06, 0.07, 0.13, 0.14, 0.15) #NOTE Mają się sumować do 1? 
 #	prepare_array(POPULATION_male_ratio, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5) # jak i kiedy modyfikowane
 	
 #	prepare_array(POPULATION_birth_rate, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
