@@ -18,6 +18,7 @@ const SPAWN_DELAY: float = 0.035
 var CYCLE_DURATION: float = -1.0
 var RAD_SQ: int = -1
 var neighbours: Array = []
+var tot_pop_trans_this_cyc_before_death: int = 0
 
 
 func _ready():
@@ -71,10 +72,11 @@ func _process(delta):
 func update_village():
 	collect_resources()
 	population_idle += total_population_transporting_this_cycle #return transporters to idle pool
-	consider_starving()
-#	consider_birth()
-	consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają
+	tot_pop_trans_this_cyc_before_death = total_population_transporting_this_cycle
+#	consider_starving()
 	consider_aging()
+	consider_birth()
+	consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają
 	update_display()
 	pass
 
@@ -166,64 +168,147 @@ func generate():
 	stockpile_food = randi() % 150 + 251
 
 
-#HACK ludzie pracy nie umierają
-# gdyby mieli umierać to ~:
-#dla wydobycia
-#for neighbour in neighbours:
-#	if neighbour[2] > 0:
-#	neighbour[2] -= dead #tu i niżej max(0, value)
-#	neighbour[0].workers_total -= dead
-#	population -= dead
-#	population_collecting -= dead #chyba
+func starving_harvesters(amount: int):
+	# leć po wszystkich sąsiadach po kolei i zabijaj po 1 pracowniku
+	while(amount > 0):
+		for neighbour in neighbours:
+			if neighbour[2] > 0:
+				neighbour[2] -= 1
+				neighbour[0].workers_total -= 1
+				population_collecting -= 1 #chyba
+				kill_random_citizen()
+				amount -= 1
+				if amount == 0:
+					break
+
+
+func aging_harvesters(amount: int):
+	while(amount > 0):
+		for neighbour in neighbours:
+			if neighbour[2] > 0:
+				neighbour[2] -= 1
+				neighbour[0].workers_total -= 1
+				population_collecting -= 1 #chyba
+				amount -= 1
+				if amount == 0:
+					break
+
 
 func consider_starving():
-	if stockpile_food >= consumption_food: # dość jedzenia
+	# since I am returning transporters to idle pool I need to track that
+	var population_truly_idle = population_idle - total_population_transporting_this_cycle
+	# no need to track changes in population_truly_idle since it is used only once per call
+	var amount
+	if stockpile_food >= consumption_food: # dość jedzenia, umierają tylko idle
 		stockpile_food -= consumption_food
 		if randf() < 0.5:
-			population -= round(0.15 * population_idle)
-			population_idle -= round(0.15 * population_idle)
+			amount = round(0.15 * population_idle)
+			population_idle -= amount
+			for i in range(amount):
+				kill_random_citizen() # decreasing population counter inside
+			if amount > population_truly_idle: # if transporter is dying
+				total_population_transporting_this_cycle -= (amount - population_truly_idle)
 		else:
-			population -= round(0.1 * population_idle)
-			population_idle -= round(0.1 * population_idle)
-	else: # za mało jedzenia, ale nic nie zjadają
+			amount = round(0.1 * population_idle)
+			population_idle -= amount
+			for i in range(amount):
+				kill_random_citizen()
+			if amount > population_truly_idle:
+				total_population_transporting_this_cycle -= (amount - population_truly_idle)
+	else: # za mało jedzenia, nic nie zjadają, umierają idle i harvesters
 		if randf() < 0.5:
-			population -= min(population_idle, max(1, floor(0.7 * population_idle)))
-			population_idle -= min(population_idle, max(1, floor(0.7 * population_idle)))
-#			population = max(0, population)
+			amount = min(population_idle, max(1, floor(0.7 * population_idle)))
+			population_idle -= amount
+			for i in range(amount):
+				kill_random_citizen()
+			if amount > population_truly_idle:
+				total_population_transporting_this_cycle -= (amount - population_truly_idle)
 		else:
-			population -= min(population_idle, max(1, floor(0.4 * population_idle)))
-			population_idle -= min(population_idle, max(1, floor(0.4 * population_idle)))
-#			population = max(0, population)
+			amount = min(population_idle, max(1, floor(0.4 * population_idle)))
+			population_idle -= amount
+			for i in range(amount):
+				kill_random_citizen()
+			if amount > population_truly_idle:
+				total_population_transporting_this_cycle -= (amount - population_truly_idle)
+		amount = floor(0.4 * (population - population_idle))
+#		starving_harvesters(amount)
 
 
 func consider_birth():
-	if stockpile_food >= consumption_food: # dość jedzenia - rodzi się 10-15% pop
+	var amount
+	if stockpile_food >= consumption_food: # dość jedzenia - rodzi się 10 v 15% pop
 		stockpile_food -= consumption_food
 		if randf() < 0.5:
-			population_idle += max(1, floor(0.1 * population))
-			population += max(1, floor(0.1*population))
+			amount = max(1, floor(0.1 * population))
+			population_idle += amount
+			population += amount
+			for i in range(amount):
+				POPULATION_by_age[0] += 1
 		else:
-			population_idle += max(1, floor(0.15 * population))
-			population += max(1, floor(0.15 * population))
-	else: # mało jedzenia - rodzi się 0-2% pop
+			amount = max(1, floor(0.15 * population))
+			population_idle += amount
+			population += amount
+			for i in range(amount):
+				POPULATION_by_age[0] += 1
+			
+	else: # mało jedzenia - rodzi się 0 v 2% pop
 		if randf() < 0.5:
-			population_idle += round(0.02 * population)
-			population += round(0.02 * population)
+			amount = round(0.02 * population)
+			population_idle += amount
+			population += amount
+			for i in range(amount):
+				POPULATION_by_age[0] += 1
 
 
-func consider_aging(): #NOTE kiedy powinni się starzeć? przed/po rodzeniu/umieraniu? Zakladam przed obydwoma
-	var temp = 0
-#	if population_idle >= POPULATION_by_age[99]:
-#		population_idle -= POPULATION_by_age[99]
-#	else:
-#			#kill (POPULATION_by_age[99] - population_idle) harvesters if we got that many(100% should have)
-#			population_idle = 0 
-	#NOTE Kto umarł? idle czy collector? Skąd wiedzieć?
+func consider_aging(): #NOTE kiedy powinni się starzeć? przed/po rodzeniu/głodowaniu? Zakladam po głodowaniu
+	#HACK Zakładam, że ludzie giną w kolejności idle -> transporter -> harvester
+	# pop = harvest + transport + truly idle
+	# w tym momencie idle zawiera w sobie harvesterów
+	
+	if POPULATION_by_age[99] <= population_idle: # idle + trans
+		var population_truly_idle = population_idle - total_population_transporting_this_cycle
+		# if zbędny, ale chyba dodaje przejrzystości
+		if POPULATION_by_age[99] <= population_truly_idle: # ginie część/wszyscy truly_idle
+			population_idle -= POPULATION_by_age[99]
+		else: # giną wszyscy truly_idle i wszyscy/część transporterów
+			population_idle -= POPULATION_by_age[99]
+			total_population_transporting_this_cycle -= (POPULATION_by_age[99] - population_truly_idle)
+	else: # giną wszyscy truly_idle, wszyscy transporterzy i wszyscy/część zbieraczy
+		aging_harvesters(POPULATION_by_age[99] - population_idle)
+		population_idle = 0
+	
 	population -= POPULATION_by_age[99]
 	for i in range (99, 0, -1): # i = 99; i > 0; i--
 		POPULATION_by_age[i] = POPULATION_by_age[i-1]
 	POPULATION_by_age[0] = 0
 	update()
+
+
+"""Decrement random cell in POPULATION_by_age by one, besides that affect population counter only.
+The idea is to call this function in proper context, alongside with decreasement 
+of corresponding counter (idle/harvester)."""
+func kill_random_citizen():
+	if population > 0:
+		for i in range(10):
+			var temp = randi() % 100
+			if POPULATION_by_age[temp] > 0:
+				POPULATION_by_age[temp] -= 1
+				population -= 1
+				break
+		var a = 0
+		var b = 99
+		while(true): # if cannot find random age citizen in 10 attempts, kill youngest/oldest citizen
+			if POPULATION_by_age[a] > 0:
+				POPULATION_by_age[a] -= 1
+				population -= 1
+				break
+			if POPULATION_by_age[b] > 0:
+				POPULATION_by_age[b] -= 1
+				population -= 1
+				break
+			a += 1
+			b -= 1
+
 
 
 func send_peasants(where: Vector2, how_much: int = 1):
@@ -406,7 +491,9 @@ func draw_population_chart(zoom: int = 1):
 
 """Actualize settlement info displayed on scene; called by update_village"""
 func update_display():
-	$InfoTable/values.text = str(population_idle) +"/"+ str(population) +"\n"
+	# ile truly_idle przeżyło ten rok 
+	$InfoTable/values.text = str(population_idle - total_population_transporting_this_cycle) +"/"+ str(population) +"\n"
+	# ile col/trans przeżyło ten rok, tot_pop_trans_this_cyc_before_death mowi ile transportowalo przed smiercia
 	$InfoTable/values.text += str(population_collecting) +"/"+ str(total_population_transporting_this_cycle)+"\n"
 	$InfoTable/values.text += str(floor(stockpile_food))+"\n"
 	$InfoTable/values.text += str(consumption_food)+"/s\n"
@@ -417,7 +504,8 @@ func update_display():
 
 func on_hover_info():
 	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
-	globals.debug.text += "Golden law: " + str(population - population_idle) + " = "\
-	                          + str(population_collecting + total_population_transporting_this_cycle) + "\n"
+	# remember total_population_transporting_this_cycle was returned  to idle pool before display
+	globals.debug.text += "Golden law: " + str(population - population_idle + total_population_transporting_this_cycle)\
+	                  + " = " + str(population_collecting + total_population_transporting_this_cycle) + "\n"
 	globals.debug.text += "Pop needed this cycle: " + str(population_needed_for_transport_this_cycle) + "\n"
-	globals.debug.text += "Pop Needed next cycle: " + str(population_needed_for_transport_next_cycle) + "\n"
+	globals.debug.text += "Pop needed next cycle: " + str(population_needed_for_transport_next_cycle) + "\n"
