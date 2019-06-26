@@ -73,7 +73,7 @@ func update_village():
 	collect_resources()
 	population_idle += total_population_transporting_this_cycle #return transporters to idle pool
 	tot_pop_trans_this_cyc_before_death = total_population_transporting_this_cycle
-#	consider_starving()
+	consider_starving()
 	consider_aging()
 	consider_birth()
 	consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają
@@ -231,7 +231,7 @@ func consider_starving():
 			if amount > population_truly_idle:
 				total_population_transporting_this_cycle -= (amount - population_truly_idle)
 		amount = floor(0.4 * (population - population_idle))
-#		starving_harvesters(amount)
+		starving_harvesters(amount)
 
 
 func consider_birth():
@@ -294,18 +294,18 @@ func kill_random_citizen():
 			if POPULATION_by_age[temp] > 0:
 				POPULATION_by_age[temp] -= 1
 				population -= 1
-				break
+				return
 		var a = 0
 		var b = 99
 		while(true): # if cannot find random age citizen in 10 attempts, kill youngest/oldest citizen
 			if POPULATION_by_age[a] > 0:
 				POPULATION_by_age[a] -= 1
 				population -= 1
-				break
+				return
 			if POPULATION_by_age[b] > 0:
 				POPULATION_by_age[b] -= 1
 				population -= 1
-				break
+				return
 			a += 1
 			b -= 1
 
