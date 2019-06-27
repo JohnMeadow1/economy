@@ -70,19 +70,46 @@ func _process(delta):
 
 
 func update_village():
+	calculate_workforce() # chyba lepiej w ready i zmiany obsługiwane podczas umierania/rodzenia
+	calculate_foodreq()
 	collect_resources()
-	population_idle += total_population_transporting_this_cycle #return transporters to idle pool
-	tot_pop_trans_this_cyc_before_death = total_population_transporting_this_cycle
+#	collect_resources2()
+#	population_idle += total_population_transporting_this_cycle #return transporters to idle pool
+#	tot_pop_trans_this_cyc_before_death = total_population_transporting_this_cycle
 #	consider_starving()
-	consider_accidents()
-	consider_aging()
-	consider_birth()
+#	consider_accidents()
+#	consider_aging()
+#	consider_birth()
 	consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają
 	update_display()
 	pass
 
 
+func calculate_workforce():
+	workforce = 0
+	for i in range(100):
+		workforce += POPULATION_by_age[i] * POPULATION_work_eff[i]
+
+
+func calculate_foodreq():
+	foodreq = 0
+	for i in range(100):
+		foodreq += POPULATION_by_age[i] * POPULATION_food_req[i]
+
+
+"""Transport food, then harvest all, then transport remainig res (newly produced food included, but w/o priority)."""
 func collect_resources():
+	for neighbour in neighbours:
+		if neighbour[0].ResourceName == "Food":
+			pass#try_collect(neighbour[0])
+	
+	for neighbour in neighbours:
+		pass#try_harvest(neighbour[0])
+	
+	for neighbour in neighbours:
+		pass#try_collect(neighbour[0])
+
+func collect_resources2():
 	var index = 0
 	
 	total_population_transporting_this_cycle = 0
@@ -268,6 +295,8 @@ func consider_accidents():
 			for j in range(number_of_possible_accidents):
 				if randf() < POPULATION_death_rate[i]:
 					POPULATION_by_age[i] -= 1
+					####### every death/birth should actualize workforce and food req
+					# workforce -= POPULATION_work_eff[i]
 					if population_idle >= 1:
 						if (population_idle == total_population_transporting_this_cycle): #brak truly idle
 							total_population_transporting_this_cycle -= 1
@@ -280,6 +309,7 @@ func consider_accidents():
 								neighbour[0].workers_total -= 1
 								population_collecting -= 1 #chyba
 								not_killed_yet = false
+					#######
 					population -= 1
 
 
