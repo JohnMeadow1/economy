@@ -73,7 +73,8 @@ func update_village():
 	collect_resources()
 	population_idle += total_population_transporting_this_cycle #return transporters to idle pool
 	tot_pop_trans_this_cyc_before_death = total_population_transporting_this_cycle
-	consider_starving()
+#	consider_starving()
+	consider_accidents()
 	consider_aging()
 	consider_birth()
 	consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają
@@ -260,6 +261,28 @@ func consider_birth():
 				POPULATION_by_age[0] += 1
 
 
+func consider_accidents():
+	for i in range(100):
+		if POPULATION_by_age[i] > 0:
+			var number_of_possible_accidents = POPULATION_by_age[i]
+			for j in range(number_of_possible_accidents):
+				if randf() < POPULATION_death_rate[i]:
+					POPULATION_by_age[i] -= 1
+					if population_idle >= 1:
+						if (population_idle == total_population_transporting_this_cycle): #brak truly idle
+							total_population_transporting_this_cycle -= 1
+						population_idle -= 1
+					else:
+						var not_killed_yet = true
+						for neighbour in neighbours:
+							if neighbour[2] > 0 and not_killed_yet:
+								neighbour[2] -= 1
+								neighbour[0].workers_total -= 1
+								population_collecting -= 1 #chyba
+								not_killed_yet = false
+					population -= 1
+
+
 func consider_aging(): #NOTE kiedy powinni się starzeć? przed/po rodzeniu/głodowaniu? Zakladam po głodowaniu
 	#HACK Zakładam, że ludzie giną w kolejności idle -> transporter -> harvester
 	# pop = harvest + transport + truly idle
@@ -329,7 +352,16 @@ func prepare_population_arrays():
 	prepare_array(POPULATION_by_age, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 #	prepare_array(POPULATION_food_req, 0.0, 0.7, 1.0, 1.0, 0.7, 0.5, 0.4, 0.3, 0.3, 0.3)
 #	prepare_array(POPULATION_work_eff, 0.3, 0.6, 1.0, 1.0, 0.8, 0.5, 0.4, 0.3, 0.3, 0.3)
-	prepare_array(POPULATION_death_rate, 0.3, 0.04, 0.03, 0.03, 0.05, 0.06, 0.07, 0.13, 0.14, 0.15) #NOTE Mają się sumować do 1? 
+	POPULATION_death_rate = [0.25, 0.1, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 
+	                         0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01,
+	                         0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 
+	                         0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 
+	                         0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 
+	                         0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 
+	                         0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 
+	                         0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 
+	                         0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 0.09, 
+	                         0.11, 0.13, 0.15, 0.17, 0.19, 0.21, 0.23, 0.25, 0.27, 1]
 #	prepare_array(POPULATION_male_ratio, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5) # jak i kiedy modyfikowane
 	
 #	prepare_array(POPULATION_birth_rate, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
