@@ -101,17 +101,17 @@ func calculate_foodreq():
 """Transport food, then transport remaining res, then harvest food, then harvest remaining res."""
 func collect_resources():
 	for neighbour in neighbours:
-		if neighbour[0].ResourceName == "Food":
+		if neighbour[0].resource_name == "Food":
 			try_transport(neighbour[0])
 	for neighbour in neighbours:
-		if neighbour[0].ResourceName != "Food":
+		if neighbour[0].resource_name != "Food":
 			try_transport(neighbour[0])
 	
 	for neighbour in neighbours:
-		if neighbour[0].ResourceName == "Food":
+		if neighbour[0].resource_name == "Food":
 			try_harvest(neighbour[0])
 	for neighbour in neighbours:
-		if neighbour[0].ResourceName != "Food":
+		if neighbour[0].resource_name != "Food":
 			try_harvest(neighbour[0])
 
 
@@ -137,7 +137,7 @@ func try_harvest(location: ResourceLocation):
 		if location.workforce_total < location.worforce_capacity:
 				var max_workforce_allocation = location.workforce_capacity - location.workforce_total
 				var workforce_allocation = min(workforce, max_workforce_allocation)
-				workforce  -= workforce_allocation
+				workforce -= workforce_allocation
 				location.workforce_total += workforce_allocation #do zerowania co update
 				neighbours[find_neighbour_idx(location)][2] += workforce_allocation #do poprawy
 				workforce_collecting += workforce_allocation#@
@@ -322,7 +322,8 @@ func consider_birth():
 				POPULATION_by_age[0] += 1
 
 
-func consider_accidents():
+func consider_accidents(): # death should decrease workforce
+# but if we do not transprot or harvest later in this cycle we recalculate at the beginning anyway
 	for i in range(100):
 		if POPULATION_by_age[i] > 0:
 			var number_of_possible_accidents = POPULATION_by_age[i]
@@ -395,7 +396,6 @@ func kill_random_citizen():
 				return
 			a += 1
 			b -= 1
-
 
 
 func send_peasants(where: Vector2, how_much: int = 1):
@@ -621,6 +621,15 @@ func update_display():
 
 
 func on_hover_info():
+	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
+	# remember starting_workforce?
+	globals.debug.text += "Golden law: " + str(population - population_idle)\
+	                  + " = " + str(workforce_collecting + total_workforce_transporting_this_cycle) + "\n"
+	globals.debug.text += "Pop needed this cycle: " + str(population_needed_for_transport_this_cycle) + "\n"
+	globals.debug.text += "Pop needed next cycle: " + str(population_needed_for_transport_next_cycle) + "\n"
+
+
+func on_hover_info2():
 	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
 	# remember total_population_transporting_this_cycle was returned  to idle pool before display
 	globals.debug.text += "Golden law: " + str(population - population_idle + total_population_transporting_this_cycle)\
