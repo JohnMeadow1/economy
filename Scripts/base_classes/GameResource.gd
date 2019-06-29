@@ -17,11 +17,13 @@ export(float) var auto_harvest: float          = 0.0
 export(float) var regenerates_per_cycle: float = 0.0
 export(float) var stockpile_max: float         = 10.0
 export(float) var stockpile: float             = 1.0
+export(float) var workforce_capacity: float    = 1.0
 export(int) var worker_capacity: int           = 1
 
 
 var cycle: float                  = 0.0 
 var workers_total: int            = 0
+var workforce_total: float        = 0.0
 var available_fluctuations: float = 0.0
 var stockpile_fluctuations: float = 0.0
 var previous_stockpile: float     = 0.0

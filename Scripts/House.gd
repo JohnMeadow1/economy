@@ -71,6 +71,7 @@ func _process(delta):
 
 func update_village():
 	calculate_workforce() # chyba lepiej w ready i zmiany obsługiwane podczas umierania/rodzenia
+	# jednak nie, bo chcemy zerować niewykorzystaną
 	calculate_foodreq()
 	collect_resources()
 #	collect_resources2()
@@ -97,17 +98,50 @@ func calculate_foodreq():
 		foodreq += POPULATION_by_age[i] * POPULATION_food_req[i]
 
 
-"""Transport food, then harvest all, then transport remainig res (newly produced food included, but w/o priority)."""
+"""Transport food, then transport remaining res, then harvest food, then harvest remaining res."""
 func collect_resources():
 	for neighbour in neighbours:
 		if neighbour[0].ResourceName == "Food":
-			pass#try_collect(neighbour[0])
+			try_transport(neighbour[0])
+	for neighbour in neighbours:
+		if neighbour[0].ResourceName != "Food":
+			try_transport(neighbour[0])
 	
 	for neighbour in neighbours:
-		pass#try_harvest(neighbour[0])
-	
+		if neighbour[0].ResourceName == "Food":
+			try_harvest(neighbour[0])
 	for neighbour in neighbours:
-		pass#try_collect(neighbour[0])
+		if neighbour[0].ResourceName != "Food":
+			try_harvest(neighbour[0])
+
+
+func try_transport(location: ResourceLocation):
+	if workforce > 0 and location.stockpile > 0:
+		var transport_cost: float = (position.distance_to(location.position) * 0.01)
+		var workforce_needed_for_max_transport: float = location.stockpile * transport_cost
+		var workforce_transporting: float = min(workforce_needed_for_max_transport, workforce)
+		
+		total_workforce_transporting_this_cycle += workforce_transporting#@
+		send_peasants(location.position, workforce_transporting)
+		workforce -= workforce_transporting
+#		workforce_reserved_for_transport = max(0, workforce_reserved_for_transport - workforce_transporting)
+		stockpile_food += workforce_transporting/transport_cost
+		location.stockpile -= workforce_transporting/transport_cost
+		
+#		workforce_needed_for_transport_next_cycle += workforce_needed_for_max_transport
+#		workforce_needed_for_transport_next_cycle -= workforce_transporting
+
+
+func try_harvest(location: ResourceLocation):
+	if workforce > 0 and location.available > 1:
+		if location.workforce_total < location.worforce_capacity:
+				var max_workforce_allocation = location.workforce_capacity - location.workforce_total
+				var workforce_allocation = min(workforce, max_workforce_allocation)
+				workforce  -= workforce_allocation
+				location.workforce_total += workforce_allocation #do zerowania co update
+				neighbours[find_neighbour_idx(location)][2] += workforce_allocation #do poprawy
+				workforce_collecting += workforce_allocation#@
+
 
 func collect_resources2():
 	var index = 0
@@ -514,14 +548,14 @@ class MyCustomSorter:
 
 
 """ mean = mean human age, deviation in years too"""
-func fill_POPULATION_by_age(pop, mean = 30, deviation = 5): # 68% [25, 35] 95% [20, 40], 99.7% [15, 45]
+func fill_POPULATION_by_age(pop, mean: float = 30.0, deviation: float = 5.0): # 68% [25, 35] 95% [20, 40], 99.7% [15, 45]
 	var temp
 	for i in range(pop):
 		temp = gaussian(mean, deviation)
 		POPULATION_by_age[int(clamp(temp, 0, 100))] += 1
 
 
-func gaussian(mean, deviation):
+func gaussian(mean, deviation) -> float:
 	var x1 = null
 	var x2 = null
 	var w = null
