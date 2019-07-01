@@ -68,20 +68,20 @@ func _process(delta):
 			cycle -= CYCLE_DURATION
 			update_village()
 
-
+"""Calculate wf & fr, then collect. After that starving, accidents, aging birth. wf and fr updated (recalculated)
+only at the beginning, population updated when changed."""
 func update_village():
-	calculate_workforce() # chyba lepiej w ready i zmiany obsługiwane podczas umierania/rodzenia
-	# jednak nie, bo chcemy zerować niewykorzystaną
+	calculate_workforce()
 	calculate_foodreq()
 	collect_resources()
 #	collect_resources2()
 #	population_idle += total_population_transporting_this_cycle #return transporters to idle pool
 #	tot_pop_trans_this_cyc_before_death = total_population_transporting_this_cycle
-#	consider_starving()
-#	consider_accidents()
-#	consider_aging()
-#	consider_birth()
-	consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają
+#	consider_starving()#?
+#	consider_accidents()#
+#	consider_aging()#
+#	consider_birth()#
+#	consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają -> obecnie max 1, foodreq ??
 	update_display()
 	pass
 
@@ -134,11 +134,11 @@ func try_transport(location: ResourceLocation):
 
 func try_harvest(location: ResourceLocation):
 	if workforce > 0 and location.available > 1:
-		if location.workforce_total < location.worforce_capacity:
+		if location.workforce_total < location.workforce_capacity:
 				var max_workforce_allocation = location.workforce_capacity - location.workforce_total
 				var workforce_allocation = min(workforce, max_workforce_allocation)
 				workforce -= workforce_allocation
-				location.workforce_total += workforce_allocation #do zerowania co update
+				location.workforce_total += workforce_allocation #NOTE do zerowania co update
 				neighbours[find_neighbour_idx(location)][2] += workforce_allocation #do poprawy
 				workforce_collecting += workforce_allocation#@
 
@@ -323,6 +323,21 @@ func consider_birth():
 
 
 func consider_accidents(): # death should decrease workforce
+# but if we do not transprot or harvest later in this cycle we recalculate at the beginning anyway
+	for i in range(100):
+		if POPULATION_by_age[i] > 0:
+			var number_of_possible_accidents = POPULATION_by_age[i]
+			for j in range(number_of_possible_accidents):
+				if randf() < POPULATION_death_rate[i]:
+					POPULATION_by_age[i] -= 1
+					####### every death/birth should actualize workforce and food req?
+					# workforce -= POPULATION_work_eff[i]
+#					neighbour[0].workers_total -= 1 # czasami, ale to trzeba zerować co cykl i tak i nie trackujemy juz
+					#######
+					population -= 1
+
+
+func consider_accidents2(): # death should decrease workforce
 # but if we do not transprot or harvest later in this cycle we recalculate at the beginning anyway
 	for i in range(100):
 		if POPULATION_by_age[i] > 0:
@@ -610,6 +625,19 @@ func draw_population_chart(zoom: int = 1):
 """Actualize settlement info displayed on scene; called by update_village"""
 func update_display():
 	# ile truly_idle przeżyło ten rok 
+	$InfoTable/values.text = "_pop_" + str(population) +"\n"
+	# ile col/trans przeżyło ten rok, tot_pop_trans_this_cyc_before_death mowi ile transportowalo przed smiercia
+	$InfoTable/values.text += "_non_"+"\n"
+	$InfoTable/values.text += "_sf_"+str(floor(stockpile_food))+"\n"
+	$InfoTable/values.text +=  "_non_"+"/s\n"
+	update_cost_labels("CostLabels")
+	_set_settlement_type(clamp(population/50, 0, 3)) # population/50 to dzielenie intów, więc powinno obciąć: 0-49 to 0
+	# 50-99 to 1, 100-149 to 2 i 150+ to 3
+
+
+"""Actualize settlement info displayed on scene; called by update_village"""
+func update_display2():
+	# ile truly_idle przeżyło ten rok 
 	$InfoTable/values.text = str(population_idle - total_population_transporting_this_cycle) +"/"+ str(population) +"\n"
 	# ile col/trans przeżyło ten rok, tot_pop_trans_this_cyc_before_death mowi ile transportowalo przed smiercia
 	$InfoTable/values.text += str(population_collecting) +"/"+ str(total_population_transporting_this_cycle)+"\n"
@@ -623,10 +651,8 @@ func update_display():
 func on_hover_info():
 	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
 	# remember starting_workforce?
-	globals.debug.text += "Golden law: " + str(population - population_idle)\
-	                  + " = " + str(workforce_collecting + total_workforce_transporting_this_cycle) + "\n"
-	globals.debug.text += "Pop needed this cycle: " + str(population_needed_for_transport_this_cycle) + "\n"
-	globals.debug.text += "Pop needed next cycle: " + str(population_needed_for_transport_next_cycle) + "\n"
+	globals.debug.text += "Population: " + str(population) + "\n"#\
+#	                  + " = " + str(workforce_collecting + total_workforce_transporting_this_cycle) + "\n"
 
 
 func on_hover_info2():
