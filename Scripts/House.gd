@@ -78,9 +78,9 @@ func update_village():
 #	population_idle += total_population_transporting_this_cycle #return transporters to idle pool
 #	tot_pop_trans_this_cyc_before_death = total_population_transporting_this_cycle
 #	consider_starving()#?
-#	consider_accidents()#
-#	consider_aging()#
-#	consider_birth()#
+	consider_accidents()#
+	consider_aging()#
+	consider_birth()#
 #	consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają -> obecnie max 1, foodreq ??
 	update_display()
 	pass
@@ -297,19 +297,19 @@ func consider_starving():
 		starving_harvesters(amount)
 
 
-func consider_birth():
+func consider_birth(): #NOTE w/o birthrate for now, TODO
 	var amount
 	if stockpile_food >= consumption_food: # dość jedzenia - rodzi się 10 v 15% pop
 		stockpile_food -= consumption_food
 		if randf() < 0.5:
 			amount = max(1, floor(0.1 * population))
-			population_idle += amount
+#			population_idle += amount
 			population += amount
 			for i in range(amount):
 				POPULATION_by_age[0] += 1
 		else:
 			amount = max(1, floor(0.15 * population))
-			population_idle += amount
+#			population_idle += amount
 			population += amount
 			for i in range(amount):
 				POPULATION_by_age[0] += 1
@@ -317,21 +317,22 @@ func consider_birth():
 	else: # mało jedzenia - rodzi się 0 v 2% pop
 		if randf() < 0.5:
 			amount = round(0.02 * population)
-			population_idle += amount
+#			population_idle += amount
 			population += amount
 			for i in range(amount):
 				POPULATION_by_age[0] += 1
 
 
-func consider_accidents(): # death should decrease workforce
-# but if we do not transprot or harvest later in this cycle we recalculate at the beginning anyway
+func consider_accidents(): 
+# death should decrease workforce, but if we do not transprot or harvest
+# later in this cycle, we can ignore it bec we recalculate at the beginning anyway
 	for i in range(100):
 		if POPULATION_by_age[i] > 0:
 			var number_of_possible_accidents = POPULATION_by_age[i]
 			for j in range(number_of_possible_accidents):
 				if randf() < POPULATION_death_rate[i]:
 					POPULATION_by_age[i] -= 1
-					####### every death/birth should actualize workforce and food req?
+					####### every death/birth should actualize workforce and food req? NOPE
 					# workforce -= POPULATION_work_eff[i]
 #					neighbour[0].workers_total -= 1 # czasami, ale to trzeba zerować co cykl i tak i nie trackujemy juz
 					#######
@@ -364,7 +365,16 @@ func consider_accidents2(): # death should decrease workforce
 					population -= 1
 
 
-func consider_aging(): #NOTE kiedy powinni się starzeć? przed/po rodzeniu/głodowaniu? Zakladam po głodowaniu
+"""If sb somehow reacheas age of 100 years - sb need to die. Every person ages."""
+func consider_aging(): # Zakladam starzenie po głodowaniu
+	population -= POPULATION_by_age[99]
+	for i in range (99, 0, -1): # i = 99; i > 0; i--
+		POPULATION_by_age[i] = POPULATION_by_age[i-1]
+	POPULATION_by_age[0] = 0
+	update()
+
+
+func consider_aging2(): #kiedy powinni się starzeć? przed/po rodzeniu/głodowaniu? Zakladam po głodowaniu
 	#HACK Zakładam, że ludzie giną w kolejności idle -> transporter -> harvester
 	# pop = harvest + transport + truly idle
 	# w tym momencie idle zawiera w sobie harvesterów
