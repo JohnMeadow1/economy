@@ -19,6 +19,7 @@ var CYCLE_DURATION: float = -1.0
 var RAD_SQ: int = -1
 var neighbours: Array = []
 var tot_pop_trans_this_cyc_before_death: int = 0
+var calculated_workforce: float = 0.0
 
 
 func _ready():
@@ -81,7 +82,6 @@ func update_village():
 	consider_accidents()#
 	consider_aging()#
 	consider_birth()#
-#	consumption_food = max (1, ceil(population/5)) # umarłe osady nie odżywają -> obecnie max 1, foodreq ??
 	update_display()
 	pass
 
@@ -90,12 +90,14 @@ func calculate_workforce():
 	workforce = 0
 	for i in range(100):
 		workforce += POPULATION_by_age[i] * POPULATION_work_eff[i]
+	calculated_workforce = workforce
 
 
 func calculate_foodreq():
 	foodreq = 0
 	for i in range(100):
 		foodreq += POPULATION_by_age[i] * POPULATION_food_req[i]
+	consumption_food = max (1, foodreq) # umarłe osady nie odżywają
 
 
 """Transport food, then transport remaining res, then harvest food, then harvest remaining res."""
@@ -635,12 +637,10 @@ func draw_population_chart(zoom: int = 1):
 
 """Actualize settlement info displayed on scene; called by update_village"""
 func update_display():
-	# ile truly_idle przeżyło ten rok 
-	$InfoTable/values.text = "Population_" + str(population) +"\n"
-	# ile col/trans przeżyło ten rok, tot_pop_trans_this_cyc_before_death mowi ile transportowalo przed smiercia
-	$InfoTable/values.text += "_non_"+"\n"
-	$InfoTable/values.text += "Stockpile food_"+str(floor(stockpile_food))+"\n"
-	$InfoTable/values.text +=  "_non_"+"/s\n"
+	$InfoTable/values.text = str(population) + "/" + str(stepify(calculated_workforce, 0.1))+"\n"
+	$InfoTable/values.text += str(stepify(calculated_workforce - workforce, 0.1))+"\n"
+	$InfoTable/values.text += str(stepify(stockpile_food, 0.1))+"\n"
+	$InfoTable/values.text += str(stepify(consumption_food, 0.1))+"/s\n"
 	update_cost_labels("CostLabels")
 	_set_settlement_type(clamp(population/50, 0, 3)) # population/50 to dzielenie intów, więc powinno obciąć: 0-49 to 0
 	# 50-99 to 1, 100-149 to 2 i 150+ to 3

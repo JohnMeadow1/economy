@@ -40,7 +40,7 @@ margin_bottom = -56.0
 grow_horizontal = 2
 grow_vertical = 2
 custom_fonts/font = ExtResource( 4 )
-text = "SETTLEMENT"
+text = "SETTLEMENT_0"
 align = 1
 
 [node name="InfoTable" type="Node2D" parent="."]
@@ -48,7 +48,7 @@ align = 1
 [node name="Background" type="NinePatchRect" parent="InfoTable"]
 margin_left = 40.0
 margin_top = -50.0
-margin_right = 80.0
+margin_right = 81.0
 margin_bottom = -10.0
 rect_scale = Vector2( 5.13624, 2.31057 )
 texture = SubResource( 3 )
@@ -59,10 +59,10 @@ margin_top = -40.0
 margin_right = 178.0
 margin_bottom = 33.0
 custom_fonts/font = ExtResource( 4 )
-text = "Idle population:
-Coll/trans pop:
-Food:
-Consumption:"
+text = "Pop/workforce:
+Workforce used:
+Food stockpile:
+Food consumption:"
 
 [node name="values" type="Label" parent="InfoTable"]
 margin_left = 189.0
@@ -70,8 +70,8 @@ margin_top = -40.0
 margin_right = 229.0
 margin_bottom = 52.0
 custom_fonts/font = ExtResource( 5 )
-text = "80/80
-0/0
-0
-0/s
+text = "Population_80
+_non_
+needed/stockpile -1/0
+_non_/s
 "
