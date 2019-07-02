@@ -100,6 +100,7 @@ func calculate_foodreq():
 
 """Transport food, then transport remaining res, then harvest food, then harvest remaining res."""
 func collect_resources():
+	total_workforce_transporting_this_cycle = 0
 	for neighbour in neighbours:
 		if neighbour[0].resource_name == "Food":
 			try_transport(neighbour[0])
@@ -138,8 +139,8 @@ func try_harvest(location: ResourceLocation):
 				var max_workforce_allocation = location.workforce_capacity - location.workforce_total
 				var workforce_allocation = min(workforce, max_workforce_allocation)
 				workforce -= workforce_allocation
-				location.workforce_total += workforce_allocation #NOTE do zerowania co update
-				neighbours[find_neighbour_idx(location)][2] += workforce_allocation #do poprawy
+				location.workforce_total += workforce_allocation #NOTE Zerowane co update wszystkim wioskom
+				neighbours[find_neighbour_idx(location)][2] += workforce_allocation #NOTE Do poprawy ten 3 el tablicy
 				workforce_collecting += workforce_allocation#@
 
 
@@ -625,10 +626,10 @@ func draw_population_chart(zoom: int = 1):
 """Actualize settlement info displayed on scene; called by update_village"""
 func update_display():
 	# ile truly_idle przeżyło ten rok 
-	$InfoTable/values.text = "_pop_" + str(population) +"\n"
+	$InfoTable/values.text = "Population_" + str(population) +"\n"
 	# ile col/trans przeżyło ten rok, tot_pop_trans_this_cyc_before_death mowi ile transportowalo przed smiercia
 	$InfoTable/values.text += "_non_"+"\n"
-	$InfoTable/values.text += "_sf_"+str(floor(stockpile_food))+"\n"
+	$InfoTable/values.text += "Stockpile food_"+str(floor(stockpile_food))+"\n"
 	$InfoTable/values.text +=  "_non_"+"/s\n"
 	update_cost_labels("CostLabels")
 	_set_settlement_type(clamp(population/50, 0, 3)) # population/50 to dzielenie intów, więc powinno obciąć: 0-49 to 0

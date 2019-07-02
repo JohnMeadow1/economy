@@ -60,6 +60,7 @@ func _physics_process(delta):
 			cycle -= CYCLE_DURATION
 			harvest()
 			update_display()
+			workforce_total = 0
 
 
 func harvest():
