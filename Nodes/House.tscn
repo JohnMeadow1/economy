@@ -6,7 +6,7 @@
 [ext_resource path="res://Fonts/Jamma_13.tres" type="DynamicFont" id=4]
 [ext_resource path="res://Fonts/Bandwidth_13.tres" type="DynamicFont" id=5]
 
-[sub_resource type="ShaderMaterial" id=1]
+[sub_resource type="ShaderMaterial" id=4]
 shader = ExtResource( 2 )
 shader_param/width = null
 shader_param/outline_color = Color( 0, 1, 0, 1 )
@@ -28,7 +28,7 @@ population_idle = 80
 _settlement_type = 1
 
 [node name="Sprite" type="Sprite" parent="."]
-material = SubResource( 1 )
+material = SubResource( 4 )
 scale = Vector2( 2, 2 )
 texture = ExtResource( 3 )
 
@@ -70,8 +70,8 @@ margin_top = -40.0
 margin_right = 229.0
 margin_bottom = 52.0
 custom_fonts/font = ExtResource( 5 )
-text = "Population_80
-_non_
-needed/stockpile -1/0
-_non_/s
+text = "80/40
+1.23%
+7
+2.3/s
 "

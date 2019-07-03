@@ -638,7 +638,11 @@ func draw_population_chart(zoom: int = 1):
 """Actualize settlement info displayed on scene; called by update_village"""
 func update_display():
 	$InfoTable/values.text = str(population) + "/" + str(stepify(calculated_workforce, 0.1))+"\n"
-	$InfoTable/values.text += str(stepify(calculated_workforce - workforce, 0.1))+"\n"
+#	$InfoTable/values.text += str(stepify(calculated_workforce - workforce, 0.1))+"\n"
+	if calculated_workforce != 0:
+		$InfoTable/values.text += str(stepify(100*((calculated_workforce - workforce)/calculated_workforce), 0.1))+"%\n"
+	else:
+		$InfoTable/values.text += "ALL DEAD\n"
 	$InfoTable/values.text += str(stepify(stockpile_food, 0.1))+"\n"
 	$InfoTable/values.text += str(stepify(consumption_food, 0.1))+"/s\n"
 	update_cost_labels("CostLabels")
