@@ -75,7 +75,6 @@ func update_village():
 	calculate_workforce()
 	calculate_foodreq()
 	collect_resources()
-#	collect_resources2()
 #	population_idle += total_population_transporting_this_cycle #return transporters to idle pool
 #	tot_pop_trans_this_cyc_before_death = total_population_transporting_this_cycle
 #	consider_starving()#?
@@ -144,64 +143,6 @@ func try_harvest(location: ResourceLocation):
 				location.workforce_total += workforce_allocation #NOTE Zerowane co update wszystkim wioskom
 				neighbours[find_neighbour_idx(location)][2] += workforce_allocation #NOTE Do poprawy ten 3 el tablicy
 				workforce_collecting += workforce_allocation#@
-
-
-func collect_resources2():
-	var index = 0
-	
-	total_population_transporting_this_cycle = 0
-	population_needed_for_transport_this_cycle = population_needed_for_transport_next_cycle
-	population_needed_for_transport_next_cycle = 0
-	while(population_idle > 0 and index < neighbours.size()):
-#		print("Starting ", index+1, " harvest of ", get_parent().age, " year.")
-		delegate_workers(get_cheapest_resource(index))
-		transport_resources(get_cheapest_resource(index))
-		index += 1
-	population_reserved_for_transport = 0 # rezerwowanie jest podczas delegate na potrzeby transport tego cyklu
-
-
-func delegate_workers(location: ResourceLocation):
-	convert_harvesters_to_transporters(location)
-	
-	if population_needed_for_transport_this_cycle == 0:
-		if location.available > 1:
-			if location.workers_total < location.worker_capacity:
-				var worker_allocation = location.worker_capacity - location.workers_total
-				#zarezerwowanych nie wysylam do pracy
-				worker_allocation = min(worker_allocation, population_idle - population_reserved_for_transport)
-				population_idle  -= worker_allocation
-				location.workers_total += worker_allocation
-				neighbours[find_neighbour_idx(location)][2] += worker_allocation##
-				population_collecting += worker_allocation
-		elif neighbours[find_neighbour_idx(location)][2] != 0:##
-			population_collecting -= neighbours[find_neighbour_idx(location)][2]##
-			population_idle += neighbours[find_neighbour_idx(location)][2]##
-			location.workers_total -= neighbours[find_neighbour_idx(location)][2]##
-			neighbours[find_neighbour_idx(location)][2] = 0##
-
-
-func convert_harvesters_to_transporters(location: ResourceLocation):
-	if population_needed_for_transport_this_cycle > 0:
-		var workers = neighbours[find_neighbour_idx(location)][2] # var workers dla przejrzystości
-		#edycja: zastępuję location.workers_total przez workers
-		if workers > 0:##
-			if workers >= population_needed_for_transport_this_cycle:##
-				workers -= population_needed_for_transport_this_cycle##
-				neighbours[find_neighbour_idx(location)][2] -= population_needed_for_transport_this_cycle
-				location.workers_total -= population_needed_for_transport_this_cycle
-				population_collecting -= population_needed_for_transport_this_cycle
-				# wliczam needed do idle, ale zapamiętuje jako reserved
-				population_idle += population_needed_for_transport_this_cycle
-				population_reserved_for_transport += population_needed_for_transport_this_cycle
-				population_needed_for_transport_this_cycle = 0
-			else:
-				population_needed_for_transport_this_cycle -= workers##
-				population_collecting -= workers##
-				population_idle += workers##
-				population_reserved_for_transport += workers##
-				location.workers_total -= workers
-#				workers = 0##
-				neighbours[find_neighbour_idx(location)][2] = 0
 
 
 func transport_resources(location: ResourceLocation):
@@ -341,58 +282,8 @@ func consider_accidents():
 					population -= 1
 
 
-func consider_accidents2(): # death should decrease workforce
-# but if we do not transprot or harvest later in this cycle we recalculate at the beginning anyway
-	for i in range(100):
-		if POPULATION_by_age[i] > 0:
-			var number_of_possible_accidents = POPULATION_by_age[i]
-			for j in range(number_of_possible_accidents):
-				if randf() < POPULATION_death_rate[i]:
-					POPULATION_by_age[i] -= 1
-					####### every death/birth should actualize workforce and food req
-					# workforce -= POPULATION_work_eff[i]
-					if population_idle >= 1:
-						if (population_idle == total_population_transporting_this_cycle): #brak truly idle
-							total_population_transporting_this_cycle -= 1
-						population_idle -= 1
-					else:
-						var not_killed_yet = true
-						for neighbour in neighbours:
-							if neighbour[2] > 0 and not_killed_yet:
-								neighbour[2] -= 1
-								neighbour[0].workers_total -= 1
-								population_collecting -= 1 #chyba
-								not_killed_yet = false
-					#######
-					population -= 1
-
-
 """If sb somehow reacheas age of 100 years - sb need to die. Every person ages."""
 func consider_aging(): # Zakladam starzenie po głodowaniu
-	population -= POPULATION_by_age[99]
-	for i in range (99, 0, -1): # i = 99; i > 0; i--
-		POPULATION_by_age[i] = POPULATION_by_age[i-1]
-	POPULATION_by_age[0] = 0
-	update()
-
-
-func consider_aging2(): #kiedy powinni się starzeć? przed/po rodzeniu/głodowaniu? Zakladam po głodowaniu
-	#HACK Zakładam, że ludzie giną w kolejności idle -> transporter -> harvester
-	# pop = harvest + transport + truly idle
-	# w tym momencie idle zawiera w sobie harvesterów
-	
-	if POPULATION_by_age[99] <= population_idle: # idle + trans
-		var population_truly_idle = population_idle - total_population_transporting_this_cycle
-		# if zbędny, ale chyba dodaje przejrzystości
-		if POPULATION_by_age[99] <= population_truly_idle: # ginie część/wszyscy truly_idle
-			population_idle -= POPULATION_by_age[99]
-		else: # giną wszyscy truly_idle i wszyscy/część transporterów
-			population_idle -= POPULATION_by_age[99]
-			total_population_transporting_this_cycle -= (POPULATION_by_age[99] - population_truly_idle)
-	else: # giną wszyscy truly_idle, wszyscy transporterzy i wszyscy/część zbieraczy
-		aging_harvesters(POPULATION_by_age[99] - population_idle)
-		population_idle = 0
-	
 	population -= POPULATION_by_age[99]
 	for i in range (99, 0, -1): # i = 99; i > 0; i--
 		POPULATION_by_age[i] = POPULATION_by_age[i-1]
@@ -521,26 +412,6 @@ func detect_neighbours(): # array of triples (Reosurce Node, distance, amount of
 				neighbours.remove(resource_idx)
 
 
-func detect_neighbours2(): # array of triples (Reosurce Node, distance, amount of this settlement workers)
-#	neighbours.clear()
-	for resource in get_tree().get_nodes_in_group("resource"):
-		var resource_idx = find_neighbour_idx(resource)
-		if position.distance_squared_to(resource.position) < RAD_SQ:
-			if resource_idx == -1: # jest a zasięgu, nie ma w tablicy -> dodaj
-				#NOTE czym jest trzeci element tablicy ustawiony na 0 ?
-				#NOTE jest napisane 6 linijek wyżej: ilość pracowników tej wioski wydobywających w danym sąsiedzie
-				var triple = [resource, position.distance_to(resource.position), 0]
-				neighbours.append(triple)
-		else:
-			if resource_idx != -1: # jest w tablicy, nie ma w zasięgu -> usuń i zabij pracowników, którym uciekł dom
-				population_collecting -= neighbours[resource_idx][2]
-#				population_idle += neighbours[resource_idx][2] # umieraja, wiec zamiast ich zwracac obnizam pop
-				population -= neighbours[resource_idx][2]
-				resource.workers_total -= neighbours[resource_idx][2]
-#				neighbours[resource_idx][2] = 0 # niepotrzebne
-				neighbours.remove(resource_idx)
-
-
 func create_cost_labels():
 	var node = Node2D.new()
 	node.name = "CostLabels"
@@ -665,6 +536,41 @@ func update_display():
 	# 50-99 to 1, 100-149 to 2 i 150+ to 3
 
 
+
+
+func on_hover_info():
+	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
+	# remember starting_workforce?
+	globals.debug.text += "Population: " + str(population) + "\n"#\
+#	                  + " = " + str(workforce_collecting + total_workforce_transporting_this_cycle) + "\n"
+
+
+
+
+
+
+
+
+
+
+
+
+
+# OLD VERSIONS OF FUNCTIONS bec of worker -> workforce
+# OLD VERSIONS OF FUNCTIONS bec of worker -> workforce
+# OLD VERSIONS OF FUNCTIONS bec of worker -> workforce
+
+
+
+func on_hover_info2():
+	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
+	# remember total_population_transporting_this_cycle was returned  to idle pool before display
+	globals.debug.text += "Golden law: " + str(population - population_idle + total_population_transporting_this_cycle)\
+	                  + " = " + str(population_collecting + total_population_transporting_this_cycle) + "\n"
+	globals.debug.text += "Pop needed this cycle: " + str(population_needed_for_transport_this_cycle) + "\n"
+	globals.debug.text += "Pop needed next cycle: " + str(population_needed_for_transport_next_cycle) + "\n"
+
+
 """Actualize settlement info displayed on scene; called by update_village"""
 func update_display2():
 	# ile truly_idle przeżyło ten rok 
@@ -678,17 +584,129 @@ func update_display2():
 	# 50-99 to 1, 100-149 to 2 i 150+ to 3
 
 
-func on_hover_info():
-	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
-	# remember starting_workforce?
-	globals.debug.text += "Population: " + str(population) + "\n"#\
-#	                  + " = " + str(workforce_collecting + total_workforce_transporting_this_cycle) + "\n"
+func detect_neighbours2(): # array of triples (Reosurce Node, distance, amount of this settlement workers)
+#	neighbours.clear()
+	for resource in get_tree().get_nodes_in_group("resource"):
+		var resource_idx = find_neighbour_idx(resource)
+		if position.distance_squared_to(resource.position) < RAD_SQ:
+			if resource_idx == -1: # jest a zasięgu, nie ma w tablicy -> dodaj
+				#NOTE czym jest trzeci element tablicy ustawiony na 0 ?
+				#NOTE jest napisane 6 linijek wyżej: ilość pracowników tej wioski wydobywających w danym sąsiedzie
+				var triple = [resource, position.distance_to(resource.position), 0]
+				neighbours.append(triple)
+		else:
+			if resource_idx != -1: # jest w tablicy, nie ma w zasięgu -> usuń i zabij pracowników, którym uciekł dom
+				population_collecting -= neighbours[resource_idx][2]
+#				population_idle += neighbours[resource_idx][2] # umieraja, wiec zamiast ich zwracac obnizam pop
+				population -= neighbours[resource_idx][2]
+				resource.workers_total -= neighbours[resource_idx][2]
+#				neighbours[resource_idx][2] = 0 # niepotrzebne
+				neighbours.remove(resource_idx)
 
 
-func on_hover_info2():
-	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
-	# remember total_population_transporting_this_cycle was returned  to idle pool before display
-	globals.debug.text += "Golden law: " + str(population - population_idle + total_population_transporting_this_cycle)\
-	                  + " = " + str(population_collecting + total_population_transporting_this_cycle) + "\n"
-	globals.debug.text += "Pop needed this cycle: " + str(population_needed_for_transport_this_cycle) + "\n"
-	globals.debug.text += "Pop needed next cycle: " + str(population_needed_for_transport_next_cycle) + "\n"
+func consider_accidents2(): # death should decrease workforce
+# but if we do not transprot or harvest later in this cycle we recalculate at the beginning anyway
+	for i in range(100):
+		if POPULATION_by_age[i] > 0:
+			var number_of_possible_accidents = POPULATION_by_age[i]
+			for j in range(number_of_possible_accidents):
+				if randf() < POPULATION_death_rate[i]:
+					POPULATION_by_age[i] -= 1
+					####### every death/birth should actualize workforce and food req
+					# workforce -= POPULATION_work_eff[i]
+					if population_idle >= 1:
+						if (population_idle == total_population_transporting_this_cycle): #brak truly idle
+							total_population_transporting_this_cycle -= 1
+						population_idle -= 1
+					else:
+						var not_killed_yet = true
+						for neighbour in neighbours:
+							if neighbour[2] > 0 and not_killed_yet:
+								neighbour[2] -= 1
+								neighbour[0].workers_total -= 1
+								population_collecting -= 1 #chyba
+								not_killed_yet = false
+					#######
+					population -= 1
+
+
+func collect_resources2():
+	var index = 0
+	
+	total_population_transporting_this_cycle = 0
+	population_needed_for_transport_this_cycle = population_needed_for_transport_next_cycle
+	population_needed_for_transport_next_cycle = 0
+	while(population_idle > 0 and index < neighbours.size()):
+#		print("Starting ", index+1, " harvest of ", get_parent().age, " year.")
+		delegate_workers(get_cheapest_resource(index))
+		transport_resources(get_cheapest_resource(index))
+		index += 1
+	population_reserved_for_transport = 0 # rezerwowanie jest podczas delegate na potrzeby transport tego cyklu
+
+
+func consider_aging2(): #kiedy powinni się starzeć? przed/po rodzeniu/głodowaniu? Zakladam po głodowaniu
+	#HACK Zakładam, że ludzie giną w kolejności idle -> transporter -> harvester
+	# pop = harvest + transport + truly idle
+	# w tym momencie idle zawiera w sobie harvesterów
+	
+	if POPULATION_by_age[99] <= population_idle: # idle + trans
+		var population_truly_idle = population_idle - total_population_transporting_this_cycle
+		# if zbędny, ale chyba dodaje przejrzystości
+		if POPULATION_by_age[99] <= population_truly_idle: # ginie część/wszyscy truly_idle
+			population_idle -= POPULATION_by_age[99]
+		else: # giną wszyscy truly_idle i wszyscy/część transporterów
+			population_idle -= POPULATION_by_age[99]
+			total_population_transporting_this_cycle -= (POPULATION_by_age[99] - population_truly_idle)
+	else: # giną wszyscy truly_idle, wszyscy transporterzy i wszyscy/część zbieraczy
+		aging_harvesters(POPULATION_by_age[99] - population_idle)
+		population_idle = 0
+	
+	population -= POPULATION_by_age[99]
+	for i in range (99, 0, -1): # i = 99; i > 0; i--
+		POPULATION_by_age[i] = POPULATION_by_age[i-1]
+	POPULATION_by_age[0] = 0
+	update()
+
+
+func delegate_workers(location: ResourceLocation):
+	convert_harvesters_to_transporters(location)
+	
+	if population_needed_for_transport_this_cycle == 0:
+		if location.available > 1:
+			if location.workers_total < location.worker_capacity:
+				var worker_allocation = location.worker_capacity - location.workers_total
+				#zarezerwowanych nie wysylam do pracy
+				worker_allocation = min(worker_allocation, population_idle - population_reserved_for_transport)
+				population_idle  -= worker_allocation
+				location.workers_total += worker_allocation
+				neighbours[find_neighbour_idx(location)][2] += worker_allocation##
+				population_collecting += worker_allocation
+		elif neighbours[find_neighbour_idx(location)][2] != 0:##
+			population_collecting -= neighbours[find_neighbour_idx(location)][2]##
+			population_idle += neighbours[find_neighbour_idx(location)][2]##
+			location.workers_total -= neighbours[find_neighbour_idx(location)][2]##
+			neighbours[find_neighbour_idx(location)][2] = 0##
+
+
+func convert_harvesters_to_transporters(location: ResourceLocation):
+	if population_needed_for_transport_this_cycle > 0:
+		var workers = neighbours[find_neighbour_idx(location)][2] # var workers dla przejrzystości
+		#edycja: zastępuję location.workers_total przez workers
+		if workers > 0:##
+			if workers >= population_needed_for_transport_this_cycle:##
+				workers -= population_needed_for_transport_this_cycle##
+				neighbours[find_neighbour_idx(location)][2] -= population_needed_for_transport_this_cycle
+				location.workers_total -= population_needed_for_transport_this_cycle
+				population_collecting -= population_needed_for_transport_this_cycle
+				# wliczam needed do idle, ale zapamiętuje jako reserved
+				population_idle += population_needed_for_transport_this_cycle
+				population_reserved_for_transport += population_needed_for_transport_this_cycle
+				population_needed_for_transport_this_cycle = 0
+			else:
+				population_needed_for_transport_this_cycle -= workers##
+				population_collecting -= workers##
+				population_idle += workers##
+				population_reserved_for_transport += workers##
+				location.workers_total -= workers
+#				workers = 0##
+				neighbours[find_neighbour_idx(location)][2] = 0
