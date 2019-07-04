@@ -506,7 +506,22 @@ func prepare_array(array, v1_10, v11_20, v21_30, v31_40, v41_50, v51_60, v61_70,
 		array.push_back(v91_100)
 
 
-func detect_neighbours(): # array of triples (Reosurce Node, distance, amount of this settlement workers)
+func detect_neighbours(): # array of triples (Reosurce Node, distance, amount of this settlement workforce)
+#	neighbours.clear()
+	for resource in get_tree().get_nodes_in_group("resource"):
+		var resource_idx = find_neighbour_idx(resource)
+		if position.distance_squared_to(resource.position) < RAD_SQ:
+			if resource_idx == -1: # jest a zasięgu, nie ma w tablicy -> dodaj
+				var triple = [resource, position.distance_to(resource.position), 0]
+				neighbours.append(triple)
+		else:
+			if resource_idx != -1: # jest w tablicy, nie ma w zasięgu -> usuń i wyzeruj workforce? tylko po co w sumie
+				resource.workforce_total -= neighbours[resource_idx][2]###
+#				neighbours[resource_idx][2] = 0 # niepotrzebne
+				neighbours.remove(resource_idx)
+
+
+func detect_neighbours2(): # array of triples (Reosurce Node, distance, amount of this settlement workers)
 #	neighbours.clear()
 	for resource in get_tree().get_nodes_in_group("resource"):
 		var resource_idx = find_neighbour_idx(resource)
