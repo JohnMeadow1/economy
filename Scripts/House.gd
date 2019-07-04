@@ -77,7 +77,7 @@ func update_village():
 	collect_resources()
 #	population_idle += total_population_transporting_this_cycle #return transporters to idle pool
 #	tot_pop_trans_this_cyc_before_death = total_population_transporting_this_cycle
-#	consider_starving()#?
+	consider_starving()#
 	consider_accidents()#
 	consider_aging()#
 	consider_birth()#
@@ -174,20 +174,6 @@ func generate():
 	stockpile_food = randi() % 150 + 251
 
 
-func starving_harvesters(amount: int):
-	# leć po wszystkich sąsiadach po kolei i zabijaj po 1 pracowniku
-	while(amount > 0):
-		for neighbour in neighbours:
-			if neighbour[2] > 0:
-				neighbour[2] -= 1
-				neighbour[0].workers_total -= 1
-				population_collecting -= 1 #chyba
-				kill_random_citizen()
-				amount -= 1
-				if amount == 0:
-					break
-
-
 func aging_harvesters(amount: int):
 	while(amount > 0):
 		for neighbour in neighbours:
@@ -201,46 +187,23 @@ func aging_harvesters(amount: int):
 
 
 func consider_starving():
-	# since I am returning transporters to idle pool I need to track that
-	var population_truly_idle = population_idle - total_population_transporting_this_cycle
-	# no need to track changes in population_truly_idle since it is used only once per call
-	var amount
-	if stockpile_food >= consumption_food: # dość jedzenia, umierają tylko idle
+	if stockpile_food >= consumption_food: # dość jedzenia, nie rób nic
 		stockpile_food -= consumption_food
-		if randf() < 0.5:
-			amount = round(0.15 * population_idle)
-			population_idle -= amount
-			for i in range(amount):
-				kill_random_citizen() # decreasing population counter inside
-			if amount > population_truly_idle: # if transporter is dying
-				total_population_transporting_this_cycle -= (amount - population_truly_idle)
-		else:
-			amount = round(0.1 * population_idle)
-			population_idle -= amount
-			for i in range(amount):
-				kill_random_citizen()
-			if amount > population_truly_idle:
-				total_population_transporting_this_cycle -= (amount - population_truly_idle)
-	else: # za mało jedzenia, nic nie zjadają, umierają idle i harvesters
-		if randf() < 0.5:
-			amount = min(population_idle, max(1, floor(0.7 * population_idle)))
-			population_idle -= amount
-			for i in range(amount):
-				kill_random_citizen()
-			if amount > population_truly_idle:
-				total_population_transporting_this_cycle -= (amount - population_truly_idle)
-		else:
-			amount = min(population_idle, max(1, floor(0.4 * population_idle)))
-			population_idle -= amount
-			for i in range(amount):
-				kill_random_citizen()
-			if amount > population_truly_idle:
-				total_population_transporting_this_cycle -= (amount - population_truly_idle)
-		amount = floor(0.4 * (population - population_idle))
-		starving_harvesters(amount)
+	elif population > 0: # za mało jedzenia, zjadają co jest i umierają proporcjonalnie do brakującej żywności
+		var food_missing = consumption_food - stockpile_food
+		var consumption_food_missing_percentage = food_missing / consumption_food # need 100, got 70 so missing 30%
+		stockpile_food = 0
+		
+		# brakuje 30%, więc umiera 30%, mniejalbo więcej niż wynika z foodreq więc jakaś losowość
+		
+		var amount = max(1, floor(consumption_food_missing_percentage * population))
+		for i in range(amount):
+			kill_random_citizen() # do not decrease workforce and foodreq -> no need
+		
 
 
 func consider_birth(): #NOTE w/o birthrate for now, TODO
+# how birthrate should work? pairs, age difference, or ignore
 	var amount
 	if stockpile_food >= consumption_food: # dość jedzenia - rodzi się 10 v 15% pop
 		stockpile_food -= consumption_food
@@ -293,7 +256,7 @@ func consider_aging(): # Zakladam starzenie po głodowaniu
 
 """Decrement random cell in POPULATION_by_age by one, besides that affect population counter only.
 The idea is to call this function in proper context, alongside with decreasement 
-of corresponding counter (idle/harvester)."""
+of corresponding variabiles."""
 func kill_random_citizen():
 	if population > 0:
 		for i in range(10):
@@ -668,6 +631,46 @@ func consider_aging2(): #kiedy powinni się starzeć? przed/po rodzeniu/głodowa
 	update()
 
 
+func consider_starving2():
+	# since I am returning transporters to idle pool I need to track that
+	var population_truly_idle = population_idle - total_population_transporting_this_cycle
+	# no need to track changes in population_truly_idle since it is used only once per call
+	var amount
+	if stockpile_food >= consumption_food: # dość jedzenia, umierają tylko idle
+		stockpile_food -= consumption_food
+		if randf() < 0.5:
+			amount = round(0.15 * population_idle)
+			population_idle -= amount
+			for i in range(amount):
+				kill_random_citizen() # decreasing population counter inside
+			if amount > population_truly_idle: # if transporter is dying
+				total_population_transporting_this_cycle -= (amount - population_truly_idle)
+		else:
+			amount = round(0.1 * population_idle)
+			population_idle -= amount
+			for i in range(amount):
+				kill_random_citizen()
+			if amount > population_truly_idle:
+				total_population_transporting_this_cycle -= (amount - population_truly_idle)
+	else: # za mało jedzenia, nic nie zjadają, umierają idle i harvesters
+		if randf() < 0.5:
+			amount = min(population_idle, max(1, floor(0.7 * population_idle)))
+			population_idle -= amount
+			for i in range(amount):
+				kill_random_citizen()
+			if amount > population_truly_idle:
+				total_population_transporting_this_cycle -= (amount - population_truly_idle)
+		else:
+			amount = min(population_idle, max(1, floor(0.4 * population_idle)))
+			population_idle -= amount
+			for i in range(amount):
+				kill_random_citizen()
+			if amount > population_truly_idle:
+				total_population_transporting_this_cycle -= (amount - population_truly_idle)
+		amount = floor(0.4 * (population - population_idle))
+		starving_harvesters(amount)
+
+
 func delegate_workers(location: ResourceLocation):
 	convert_harvesters_to_transporters(location)
 	
@@ -710,3 +713,17 @@ func convert_harvesters_to_transporters(location: ResourceLocation):
 				location.workers_total -= workers
 #				workers = 0##
 				neighbours[find_neighbour_idx(location)][2] = 0
+
+
+func starving_harvesters(amount: int):
+	# leć po wszystkich sąsiadach po kolei i zabijaj po 1 pracowniku
+	while(amount > 0):
+		for neighbour in neighbours:
+			if neighbour[2] > 0:
+				neighbour[2] -= 1
+				neighbour[0].workers_total -= 1
+				population_collecting -= 1 #chyba
+				kill_random_citizen()
+				amount -= 1
+				if amount == 0:
+					break
