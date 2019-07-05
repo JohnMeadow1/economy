@@ -19,11 +19,11 @@ export(float) var stockpile_food: float = 0.0
 
 #var population_transporting: int = 0 # local for transport_resources func
 
-var population_collecting: int                       = 0
-var population_needed_for_transport_this_cycle: int  = 0
-var population_needed_for_transport_next_cycle: int  = 0
-var population_reserved_for_transport: int           = 0
-var total_population_transporting_this_cycle: int    = 0
+var population_collecting: int                       = 0#out
+var population_needed_for_transport_this_cycle: int  = 0#out
+var population_needed_for_transport_next_cycle: int  = 0#out
+var population_reserved_for_transport: int           = 0#out
+var total_population_transporting_this_cycle: int    = 0#out
 var workforce_collecting: float                      = 0.0
 var workforce_needed_for_transport_this_cycle: float = 0.0
 var workforce_needed_for_transport_next_cycle: float = 0.0
