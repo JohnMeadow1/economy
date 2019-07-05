@@ -25,22 +25,6 @@ func _process(_delta):
 		update_main()
 
 
-#func _on_Timer_timeout():
-#	update_main()
-#	update_villages()
-#	update_resources()
-
-
 func update_main():
 	age += 1
 	gameAge.text = "Game Age: " + str(age)
-
-
-#func update_villages():
-#	for village in get_tree().get_nodes_in_group("villages"):
-#		village.update_village()
-#
-#
-#func update_resources():
-#	for resource in get_tree().get_nodes_in_group("resources"):
-#		resource.update_resource()

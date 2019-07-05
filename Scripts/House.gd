@@ -151,18 +151,6 @@ func generate():
 	stockpile_food = randi() % 150 + 251
 
 
-func aging_harvesters(amount: int):
-	while(amount > 0):
-		for neighbour in neighbours:
-			if neighbour[2] > 0:
-				neighbour[2] -= 1
-				neighbour[0].workers_total -= 1
-				population_collecting -= 1 #chyba
-				amount -= 1
-				if amount == 0:
-					break
-
-
 func consider_starving():
 	if stockpile_food >= consumption_food: # dość jedzenia, nie rób nic
 		stockpile_food -= consumption_food
