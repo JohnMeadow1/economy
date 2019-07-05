@@ -14,11 +14,11 @@ export(SettlementType) var _settlement_type:int = 0 setget _set_settlement_type
 
 const SPAWN_DELAY: float = 0.035
 
-
 var CYCLE_DURATION: float = -1.0
 var RAD_SQ: int = -1
 var neighbours: Array = []
 var calculated_workforce: float = 0.0
+var starving_factor: float = 0.5
 
 
 func _ready():
@@ -113,7 +113,7 @@ func collect_resources():
 
 func try_transport(location: ResourceLocation):
 	if workforce > 0 and location.stockpile > 0:
-		var transport_cost: float = (position.distance_to(location.position) * 0.01)
+		var transport_cost: float = (position.distance_to(location.position) * 0.002)
 		var workforce_needed_for_max_transport: float = location.stockpile * transport_cost
 		var workforce_transporting: float = min(workforce_needed_for_max_transport, workforce)
 		
@@ -171,9 +171,9 @@ func consider_starving():
 		var consumption_food_missing_percentage = food_missing / consumption_food # need 100, got 70 so missing 30%
 		stockpile_food = 0
 		
-		# brakuje 30%, więc umiera 30%, mniejalbo więcej niż wynika z foodreq więc jakaś losowość
+		# brakuje 30%, więc umiera 30% * starvFactor POPULACJI a nie FOODREQ więc czasem więcej a czasem mniej
 		
-		var amount = max(1, floor(consumption_food_missing_percentage * population))
+		var amount = max(1, floor(consumption_food_missing_percentage * starving_factor * population))
 		for i in range(amount):
 			kill_random_citizen() # do not decrease workforce and foodreq -> no need
 		
