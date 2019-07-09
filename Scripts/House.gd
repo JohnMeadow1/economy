@@ -208,7 +208,7 @@ func consider_accidents():
 
 
 """If sb somehow reacheas age of 100 years - sb need to die. Every person ages."""
-func consider_aging(): # Zakladam starzenie po głodowaniu
+func consider_aging(): # Assumption: aging after starving
 	population -= POPULATION_by_age[99]
 	for i in range (99, 0, -1): # i = 99; i > 0; i--
 		POPULATION_by_age[i] = POPULATION_by_age[i-1]
@@ -373,8 +373,8 @@ func neighbours_info():
 		index += 1
 		temp += str(index) + ". " + str(neighbour[0].resource_name) + "\n"
 		temp += "Tansport cost = " + str(neighbour[1] * 0.01) + "\n"
-		temp += "Occupying " + str(neighbour[2]) + " out of " + str(neighbour[0].worker_capacity) + " worker slots.\n"
-		temp += "Our workers share = " + calculate_workers_share(neighbour[2], neighbour[0].workers_total) + "\n"
+		temp += "Occupying " + str(neighbour[2]) + " out of " + str(neighbour[0].workforce_capacity) + " workforce space.\n"
+		temp += "Our workforce share = " + calculate_workers_share(neighbour[2], neighbour[0].workforce_total) + "\n"
 	return temp
 
 
