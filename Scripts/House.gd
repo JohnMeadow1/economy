@@ -28,7 +28,7 @@ func _ready():
 	RAD_SQ = pow(radius, 2)
 	prepare_population_arrays()
 #	woip population_birth_multiplier = clamp(FOOD/FOOD_REQ, 0.5, 0.15) + clamp(HOUSING - HOUSING_REQ, 0, 1)
-	fill_POPULATION_by_age(population)
+	fill_POPULATION_by_age(population_total)
 	detect_neighbours()
 	sort_neighbours()
 	create_cost_labels()
@@ -66,7 +66,7 @@ func _process(delta):
 			update_village()
 
 """Calculate wf & fr, then collect. After that starving, accidents, aging birth. wf and fr updated (recalculated)
-only at the beginning, population updated when changed."""
+only at the beginning, population_total updated when changed."""
 func update_village():
 	calculate_workforce()
 	calculate_foodreq()
@@ -147,21 +147,21 @@ func find_neighbour_idx(location: ResourceLocation) -> int:
 
 
 func generate():
-	population = randi() % 100 + 1 # randi between 1 and 100
+	population_total = randi() % 100 + 1 # randi between 1 and 100
 	stockpile_food = randi() % 150 + 251
 
 
 func consider_starving():
 	if stockpile_food >= consumption_food: # dość jedzenia, nie rób nic
 		stockpile_food -= consumption_food
-	elif population > 0: # za mało jedzenia, zjadają co jest i umierają proporcjonalnie do brakującej żywności
+	elif population_total > 0: # za mało jedzenia, zjadają co jest i umierają proporcjonalnie do brakującej żywności
 		var food_missing = consumption_food - stockpile_food
 		var consumption_food_missing_percentage = food_missing / consumption_food # need 100, got 70 so missing 30%
 		stockpile_food = 0
 		
 		# brakuje 30%, więc umiera 30% * starvFactor POPULACJI a nie FOODREQ więc czasem więcej a czasem mniej
 		
-		var amount = max(1, floor(consumption_food_missing_percentage * starving_factor * population))
+		var amount = max(1, floor(consumption_food_missing_percentage * starving_factor * population_total))
 		for i in range(amount):
 			kill_random_citizen() # do not decrease workforce and foodreq -> no need
 		
@@ -173,20 +173,20 @@ func consider_birth(): #NOTE w/o birthrate for now, TODO
 	if stockpile_food >= consumption_food: # dość jedzenia - rodzi się 10 v 15% pop
 		stockpile_food -= consumption_food
 		if randf() < 0.5:
-			amount = max(1, floor(0.1 * population))
-			population += amount
+			amount = max(1, floor(0.1 * population_total))
+			population_total += amount
 			for i in range(amount):
 				POPULATION_by_age[0] += 1
 		else:
-			amount = max(1, floor(0.15 * population))
-			population += amount
+			amount = max(1, floor(0.15 * population_total))
+			population_total += amount
 			for i in range(amount):
 				POPULATION_by_age[0] += 1
 			
 	else: # mało jedzenia - rodzi się 0 v 2% pop
 		if randf() < 0.5:
-			amount = round(0.02 * population)
-			population += amount
+			amount = round(0.02 * population_total)
+			population_total += amount
 			for i in range(amount):
 				POPULATION_by_age[0] += 1
 
@@ -204,39 +204,39 @@ func consider_accidents():
 					# workforce -= POPULATION_work_eff[i]
 #					neighbour[0].workers_total -= 1 # czasami, ale to trzeba zerować co cykl i tak i nie trackujemy juz
 					#######
-					population -= 1
+					population_total -= 1
 
 
 """If sb somehow reacheas age of 100 years - sb need to die. Every person ages."""
 func consider_aging(): # Assumption: aging after starving
-	population -= POPULATION_by_age[99]
+	population_total -= POPULATION_by_age[99]
 	for i in range (99, 0, -1): # i = 99; i > 0; i--
 		POPULATION_by_age[i] = POPULATION_by_age[i-1]
 	POPULATION_by_age[0] = 0
 	update()
 
 
-"""Decrement random cell in POPULATION_by_age by one, besides that affect population counter only.
+"""Decrement random cell in POPULATION_by_age by one, besides that affect population_total counter only.
 The idea is to call this function in proper context, alongside with decreasement 
 of corresponding variabiles."""
 func kill_random_citizen():
-	if population > 0:
+	if population_total > 0:
 		for i in range(10):
 			var temp = randi() % 100
 			if POPULATION_by_age[temp] > 0:
 				POPULATION_by_age[temp] -= 1
-				population -= 1
+				population_total -= 1
 				return
 		var a = 0
 		var b = 99
 		while(true): # if cannot find random age citizen in 10 attempts, kill youngest/oldest citizen
 			if POPULATION_by_age[a] > 0:
 				POPULATION_by_age[a] -= 1
-				population -= 1
+				population_total -= 1
 				return
 			if POPULATION_by_age[b] > 0:
 				POPULATION_by_age[b] -= 1
-				population -= 1
+				population_total -= 1
 				return
 			a += 1
 			b -= 1
@@ -448,7 +448,7 @@ func draw_population_chart(zoom: int = 1):
 
 """Actualize settlement info displayed on scene; called by update_village"""
 func update_display():
-	$InfoTable/values.text = str(population) + "/" + str(stepify(calculated_workforce, 0.1))+"\n"
+	$InfoTable/values.text = str(population_total) + "/" + str(stepify(calculated_workforce, 0.1))+"\n"
 #	$InfoTable/values.text += str(stepify(calculated_workforce - workforce, 0.1))+"\n"
 	if calculated_workforce != 0:
 		$InfoTable/values.text += str(stepify(100*((calculated_workforce - workforce)/calculated_workforce), 0.1))+"%\n"
@@ -457,7 +457,7 @@ func update_display():
 	$InfoTable/values.text += str(stepify(stockpile_food, 0.1))+"\n"
 	$InfoTable/values.text += str(stepify(consumption_food, 0.1))+"/s\n"
 	update_cost_labels("CostLabels")
-	_set_settlement_type(clamp(population/50, 0, 3)) # population/50 to dzielenie intów, więc powinno obciąć: 0-49 to 0
+	_set_settlement_type(clamp(population_total/50, 0, 3)) # population_total/50 to dzielenie intów, więc powinno obciąć: 0-49 to 0
 	# 50-99 to 1, 100-149 to 2 i 150+ to 3
 
 
@@ -466,5 +466,5 @@ func update_display():
 func on_hover_info():
 	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
 	# remember starting_workforce?
-	globals.debug.text += "Population: " + str(population) + "\n"#\
+	globals.debug.text += "population_total: " + str(population_total) + "\n"#\
 #	                  + " = " + str(workforce_collecting + total_workforce_transporting_this_cycle) + "\n"

@@ -10,8 +10,7 @@ var SettlementSprites = ["res://Sprites/Town/Church_5_2.png",
                        "res://Sprites/Town/Church_5_1.png",
                        "res://Sprites/Town/Church_1.png"]
 
-#NOTE population should be changed to secondary variable (population_total) for suming POPULATION_by_age array
-export(int) var population: int         = 2
+export(int) var population_total: int   = 20
 
 export(int) var radius: int             = 300
 export(int) var population_idle: int    = 0
@@ -34,7 +33,7 @@ var cycle: float                                     = 0.0
 var foodreq: float                                   = 0.0
 var workforce: float                                 = 0.0
 
-#NOTE each array holds specific data per age range (from 1 to 100 years old)
+# Each array holds specific data per age range (from 1 to 100 years old)
 var POPULATION_by_age: Array           = []
 var POPULATION_food_req: Array         = []
 var POPULATION_work_eff: Array         = []
