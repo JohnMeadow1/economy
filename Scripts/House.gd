@@ -68,6 +68,7 @@ func _process(delta):
 """Calculate wf & fr, then collect. After that starving, accidents, aging birth. wf and fr updated (recalculated)
 only at the beginning, population_total updated when changed."""
 func update_village():
+	clear_harvesting_workforce()
 	calculate_workforce()
 	calculate_foodreq()
 	collect_resources()
@@ -137,6 +138,11 @@ func try_harvest(location: ResourceLocation):
 				location.workforce_total += workforce_allocation #NOTE Zerowane co update wszystkim wioskom
 				neighbours[find_neighbour_idx(location)][2] += workforce_allocation #NOTE Do poprawy ten 3 el tablicy
 				workforce_collecting += workforce_allocation#@
+
+
+func clear_harvesting_workforce():
+	for neighbour in neighbours:
+		neighbour[2] = 0
 
 
 func find_neighbour_idx(location: ResourceLocation) -> int:
