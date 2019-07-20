@@ -65,6 +65,7 @@ func _process(delta):
 			cycle -= CYCLE_DURATION
 			update_village()
 
+
 """Calculate wf & fr, then collect. After that starving, accidents, aging birth. wf and fr updated (recalculated)
 only at the beginning, population_total updated when changed."""
 func update_village():
@@ -94,24 +95,19 @@ func calculate_foodreq():
 	consumption_food = max (1, foodreq) # umarłe osady nie odżywają
 
 
-"""Transport food, then transport remaining res, then harvest food, then harvest remaining res."""
+"""Harvest food, then harvest remaining res."""
 func collect_resources():
 	total_workforce_transporting_this_cycle = 0
 	for neighbour in neighbours:
 		if neighbour[0].resource_name == "Food":
-			try_transport(neighbour[0])
-	for neighbour in neighbours:
-		if neighbour[0].resource_name != "Food":
-			try_transport(neighbour[0])
-	
-	for neighbour in neighbours:
-		if neighbour[0].resource_name == "Food":
 			try_harvest(neighbour[0])
 	for neighbour in neighbours:
 		if neighbour[0].resource_name != "Food":
 			try_harvest(neighbour[0])
 
 
+#NOTE transport = move resource from one village to another
+"""Need rework for village to village mode."""
 func try_transport(location: ResourceLocation):
 	if workforce > 0 and location.stockpile > 0:
 		var transport_cost: float = (position.distance_to(location.position) * 0.002)
@@ -129,6 +125,9 @@ func try_transport(location: ResourceLocation):
 #		workforce_needed_for_transport_next_cycle -= workforce_transporting
 
 
+#NOTE still nedd rework, changes in base classes (harvest+transport, still capacity)
+"""Take resource from the given location and transport it to the village. Transport cost is affected by distance
+and resource type (something like 'gathering cost')."""
 func try_harvest(location: ResourceLocation):
 	if workforce > 0 and location.available > 1:
 		if location.workforce_total < location.workforce_capacity:
