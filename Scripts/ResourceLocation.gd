@@ -58,11 +58,18 @@ func _physics_process(delta):
 		cycle += delta
 		if cycle > CYCLE_DURATION:
 			cycle -= CYCLE_DURATION
-			harvest()
+#			harvest()
+			regenerate()
 			update_display()
 			workforce_total = 0
 
 
+func regenerate():
+	available_fluctuations = available_fluctuations - available
+	available += regenerates_per_cycle
+	
+
+#NOTE handled by house.gd, now obsolete
 func harvest():
 	available_fluctuations = available
 #	stockpile_fluctuations = previous_stockpile - stockpile
