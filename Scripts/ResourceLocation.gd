@@ -65,15 +65,15 @@ func _physics_process(delta):
 
 func harvest():
 	available_fluctuations = available
-	stockpile_fluctuations = previous_stockpile - stockpile
-	previous_stockpile = stockpile
+#	stockpile_fluctuations = previous_stockpile - stockpile
+#	previous_stockpile = stockpile
 	available += regenerates_per_cycle
 #	var hervested = workers_total / harvest_cost + auto_harvest
 	var hervested = workforce_total / harvest_cost + auto_harvest
 	hervested = min(hervested, harvestable_per_cycle)   #limit by max harvestable
 	hervested = min(hervested, available)               #limit by max available
-	hervested = min(hervested, stockpile_max-stockpile) #limit by max storage
-	stockpile += hervested
+#	hervested = min(hervested, stockpile_max-stockpile) #limit by max storage
+#	stockpile += hervested
 	available -= hervested
 	available_fluctuations -= available
 	
@@ -95,9 +95,9 @@ func update_display():
 	$InfoTable/values.text += str(regenerates_per_cycle) + "\n"
 #	$InfoTable/values.text += str(workers_total) + "/" + str(worker_capacity) + "\n"
 	$InfoTable/values.text += str(workforce_total) + "/" + str(workforce_capacity) + "\n"
-	$InfoTable/values.text += str(round(stockpile)) + "/" + str(stockpile_max)
-	if stockpile_fluctuations <0: $InfoTable/values.text += " (+" + str(-round(stockpile_fluctuations*10)/10) + "/s)\n"
-	else: $InfoTable/values.text += " (" + str(-round(stockpile_fluctuations*10)/10) + "/s)\n"
+#	$InfoTable/values.text += str(round(stockpile)) + "/" + str(stockpile_max)
+#	if stockpile_fluctuations < 0: $InfoTable/values.text += " (+" + str(-round(stockpile_fluctuations*10)/10) + "/s)\n"
+#	else: $InfoTable/values.text += " (" + str(-round(stockpile_fluctuations*10)/10) + "/s)\n"
 
 func generate():
 	available = 50 * (randi() % 7 + 1)              # randi between 50 and 350 with 50 step

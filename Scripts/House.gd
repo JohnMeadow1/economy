@@ -109,20 +109,21 @@ func collect_resources():
 #NOTE transport = move resource from one village to another
 """Need rework for village to village mode."""
 func try_transport(location: ResourceLocation):
-	if workforce > 0 and location.stockpile > 0:
-		var transport_cost: float = (position.distance_to(location.position) * 0.002)
-		var workforce_needed_for_max_transport: float = location.stockpile * transport_cost
-		var workforce_transporting: float = min(workforce_needed_for_max_transport, workforce)
-		
-		total_workforce_transporting_this_cycle += workforce_transporting#@
-		send_peasants(location.position, workforce_transporting)
-		workforce -= workforce_transporting
-#		workforce_reserved_for_transport = max(0, workforce_reserved_for_transport - workforce_transporting)
-		stockpile_food += workforce_transporting/transport_cost
-		location.stockpile -= workforce_transporting/transport_cost
-		
-#		workforce_needed_for_transport_next_cycle += workforce_needed_for_max_transport
-#		workforce_needed_for_transport_next_cycle -= workforce_transporting
+	pass
+#	if workforce > 0 and location.stockpile > 0:
+#		var transport_cost: float = (position.distance_to(location.position) * 0.002)
+#		var workforce_needed_for_max_transport: float = location.stockpile * transport_cost
+#		var workforce_transporting: float = min(workforce_needed_for_max_transport, workforce)
+#
+#		total_workforce_transporting_this_cycle += workforce_transporting#@
+#		send_peasants(location.position, workforce_transporting)
+#		workforce -= workforce_transporting
+###		workforce_reserved_for_transport = max(0, workforce_reserved_for_transport - workforce_transporting)
+#		stockpile_food += workforce_transporting/transport_cost
+#		location.stockpile -= workforce_transporting/transport_cost
+#
+###		workforce_needed_for_transport_next_cycle += workforce_needed_for_max_transport
+###		workforce_needed_for_transport_next_cycle -= workforce_transporting
 
 
 #NOTE still nedd rework, changes in base classes (harvest+transport, still capacity)
@@ -131,12 +132,20 @@ and resource type (something like 'gathering cost')."""
 func try_harvest(location: ResourceLocation):
 	if workforce > 0 and location.available > 1:
 		if location.workforce_total < location.workforce_capacity:
+				
+				var harvest_cost: float = (position.distance_to(location.position) * 0.002) #* location.excav_cost #depends on res type
 				var max_workforce_allocation = location.workforce_capacity - location.workforce_total
-				var workforce_allocation = min(workforce, max_workforce_allocation)
+				var workforce_needed_for_max_harvest: float = location.available * harvest_cost
+				var workforce_allocation: float = min(workforce, workforce_needed_for_max_harvest)
+				workforce_allocation = min(max_workforce_allocation, workforce_allocation)
 				workforce -= workforce_allocation
 				location.workforce_total += workforce_allocation #NOTE Zerowane co update wszystkim wioskom
 				neighbours[find_neighbour_idx(location)][2] += workforce_allocation #NOTE Do poprawy ten 3 el tablicy
-				workforce_collecting += workforce_allocation#@
+				workforce_collecting += workforce_allocation#@ juz nie collectiing
+				
+				send_peasants(location.position, workforce_allocation)
+				stockpile_food += workforce_allocation/harvest_cost
+				location.available -= workforce_allocation/harvest_cost
 
 
 func clear_harvesting_workforce():
