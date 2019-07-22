@@ -5,6 +5,7 @@ class_name ResourceLocation
 
 onready var name_label: Label = $name
 onready var resource_name: String = name_label.text setget _set_resource_name, _get_resource_name
+onready var _resource_excav_cost: float = 1.0 setget _set_resource_excav_cost, _get_resource_excav_cost
 onready var sprite = $Sprite
 
 
@@ -36,14 +37,25 @@ func _get_resource_name():
 	return resource_name
 
 
+func _set_resource_excav_cost(value):
+	_resource_excav_cost = value
+
+
+func _get_resource_excav_cost():
+	return _resource_excav_cost
+
+
 func _set_resource_type(value: int):
 	_resource_type = value
 	if value >= 0:
-		self.resource_name = ResourceName[value]
+#		self.resource_name = ResourceName[value]
+		_set_resource_name(ResourceName[value])
+		_set_resource_excav_cost(ResourceExcavCost[value])
 		if has_node("Sprite"):
 			$Sprite.texture = load(ResourceSprites[value])
 	else:
-		self.resource_name = "null resource"
+#		self.resource_name = "null resource"
+		_set_resource_name("null resource")
 		if has_node("Sprite"):
 			$Sprite.texture = load("res://Sprites/No_Resource.png")
 

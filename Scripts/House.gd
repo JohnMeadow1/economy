@@ -136,6 +136,7 @@ func try_harvest(location: ResourceLocation):
 				var harvest_cost: float = (position.distance_to(location.position) * 0.002) #* location.excav_cost #depends on res type
 				var max_workforce_allocation = location.workforce_capacity - location.workforce_total
 				var workforce_needed_for_max_harvest: float = location.available * harvest_cost
+				
 				var workforce_allocation: float = min(workforce, workforce_needed_for_max_harvest)
 				workforce_allocation = min(max_workforce_allocation, workforce_allocation)
 				workforce -= workforce_allocation
