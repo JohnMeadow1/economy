@@ -108,8 +108,8 @@ func collect_resources():
 
 #NOTE transport = move resource from one village to another
 """Need rework for village to village mode."""
-func try_transport(location: ResourceLocation):
-	pass
+#func try_transport(location: ResourceLocation):
+#	pass
 #	if workforce > 0 and location.stockpile > 0:
 #		var transport_cost: float = (position.distance_to(location.position) * 0.002)
 #		var workforce_needed_for_max_transport: float = location.stockpile * transport_cost
@@ -133,7 +133,7 @@ func try_harvest(location: ResourceLocation):
 	if workforce > 0 and location.available > 1:
 		if location.workforce_total < location.workforce_capacity:
 				
-				var harvest_cost: float = (position.distance_to(location.position) * 0.002) #* location.excav_cost #depends on res type
+				var harvest_cost: float = (position.distance_to(location.position) * 0.002) * location._resource_excav_cost
 				var max_workforce_allocation = location.workforce_capacity - location.workforce_total
 				var workforce_needed_for_max_harvest: float = location.available * harvest_cost
 				
@@ -482,8 +482,8 @@ func update_display():
 	$InfoTable/values.text += str(stepify(stockpile_food, 0.1))+"\n"
 	$InfoTable/values.text += str(stepify(consumption_food, 0.1))+"/s\n"
 	update_cost_labels("CostLabels")
-	_set_settlement_type(clamp(population_total/50, 0, 3)) # population_total/50 to dzielenie intów, więc powinno obciąć: 0-49 to 0
-	# 50-99 to 1, 100-149 to 2 i 150+ to 3
+	_set_settlement_type(clamp(population_total/50, 0, 3)) # population_total/50 to dzielenie intów, więc powinno obciąć:
+	# 0-49 to 0, 50-99 to 1, 100-149 to 2 i 150+ to 3
 
 
 
