@@ -2,11 +2,11 @@
 
 [ext_resource path="res://Scripts/House.gd" type="Script" id=1]
 [ext_resource path="res://Shaders/outline.shader" type="Shader" id=2]
-[ext_resource path="res://Sprites/Town/Church_3.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Town/Church_5_2.png" type="Texture" id=3]
 [ext_resource path="res://Fonts/Jamma_13.tres" type="DynamicFont" id=4]
 [ext_resource path="res://Fonts/Bandwidth_13.tres" type="DynamicFont" id=5]
 
-[sub_resource type="ShaderMaterial" id=4]
+[sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 2 )
 shader_param/width = null
 shader_param/outline_color = Color( 0, 1, 0, 1 )
@@ -23,12 +23,10 @@ gradient = SubResource( 2 )
 "village",
 ]]
 script = ExtResource( 1 )
-population = 80
 population_idle = 80
-_settlement_type = 1
 
 [node name="Sprite" type="Sprite" parent="."]
-material = SubResource( 4 )
+material = SubResource( 1 )
 scale = Vector2( 2, 2 )
 texture = ExtResource( 3 )
 
@@ -40,16 +38,16 @@ margin_bottom = -56.0
 grow_horizontal = 2
 grow_vertical = 2
 custom_fonts/font = ExtResource( 4 )
-text = "SETTLEMENT_0"
+text = "ABANDONED_0"
 align = 1
 
 [node name="InfoTable" type="Node2D" parent="."]
 
 [node name="Background" type="NinePatchRect" parent="InfoTable"]
 margin_left = 40.0
-margin_top = -50.0
-margin_right = 81.0
-margin_bottom = -10.0
+margin_top = -47.0
+margin_right = 82.0
+margin_bottom = -1.0
 rect_scale = Vector2( 5.13624, 2.31057 )
 texture = SubResource( 3 )
 
@@ -59,7 +57,8 @@ margin_top = -40.0
 margin_right = 178.0
 margin_bottom = 33.0
 custom_fonts/font = ExtResource( 4 )
-text = "Pop/workforce:
+text = "Population:
+Workforce:
 Workforce used:
 Food stockpile:
 Food consumption:"
@@ -70,8 +69,9 @@ margin_top = -40.0
 margin_right = 229.0
 margin_bottom = 52.0
 custom_fonts/font = ExtResource( 5 )
-text = "80/40
-1.23%
-7
-2.3/s
+text = "20
+0
+ALL DEAD
+0
+0/s
 "
