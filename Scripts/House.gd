@@ -17,7 +17,6 @@ const SPAWN_DELAY: float = 0.035
 var CYCLE_DURATION: float = -1.0
 var RAD_SQ: int = -1
 var neighbours: Array = []
-var calculated_workforce: float = 0.0
 var starving_factor: float = 0.5
 
 
@@ -86,6 +85,8 @@ func calculate_workforce():
 	for i in range(100):
 		workforce += POPULATION_by_age[i] * POPULATION_work_eff[i]
 	calculated_workforce = workforce
+	calculated_workforce_fluctuations = previous_calculated_workforce - calculated_workforce
+	previous_calculated_workforce = calculated_workforce
 
 
 func calculate_foodreq():
@@ -474,7 +475,9 @@ func draw_population_chart(zoom: int = 1):
 """Actualize settlement info displayed on scene; called by update_village"""
 func update_display():
 	$InfoTable/values.text = str(population_total)+"\n"
-	$InfoTable/values.text += str(stepify(calculated_workforce, 0.1))+"\n"
+	$InfoTable/values.text += str(stepify(calculated_workforce, 0.1))
+	if calculated_workforce_fluctuations < 0: $InfoTable/values.text += " (+" + str(-stepify(calculated_workforce_fluctuations, 0.1))+"/s)\n"
+	else: $InfoTable/values.text += " (" + str(-stepify(calculated_workforce_fluctuations, 0.1))+"/s)\n"
 #	$InfoTable/values.text += str(stepify(calculated_workforce - workforce, 0.1))+"\n"
 	if calculated_workforce != 0:
 		$InfoTable/values.text += str(stepify(100*((calculated_workforce - workforce)/calculated_workforce), 0.1))+"%\n"

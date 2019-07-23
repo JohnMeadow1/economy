@@ -19,17 +19,14 @@ drag_margin_v_enabled = false
 script = ExtResource( 3 )
 
 [node name="House" parent="." instance=ExtResource( 4 )]
-position = Vector2( 256, 43 )
+position = Vector2( 238, 34 )
 population_total = 40
-population_idle = 70
 stockpile_food = 2900.0
-_settlement_type = 0
 
 [node name="House2" parent="." instance=ExtResource( 4 )]
 position = Vector2( 460, 380 )
 population_total = 70
 radius = 250
-population_idle = 90
 stockpile_food = 4000.0
 
 [node name="Resource" parent="." instance=ExtResource( 5 )]

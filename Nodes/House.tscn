@@ -23,7 +23,6 @@ gradient = SubResource( 2 )
 "village",
 ]]
 script = ExtResource( 1 )
-population_idle = 80
 
 [node name="Sprite" type="Sprite" parent="."]
 material = SubResource( 1 )
