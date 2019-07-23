@@ -18,6 +18,7 @@ export(float) var stockpile_food: float = 0.0
 #var population_transporting: int = 0 # local for transport_resources func
 
 var previous_population_total: int                   = 0
+var population_total_fluctuations: int               = 0
 var population_idle: int                             = 0
 var population_collecting: int                       = 0#out
 var population_needed_for_transport_this_cycle: int  = 0#out

@@ -66,7 +66,7 @@ func _process(delta):
 
 
 """Calculate wf & fr, then collect. After that starving, accidents, aging birth. wf and fr updated (recalculated)
-only at the beginning, population_total updated when changed."""
+only at the beginning, population_total updated when changed. Population fluctuations recalcualted only at the beginning."""
 func update_village():
 	clear_harvesting_workforce()
 	calculate_workforce()
@@ -76,6 +76,7 @@ func update_village():
 	consider_accidents()#
 	consider_aging()#
 	consider_birth()#
+	calculate_fluctuations()
 	update_display()
 	pass
 
@@ -85,8 +86,14 @@ func calculate_workforce():
 	for i in range(100):
 		workforce += POPULATION_by_age[i] * POPULATION_work_eff[i]
 	calculated_workforce = workforce
+
+
+func calculate_fluctuations():
 	calculated_workforce_fluctuations = previous_calculated_workforce - calculated_workforce
 	previous_calculated_workforce = calculated_workforce
+	
+	population_total_fluctuations = previous_population_total - population_total
+	previous_population_total = population_total
 
 
 func calculate_foodreq():
@@ -474,10 +481,13 @@ func draw_population_chart(zoom: int = 1):
 
 """Actualize settlement info displayed on scene; called by update_village"""
 func update_display():
-	$InfoTable/values.text = str(population_total)+"\n"
+	$InfoTable/values.text = str(population_total)
+	if population_total_fluctuations < 0: $InfoTable/values.text += " (+" + str(-population_total_fluctuations)+")\n"
+	else: $InfoTable/values.text += " (" + str(-population_total_fluctuations)+")\n"
 	$InfoTable/values.text += str(stepify(calculated_workforce, 0.1))
-	if calculated_workforce_fluctuations < 0: $InfoTable/values.text += " (+" + str(-stepify(calculated_workforce_fluctuations, 0.1))+"/s)\n"
-	else: $InfoTable/values.text += " (" + str(-stepify(calculated_workforce_fluctuations, 0.1))+"/s)\n"
+	if calculated_workforce_fluctuations < 0: $InfoTable/values.text += " (+" +\
+	                                                        str(-stepify(calculated_workforce_fluctuations, 0.1))+")\n"
+	else: $InfoTable/values.text += " (" + str(-stepify(calculated_workforce_fluctuations, 0.1))+")\n"
 #	$InfoTable/values.text += str(stepify(calculated_workforce - workforce, 0.1))+"\n"
 	if calculated_workforce != 0:
 		$InfoTable/values.text += str(stepify(100*((calculated_workforce - workforce)/calculated_workforce), 0.1))+"%\n"
