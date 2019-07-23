@@ -77,9 +77,31 @@ func _physics_process(delta):
 
 
 func regenerate():
-	available_fluctuations = available_fluctuations - available
+	available_fluctuations = previous_available - available
 	available += regenerates_per_cycle
-	
+	previous_available = available
+
+
+func update_display():
+	$InfoTable/values.text = str(round(available))
+	set_resource_size(available)
+#	if available < 1: _set_resource_type(-1) # pomysl: opróżnione się zerują
+	if available_fluctuations < 0: $InfoTable/values.text += " (+" + str(-round(available_fluctuations*10)/10) + "/s)\n"
+	else: $InfoTable/values.text += " (" + str(-round(available_fluctuations*10)/10) + "/s)\n"
+	$InfoTable/values.text += str(round(harvest_cost*100)/100) + "\n"
+	$InfoTable/values.text += str(regenerates_per_cycle) + "\n"
+#	$InfoTable/values.text += str(workers_total) + "/" + str(worker_capacity) + "\n"
+	$InfoTable/values.text += str(workforce_total) + "/" + str(workforce_capacity) + "\n"
+#	$InfoTable/values.text += str(round(stockpile)) + "/" + str(stockpile_max)
+#	if stockpile_fluctuations < 0: $InfoTable/values.text += " (+" + str(-round(stockpile_fluctuations*10)/10) + "/s)\n"
+#	else: $InfoTable/values.text += " (" + str(-round(stockpile_fluctuations*10)/10) + "/s)\n"
+
+
+func generate():
+	available = 50 * (randi() % 7 + 1)              # randi between 50 and 350 with 50 step
+	regenerates_per_cycle = ceil(4 * randf()) + 1   # randf [1,5]
+#	worker_capacity = randi() % 10 + 11             # randi [11,20]
+
 
 #NOTE handled by house.gd, now obsolete
 func harvest():
@@ -103,22 +125,3 @@ func update_depletion(hervested):
 	harvest_cost += available_fluctuations * 0.1
 	harvest_cost = clamp(harvest_cost, 1, harvest_cost_max)
 
-
-func update_display():
-	$InfoTable/values.text = str(round(available))
-	set_resource_size(available)
-#	if available < 1: _set_resource_type(-1) # pomysl: opróżnione się zerują
-	if available_fluctuations < 0: $InfoTable/values.text += " (+" + str(-round(available_fluctuations*10)/10) + "/s)\n"
-	else: $InfoTable/values.text += " (" + str(-round(available_fluctuations*10)/10) + "/s)\n"
-	$InfoTable/values.text += str(round(harvest_cost*100)/100) + "\n"
-	$InfoTable/values.text += str(regenerates_per_cycle) + "\n"
-#	$InfoTable/values.text += str(workers_total) + "/" + str(worker_capacity) + "\n"
-	$InfoTable/values.text += str(workforce_total) + "/" + str(workforce_capacity) + "\n"
-#	$InfoTable/values.text += str(round(stockpile)) + "/" + str(stockpile_max)
-#	if stockpile_fluctuations < 0: $InfoTable/values.text += " (+" + str(-round(stockpile_fluctuations*10)/10) + "/s)\n"
-#	else: $InfoTable/values.text += " (" + str(-round(stockpile_fluctuations*10)/10) + "/s)\n"
-
-func generate():
-	available = 50 * (randi() % 7 + 1)              # randi between 50 and 350 with 50 step
-	regenerates_per_cycle = ceil(4 * randf()) + 1   # randf [1,5]
-#	worker_capacity = randi() % 10 + 11             # randi [11,20]

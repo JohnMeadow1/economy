@@ -22,9 +22,10 @@ export(float) var workforce_capacity: float    = 1.0
 #export(int) var worker_capacity: int           = 1
 
 
-var cycle: float                  = 0.0 
+var cycle: float                   = 0.0 
 #var workers_total: int            = 0
-var workforce_total: float        = 0.0
-var available_fluctuations: float = 0.0
+var workforce_total: float         = 0.0
+var available_fluctuations: float  = 0.0
+var previous_available: float      = 0.0
 #var stockpile_fluctuations: float = 0.0
 #var previous_stockpile: float     = 0.0
