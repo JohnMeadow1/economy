@@ -12,8 +12,9 @@ onready var sprite = $Sprite
 export(ResourceType) var _resource_type:int = 0 setget _set_resource_type
 
 
-var CYCLE_DURATION: float = -1.0
-
+var CYCLE_DURATION: float  = -1.0
+var tick_to_depletion: int = 5
+var NOT_DEPLETED: bool     = true
 
 func _ready():
 	if !Engine.is_editor_hint():
@@ -68,11 +69,12 @@ func set_resource_size(availabl: float):
 func _physics_process(delta):
 	if !Engine.is_editor_hint(): # do not calculate in editor
 		cycle += delta
-		if cycle > CYCLE_DURATION:
+		if cycle > CYCLE_DURATION and NOT_DEPLETED:
 			cycle -= CYCLE_DURATION
 #			harvest()
 			regenerate()
 			update_display()
+			consider_total_depletion()
 			workforce_total = 0
 
 
@@ -80,6 +82,19 @@ func regenerate():
 	available_fluctuations = previous_available - available
 	available += regenerates_per_cycle
 	previous_available = available
+
+
+func consider_total_depletion():
+	if available <= regenerates_per_cycle:
+		tick_to_depletion -= 1
+		if tick_to_depletion == 0:
+			total_depletion()
+
+
+func total_depletion():
+	NOT_DEPLETED = false
+	_set_resource_type(-1)
+	$InfoTable/values.text = "DEPLETED"
 
 
 func update_display():
