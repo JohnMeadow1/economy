@@ -503,7 +503,10 @@ func update_display():
 
 
 func on_hover_info():
-	globals.debug.text += "\n" + $name.text + " RESOURCES\n" + neighbours_info() + "\n"
-	# remember starting_workforce?
-	globals.debug.text += "population_total: " + str(population_total) + "\n"#\
+	globals.debug.text += "\n*** " + $name.text + " ***\n"
+	globals.debug.text += "population_total: " + str(population_total) + "\n"
+	globals.debug.text += "Food: " + str(stockpile_food) + "\n"
+	globals.debug.text += "Wood: " + str(stockpile_wood) + "\n"
+	globals.debug.text += "Stone: " + str(stockpile_stone) + "\n"
+	globals.debug.text += "\nNEARBY RESOURCES\n" + neighbours_info() + "\n"
 #	                  + " = " + str(workforce_collecting + total_workforce_transporting_this_cycle) + "\n"
