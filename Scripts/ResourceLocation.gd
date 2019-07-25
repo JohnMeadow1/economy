@@ -15,6 +15,7 @@ export(ResourceType) var _resource_type:int = 0 setget _set_resource_type
 var CYCLE_DURATION: float  = -1.0
 var tick_to_depletion: int = 5
 var NOT_DEPLETED: bool     = true
+var DEPLETING: bool        = false
 
 func _ready():
 	if !Engine.is_editor_hint():
@@ -85,7 +86,8 @@ func regenerate():
 
 
 func consider_total_depletion():
-	if available <= regenerates_per_cycle:
+	if available <= regenerates_per_cycle or available <= 0.1 or DEPLETING:
+		DEPLETING = true
 		tick_to_depletion -= 1
 		if tick_to_depletion == 0:
 			total_depletion()
