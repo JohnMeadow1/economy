@@ -406,8 +406,8 @@ func neighbours_info():
 		index += 1
 		temp += str(index) + ". " + str(neighbour[0].resource_name) + "\n"
 		temp += "Tansport cost = " + str(neighbour[1] * 0.01) + "\n"
-		temp += "Occupying " + str(neighbour[2]) + " out of " + str(neighbour[0].workforce_capacity) + " workforce space.\n"
-		temp += "Our workforce share = " + calculate_workers_share(neighbour[2], neighbour[0].workforce_total) + "\n"
+		temp += "Occupying " + str(neighbour[2]) + "/" + str(neighbour[0].workforce_capacity) + " wf space.\n"
+		temp += "Workforce share = " + calculate_workers_share(neighbour[2], neighbour[0].workforce_total) + "\n"
 	return temp
 
 
