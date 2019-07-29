@@ -96,7 +96,8 @@ func consider_total_depletion():
 func total_depletion():
 	NOT_DEPLETED = false
 	_set_resource_type(-1)
-	$InfoTable/values.text = "DEPLETED"
+#	$InfoTable/values.text = "DEPLETED"
+	$InfoTable.free()
 
 
 func update_display():
