@@ -270,8 +270,30 @@ func kill_random_citizen():
 			b -= 1
 
 
-func send_peasants(where: Vector2, how_much: int = 1):
-	how_much = min(how_much, floor(0.5 * float(CYCLE_DURATION)/SPAWN_DELAY))
+func send_peasants(where: Vector2, how_much: float = 1.0):
+	var how_much_ten = floor(how_much/10)
+	how_much -= 10 * how_much_ten
+	how_much = floor(how_much)
+	
+	if how_much_ten > floor(0.5 * float(CYCLE_DURATION)/SPAWN_DELAY):
+		# needed only if we create resources with huge (~200+) workspace capacity(how_much_fifty as solution)
+		print("Need proper handling for huge workforce amount.")
+		how_much = 0
+	
+	how_much_ten = min(how_much_ten, floor(0.5 * float(CYCLE_DURATION)/SPAWN_DELAY))
+	for i in range(how_much_ten):
+		yield(get_tree().create_timer(SPAWN_DELAY), "timeout")
+		var peasant_instance = peasant.instance()
+		peasant_instance.position = Vector2.ZERO
+		peasant_instance.destination = (where - position)
+		var angle_rad = Vector2.RIGHT.angle_to(peasant_instance.destination)
+		peasant_instance.rotation = angle_rad
+		if angle_rad > 0.5 * PI and angle_rad < 1.5 * PI:
+			peasant_instance.get_node("Sprite").set_flip_v(true)
+		peasant_instance.scale = Vector2(1.2, 1.2)
+		peasant_instance.get_node("Sprite").modulate = Color(0.7, 1, 0, 1)
+		add_child(peasant_instance)
+	
 	for i in range(how_much):
 		yield(get_tree().create_timer(SPAWN_DELAY), "timeout")
 		var peasant_instance = peasant.instance()
