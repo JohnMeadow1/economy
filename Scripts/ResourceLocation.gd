@@ -9,7 +9,7 @@ onready var _resource_excav_cost: float = 1.0 setget _set_resource_excav_cost, _
 onready var sprite = $Sprite
 
 
-export(ResourceType) var _resource_type:int = 0 setget _set_resource_type
+export(ResourceType) var _resource_type:int = 0 setget _set_resource_type, _get_resource_type
 
 
 var CYCLE_DURATION: float  = -1.0
@@ -60,6 +60,10 @@ func _set_resource_type(value: int):
 		_set_resource_name("null resource")
 		if has_node("Sprite"):
 			$Sprite.texture = load("res://Sprites/No_Resource.png")
+
+
+func _get_resource_type():
+	return _resource_type
 
 
 func set_resource_size(availabl: float):
