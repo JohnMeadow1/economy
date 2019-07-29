@@ -479,20 +479,12 @@ func draw_population_chart(zoom: int = 1):
 		          Vector2(start_x + zoom*i + zoom*1, start_y - zoom*POPULATION_by_age[i+1]) , Color.white, 1)
 
 
-"""Actualize settlement info displayed on scene; called by update_village"""
+"""Actualize settlement info displayed on scene, function called by update_village."""
 func update_display():
-	$InfoTable/values.text = str(population_total)
-	if population_total_fluctuations < 0: $InfoTable/values.text += " (+" + str(-population_total_fluctuations)+")\n"
-	else: $InfoTable/values.text += " (" + str(-population_total_fluctuations)+")\n"
-	$InfoTable/values.text += str(stepify(calculated_workforce, 0.1))
-	if calculated_workforce_fluctuations < 0: $InfoTable/values.text += " (+" +\
-	                                                        str(-stepify(calculated_workforce_fluctuations, 0.1))+")\n"
-	else: $InfoTable/values.text += " (" + str(-stepify(calculated_workforce_fluctuations, 0.1))+")\n"
-#	$InfoTable/values.text += str(stepify(calculated_workforce - workforce, 0.1))+"\n"
-	if calculated_workforce != 0:
-		$InfoTable/values.text += str(stepify(100*((calculated_workforce - workforce)/calculated_workforce), 0.1))+"%\n"
-	else:
-		$InfoTable/values.text += "ALL DEAD\n"
+	$InfoTable/values.text = append_population_info()
+	$InfoTable/values.text += append_calc_workforce_info()
+	$InfoTable/values.text += append_workforce_used_info()
+	
 	$InfoTable/values.text += str(stepify(stockpile_food, 0.1))+"\n"
 	$InfoTable/values.text += str(stepify(consumption_food, 0.1))+"/s\n"
 	update_cost_labels("CostLabels")
@@ -500,13 +492,41 @@ func update_display():
 	# 0-49 to 0, 50-99 to 1, 100-149 to 2 i 150+ to 3
 
 
-
-
+"""Display settlement info on_hover, it contains all info of update_display and some more."""
 func on_hover_info():
 	globals.debug.text += "\n*** " + $name.text + " ***\n"
-	globals.debug.text += "population_total: " + str(population_total) + "\n"
-	globals.debug.text += "Food: " + str(stockpile_food) + "\n"
+	globals.debug.text += "population_total: " + append_population_info()
+	globals.debug.text += "calculated_workforce: " + append_calc_workforce_info()
+	globals.debug.text += "workforce used: " + append_workforce_used_info()
+	
+	globals.debug.text += "\nFood: " + str(stockpile_food) + "\n"
 	globals.debug.text += "Wood: " + str(stockpile_wood) + "\n"
 	globals.debug.text += "Stone: " + str(stockpile_stone) + "\n"
 	globals.debug.text += "\nNEARBY RESOURCES\n" + neighbours_info() + "\n"
 #	                  + " = " + str(workforce_collecting + total_workforce_transporting_this_cycle) + "\n"
+
+
+"""Append_*_info functions appends numerical values connected to some village parameter to given string.""" 
+func append_population_info():
+	var text: String = ""
+	text += str(population_total)
+	if population_total_fluctuations < 0: 
+		text += " (+" + str(-population_total_fluctuations)+")\n"
+	else: text += " (" + str(-population_total_fluctuations)+")\n"
+	return text
+
+
+func append_calc_workforce_info():
+	var text: String = ""
+	text += str(stepify(calculated_workforce, 0.1))
+	if calculated_workforce_fluctuations < 0: 
+		text += " (+" + str(-stepify(calculated_workforce_fluctuations, 0.1))+")\n"
+	else: text += " (" + str(-stepify(calculated_workforce_fluctuations, 0.1))+")\n"
+	return text
+
+func append_workforce_used_info():
+	var text: String = ""
+	if calculated_workforce != 0:
+		text += str(stepify(100*((calculated_workforce - workforce)/calculated_workforce), 0.1))+"%\n"
+	else: text += "ALL DEAD\n"
+	return text
