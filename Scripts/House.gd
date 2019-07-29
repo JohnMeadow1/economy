@@ -355,8 +355,8 @@ func prepare_array(array, v1_10, v11_20, v21_30, v31_40, v41_50, v51_60, v61_70,
 		array.push_back(v91_100)
 
 
-func detect_neighbours(): # array of triples (Reosurce Node, distance, amount of this settlement workforce)
-#	neighbours.clear()
+func detect_neighbours(): # Neighbour = triple [Reosurce Node, distance, amount of this settlement workforce]
+	neighbours.clear()
 	for resource in get_tree().get_nodes_in_group("resource"):
 		var resource_idx = find_neighbour_idx(resource)
 		if position.distance_squared_to(resource.position) < RAD_SQ:
