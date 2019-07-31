@@ -5,11 +5,11 @@ class_name ResourceLocation
 
 onready var name_label: Label = $name
 onready var resource_name: String = name_label.text setget _set_resource_name, _get_resource_name
-onready var _resource_excav_cost: float = 1.0 setget _set_resource_excav_cost, _get_resource_excav_cost
+onready var _resource_excav_cost: float = ResourceExcavCost[_resource_type] setget _set_resource_excav_cost, _get_resource_excav_cost
 onready var sprite = $Sprite
 
 
-export(ResourceType) var _resource_type:int = 0 setget _set_resource_type, _get_resource_type
+export(ResourceType) var _resource_type: int = 0 setget _set_resource_type, _get_resource_type
 
 
 var CYCLE_DURATION: float  = -1.0
@@ -51,7 +51,7 @@ func _set_resource_type(value: int):
 	_resource_type = value
 	if value >= 0:
 		_set_resource_name(ResourceName[value])
-		_set_resource_excav_cost(ResourceExcavCost[value])
+#		_set_resource_excav_cost(ResourceExcavCost[value]) # nie dzialalo, ustawiam w linii 8
 		if has_node("Sprite"):
 			$Sprite.texture = load(ResourceSprites[value])
 		if value == 0:

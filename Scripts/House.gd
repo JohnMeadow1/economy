@@ -13,6 +13,7 @@ export(SettlementType) var _settlement_type:int = 0 setget _set_settlement_type
 
 
 const SPAWN_DELAY: float = 0.035
+const DISTANCE_MULT: float = 0.01 # harvest cost distance multiplier
 
 var CYCLE_DURATION: float = -1.0
 var RAD_SQ: int = -1
@@ -141,7 +142,7 @@ func try_harvest(location: ResourceLocation):
 	if workforce > 0 and location.available > 1:
 		if location.workforce_total < location.workforce_capacity:
 				
-				var harvest_cost: float = (position.distance_to(location.position) * 0.002) * location._resource_excav_cost
+				var harvest_cost = (position.distance_to(location.position) * DISTANCE_MULT) * location._resource_excav_cost
 				var max_workforce_allocation = location.workforce_capacity - location.workforce_total
 				var workforce_needed_for_max_harvest: float = location.available * harvest_cost
 				
@@ -435,7 +436,8 @@ func neighbours_info():
 	for neighbour in neighbours:
 		index += 1
 		temp += str(index) + ". " + str(neighbour[0].resource_name) + "\n"
-		temp += "Tansport cost = " + str(neighbour[1] * 0.01) + "\n"
+		temp += "Harvest cost = " + str(neighbour[1] * DISTANCE_MULT * neighbour[0]._resource_excav_cost) + "\n"
+		temp += "Excav cost = " + str(neighbour[0]._resource_excav_cost) + "\n"
 		temp += "Occupying " + str(neighbour[2]) + "/" + str(neighbour[0].workforce_capacity) + " wf space.\n"
 		temp += "Workforce share = " + calculate_workers_share(neighbour[2], neighbour[0].workforce_total) + "\n"
 	return temp

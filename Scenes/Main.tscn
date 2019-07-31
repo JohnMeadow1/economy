@@ -30,6 +30,13 @@ radius = 250
 stockpile_food = 4000.0
 _settlement_type = 1
 
+[node name="House3" parent="." instance=ExtResource( 4 )]
+position = Vector2( 1320, 279 )
+population_total = 70
+radius = 250
+stockpile_food = 4000.0
+_settlement_type = 1
+
 [node name="Resource" parent="." instance=ExtResource( 5 )]
 position = Vector2( 220, 400 )
 available = 1200.0
@@ -58,4 +65,8 @@ harvestable_per_cycle = 5.0
 
 [node name="Resource5" parent="." instance=ExtResource( 5 )]
 position = Vector2( 390, 550 )
+harvestable_per_cycle = 5.0
+
+[node name="Resource6" parent="." instance=ExtResource( 5 )]
+position = Vector2( 1368, 137 )
 harvestable_per_cycle = 5.0
