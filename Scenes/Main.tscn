@@ -36,17 +36,26 @@ available = 1200.0
 harvestable_per_cycle = 5.0
 regenerates_per_cycle = 1.0
 workforce_capacity = 30.0
+_resource_type = 1
 
 [node name="Resource2" parent="." instance=ExtResource( 5 )]
 position = Vector2( 470, 140 )
 available = 3000.0
 harvestable_per_cycle = 5.0
-regenerates_per_cycle = 0.1
+regenerates_per_cycle = 1.0
 workforce_capacity = 40.0
+_resource_type = 1
 
 [node name="Resource3" parent="." instance=ExtResource( 5 )]
 position = Vector2( 30, 170 )
 available = 750.0
 harvestable_per_cycle = 5.0
-workforce_capacity = 150.0
-_resource_type = 2
+_resource_type = 3
+
+[node name="Resource4" parent="." instance=ExtResource( 5 )]
+position = Vector2( 110, -37 )
+harvestable_per_cycle = 5.0
+
+[node name="Resource5" parent="." instance=ExtResource( 5 )]
+position = Vector2( 390, 550 )
+harvestable_per_cycle = 5.0

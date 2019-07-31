@@ -153,11 +153,11 @@ func try_harvest(location: ResourceLocation):
 				workforce_collecting += workforce_allocation#@ juz nie collectiing
 				
 				send_peasants(location.position, workforce_allocation)
-				if location._get_resource_type() == 0:
+				if location._get_resource_type() == 0 or location._get_resource_type() == 1:
 					stockpile_food += workforce_allocation/harvest_cost
-				elif location._get_resource_type() == 1:
-					stockpile_wood += workforce_allocation/harvest_cost
 				elif location._get_resource_type() == 2:
+					stockpile_wood += workforce_allocation/harvest_cost
+				elif location._get_resource_type() == 3:
 					stockpile_stone += workforce_allocation/harvest_cost
 				location.available -= workforce_allocation/harvest_cost
 

@@ -50,13 +50,15 @@ func _get_resource_excav_cost():
 func _set_resource_type(value: int):
 	_resource_type = value
 	if value >= 0:
-#		self.resource_name = ResourceName[value]
 		_set_resource_name(ResourceName[value])
 		_set_resource_excav_cost(ResourceExcavCost[value])
 		if has_node("Sprite"):
 			$Sprite.texture = load(ResourceSprites[value])
+		if value == 0:
+			available = 77000
+			regenerates_per_cycle = 100
+			workforce_capacity = 150
 	else:
-#		self.resource_name = "null resource"
 		_set_resource_name("null resource")
 		if has_node("Sprite"):
 			$Sprite.texture = load("res://Sprites/No_Resource.png")

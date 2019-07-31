@@ -2,10 +2,11 @@ extends Node2D
 class_name GameResource, "res://Sprites/Rocks/Gray_Rock_Mini.png"
 
 
-enum ResourceType {NO_RESOURCE = -1, GRAIN, WOOD, STONE}
-var ResourceExcavCost: Array = [1.0, 1.5, 2.0]
-var ResourceName: Array      = ["Food", "Wood", "Stone"]
-var ResourceSprites: Array   = ["res://Sprites/Plants/Wheat.png",
+enum ResourceType {NO_RESOURCE = -1, BERRIES, GRAIN, WOOD, STONE}
+var ResourceExcavCost: Array = [3.0, 1.0, 1.5, 2.0]
+var ResourceName: Array      = ["Berries", "Food", "Wood", "Stone"]
+var ResourceSprites: Array   = ["res://Sprites/Plants/Yew_Tree.png",
+                                "res://Sprites/Plants/Wheat.png",
                                 "res://Sprites/Farm/Tree_2_Side.png",
                                 "res://Sprites/Rocks/Gray_Rock.png"]
 
