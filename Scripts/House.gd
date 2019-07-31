@@ -407,7 +407,10 @@ func create_cost_labels():
 	for resource in get_tree().get_nodes_in_group("resource"):
 		var label = Label.new()
 		label.name = resource.name
-		label.text = str(stepify(position.distance_to(resource.position), 0.1))
+		if position.distance_squared_to(resource.position) < 2 * RAD_SQ:
+			label.text = str(stepify(position.distance_to(resource.position), 0.1))
+		else:
+			label.text = ""
 		label.rect_position = 0.5*(resource.position - position)
 		label.add_font_override("font",load("res://Fonts/Jamma_13.tres"))
 		node.add_child(label)
@@ -416,7 +419,7 @@ func create_cost_labels():
 func update_cost_labels(node):
 	for resource in get_tree().get_nodes_in_group("resource"):
 		var label_node = get_node(node+"/"+resource.name) as Label
-		if resource._resource_type == -1:
+		if resource._resource_type == -1 or position.distance_squared_to(resource.position) >= 2 * RAD_SQ:
 			label_node.text = "" # hide, not delete
 		else:
 			label_node.text = str(stepify(position.distance_to(resource.position), 0.1))
@@ -492,9 +495,9 @@ func _draw():
 				isNeighbour = true
 		if resource._resource_type != -1: # do not draw lines to null resources
 			if isNeighbour:
-				draw_line(Vector2(0,0), resource.position - position, Color(0, 1, 0, 1), 3.0)
-			else:
-				draw_line(Vector2(0,0), resource.position - position, Color(1, 0, 0, 1), 3.0)
+				draw_line(Vector2(0,0), resource.position - position, Color(0, 1, 0, 1), 3.0) # green
+			elif position.distance_squared_to(resource.position) < 2 * RAD_SQ:
+				draw_line(Vector2(0,0), resource.position - position, Color(1, 0, 0, 1), 3.0) # red
 		# BUG OX and OY are rendered partially invisible after few update calls (best depicted with zoom > 2)
 		draw_population_chart(2) # zoom parameter 
 
