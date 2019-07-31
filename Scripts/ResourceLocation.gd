@@ -86,8 +86,8 @@ func _physics_process(delta):
 
 
 func regenerate():
-	available_fluctuations = previous_available - available
 	available += regenerates_per_cycle
+	available_fluctuations = previous_available - available
 	previous_available = available
 
 
