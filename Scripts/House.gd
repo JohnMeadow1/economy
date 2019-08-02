@@ -27,7 +27,6 @@ func _ready():
 	randomize()
 	RAD_SQ = pow(radius, 2)
 	prepare_population_arrays()
-#	woip population_birth_multiplier = clamp(FOOD/FOOD_REQ, 0.5, 0.15) + clamp(HOUSING - HOUSING_REQ, 0, 1)
 	fill_POPULATION_by_age(population_total)
 	detect_neighbours()
 	sort_neighbours()
@@ -73,6 +72,7 @@ func update_village():
 	calculate_workforce()
 	calculate_foodreq()
 	collect_resources()
+	consider_housing()
 	consider_starving()#
 	consider_accidents()#
 	consider_aging()#
@@ -87,14 +87,6 @@ func calculate_workforce():
 	for i in range(100):
 		workforce += POPULATION_by_age[i] * POPULATION_work_eff[i]
 	calculated_workforce = workforce
-
-
-func calculate_fluctuations():
-	calculated_workforce_fluctuations = previous_calculated_workforce - calculated_workforce
-	previous_calculated_workforce = calculated_workforce
-	
-	population_total_fluctuations = previous_population_total - population_total
-	previous_population_total = population_total
 
 
 func calculate_foodreq():
@@ -180,6 +172,12 @@ func generate():
 	stockpile_food = randi() % 150 + 251
 
 
+func consider_housing():
+	#NOTE WOIP
+	population_birth_multiplier = clamp(stockpile_food/foodreq, 0.15, 0.5)# + clamp(HOUSING - HOUSING_REQ, 0, 1)
+	pass
+
+
 func consider_starving():
 	if stockpile_food >= consumption_food: # dość jedzenia, nie rób nic
 		stockpile_food -= consumption_food
@@ -243,6 +241,14 @@ func consider_aging(): # Assumption: aging after starving
 		POPULATION_by_age[i] = POPULATION_by_age[i-1]
 	POPULATION_by_age[0] = 0
 	update()
+
+
+func calculate_fluctuations():
+	calculated_workforce_fluctuations = previous_calculated_workforce - calculated_workforce
+	previous_calculated_workforce = calculated_workforce
+	
+	population_total_fluctuations = previous_population_total - population_total
+	previous_population_total = population_total
 
 
 """Decrement random cell in POPULATION_by_age by one, besides that affect population_total counter only.
