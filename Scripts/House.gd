@@ -19,6 +19,8 @@ var CYCLE_DURATION: float = -1.0
 var RAD_SQ: int = -1
 var neighbours: Array = []
 var starving_factor: float = 0.5
+var NEED_MORE_FOOD: bool = false
+var NEED_MORE_HOUSES: bool = false
 
 
 func _ready():
@@ -72,8 +74,8 @@ func update_village():
 	calculate_workforce()
 	calculate_foodreq()
 	collect_resources()
-	consider_housing()
-	consider_starving()#
+	consider_housing()  # set NEED_MORE_HOUSES (for next year)
+	consider_starving() # set NEED_MORE_FOOD (for next year)
 	consider_accidents()#
 	consider_aging()#
 	consider_birth()#
@@ -99,12 +101,34 @@ func calculate_foodreq():
 """Harvest food, then harvest remaining res."""
 func collect_resources():
 	total_workforce_transporting_this_cycle = 0
+	if NEED_MORE_FOOD:
+		collect_resource_of_type("Food")
+		collect_resource_of_type("Berries")
+		collect_resource_of_type("Wood")
+		collect_resource_of_type("Stone")
+	elif NEED_MORE_HOUSES:
+		collect_resource_of_type("Wood")
+		collect_resource_of_type("Stone")
+		collect_resource_of_type("Food")
+		collect_resource_of_type("Berries")
+	else:
+		var temp = randf()
+		if temp < 0.5:
+			collect_resource_of_type("Food")
+			collect_resource_of_type("Berries")
+			collect_resource_of_type("Wood")
+			collect_resource_of_type("Stone")
+		else:
+			collect_resource_of_type("Wood")
+			collect_resource_of_type("Stone")
+			collect_resource_of_type("Food")
+			collect_resource_of_type("Berries")
+
+
+func collect_resource_of_type(type: String):
 	for neighbour in neighbours:
-		if neighbour[0].resource_name == "Food":
-			try_harvest(neighbour[0])
-	for neighbour in neighbours:
-		if neighbour[0].resource_name != "Food":
-			try_harvest(neighbour[0])
+			if neighbour[0].resource_name.begins_with(type):
+				try_harvest(neighbour[0])
 
 
 #NOTE transport = move resource from one village to another
@@ -174,12 +198,19 @@ func generate():
 
 func consider_housing():
 	housing_req_total = calculate_housing_req()
-	population_birth_multiplier = clamp(stockpile_food/foodreq, 0.15, 0.5) + clamp(housing - housing_req_total, 0, 1)
+	if foodreq !=0:
+		population_birth_multiplier = clamp(stockpile_food/foodreq, 0.15, 0.5) + clamp(housing - housing_req_total, 0, 1)
+	else:
+		population_birth_multiplier = 0.5 + clamp(housing - housing_req_total, 0, 1)
 	# housing rośnie jak budujemy domy, 1 dom = 300 kamienia lub 500 drewna
 	# jeśli w tym roku brakowało miejsca, to (jeśli są surki) zacznij budować domy (tak by na przyszły rok były gotowe)
 	if housing < housing_req_total:
 		var needed_houses = housing_req_total - housing
 		var possible_to_build = floor(stockpile_wood/500) + floor(stockpile_stone/300)
+		if possible_to_build < needed_houses:
+			NEED_MORE_HOUSES = true
+		else:
+			NEED_MORE_HOUSES = false
 		if possible_to_build > 0:
 			for i in range(min(needed_houses, possible_to_build)):
 				if stockpile_wood >= 500:
@@ -199,8 +230,10 @@ func calculate_housing_req() -> float:
 
 func consider_starving():
 	if stockpile_food >= consumption_food: # dość jedzenia, nie rób nic
+		NEED_MORE_FOOD = false
 		stockpile_food -= consumption_food
 	elif population_total > 0: # za mało jedzenia, zjadają co jest i umierają proporcjonalnie do brakującej żywności
+		NEED_MORE_FOOD = true
 		var food_missing = consumption_food - stockpile_food
 		var consumption_food_missing_percentage = food_missing / consumption_food # need 100, got 70 so missing 30%
 		stockpile_food = 0
@@ -575,6 +608,8 @@ func on_hover_info():
 	globals.debug.text += "Stone: " + str(stockpile_stone) + "\n"
 	globals.debug.text += "\nHousing: " + str(housing) + "\n"
 	globals.debug.text += "Housing req: " + str(housing_req_total) + "\n"
+	globals.debug.text += "Need more houses: " + str(NEED_MORE_HOUSES) + "\n"
+	globals.debug.text += "Need more food: " + str(NEED_MORE_FOOD) + "\n"
 	globals.debug.text += "\nNEARBY RESOURCES\n" + neighbours_info() + "\n"
 #	                  + " = " + str(workforce_collecting + total_workforce_transporting_this_cycle) + "\n"
 
