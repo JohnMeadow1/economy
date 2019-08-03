@@ -28,6 +28,7 @@ var population_needed_for_transport_this_cycle: int  = 0#out
 var population_needed_for_transport_next_cycle: int  = 0#out
 var population_reserved_for_transport: int           = 0#out
 var total_population_transporting_this_cycle: int    = 0#out
+var housing_req_total: float                         = 0.0
 var workforce_collecting: float                      = 0.0
 var calculated_workforce: float                      = 0.0
 var previous_calculated_workforce: float             = 0.0
