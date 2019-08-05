@@ -243,7 +243,6 @@ func consider_starving():
 		var amount = max(1, floor(consumption_food_missing_percentage * starving_factor * population_total))
 		for i in range(amount):
 			kill_random_citizen() # do not decrease workforce and foodreq -> no need
-		
 
 
 func consider_birth(): #NOTE w/o birthrate for now, TODO
@@ -373,13 +372,21 @@ func send_peasants(where: Vector2, how_much: float = 1.0):
 			how_much -= (total_peasants - floor(0.5 * float(CYCLE_DURATION)/SPAWN_DELAY))
 			total_peasants -= (total_peasants - floor(0.5 * float(CYCLE_DURATION)/SPAWN_DELAY))
 	
-	send_group(how_much_fifty, where, 1.6, Color(0, 0.5, 0.7, 1))
-	yield(get_tree().create_timer(SPAWN_DELAY), "timeout")
-	send_group(how_much_twenty, where, 1.4, Color(0.9, 0.5, 0.5, 1))
-	yield(get_tree().create_timer(SPAWN_DELAY), "timeout")
-	send_group(how_much_ten, where, 1.2, Color(0.7, 1, 0, 1))
-	yield(get_tree().create_timer(SPAWN_DELAY), "timeout")
-	send_group(how_much, where)
+	if how_much_fifty > 0:
+		send_group(how_much_fifty, where, 1.6, Color(0, 0.5, 0.7, 1))
+	
+	if how_much_twenty > 0:
+		yield(get_tree().create_timer(SPAWN_DELAY), "timeout")
+		send_group(how_much_twenty, where, 1.4, Color(0.9, 0.5, 0.5, 1))
+	
+	if how_much_ten > 0:
+		yield(get_tree().create_timer(SPAWN_DELAY), "timeout")
+		send_group(how_much_ten, where, 1.2, Color(0.7, 1, 0, 1))
+	
+	if how_much > 0:
+		yield(get_tree().create_timer(SPAWN_DELAY), "timeout")
+		send_group(how_much, where)
+	
 #	for i in range(how_much_fifty):
 #		yield(get_tree().create_timer(SPAWN_DELAY), "timeout")
 #		var peasant_instance = peasant.instance()
@@ -581,7 +588,7 @@ func calculate_workers_share(our_workers: int, total_workers: int):
 	else:
 		return "0%"
 
-
+#BUG workforce total displayed in village window is 1 cycle behind, sent peasants and neighb_info are ok
 func neighbours_info():
 	var temp: String = ""
 	var index: int = 0
