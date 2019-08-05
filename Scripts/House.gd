@@ -166,6 +166,7 @@ func try_harvest(location: ResourceLocation):
 				workforce_allocation = min(max_workforce_allocation, workforce_allocation)
 				workforce -= workforce_allocation
 				location.workforce_total += workforce_allocation #NOTE Zerowane co update wszystkim wioskom
+				location.update_display() #NOTE trochę hack
 				neighbours[find_neighbour_idx(location)][2] += workforce_allocation #NOTE Do poprawy ten 3 el tablicy
 				workforce_collecting += workforce_allocation#@ juz nie collectiing
 				
