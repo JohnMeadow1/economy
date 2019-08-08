@@ -3,6 +3,9 @@ extends "res://Scripts/base_classes/Dwelling.gd"
 class_name House
 
 
+enum Actions {KEEPING = -1, SELLING, BUYING}
+enum Goods   {FOOD, WOOD, STONE, GOLD}# raczej dict zamaist enuma + basic prices
+
 onready var peasant = load("res://Nodes/Peasant.tscn")
 onready var name_label: Label = $name
 onready var house_name: String = name_label.text setget _set_house_name, _get_house_name
@@ -14,10 +17,12 @@ export(SettlementType) var _settlement_type:int = 0 setget _set_settlement_type
 
 const SPAWN_DELAY: float = 0.035
 const DISTANCE_MULT: float = 0.01 # harvest cost distance multiplier
+const BASIC_PRICES: Array = [0.1, 0.2, 0.3, 1.0] #goods value, BASIC_PRICES[Goods.FOOD] = 0.1 etc.
 
 var CYCLE_DURATION: float = -1.0
 var RAD_SQ: int = -1
 var neighbours: Array = []
+var TRADING: Array = []
 var starving_factor: float = 0.5
 var NEED_MORE_FOOD: bool = false
 var NEED_MORE_HOUSES: bool = false
@@ -28,6 +33,7 @@ func _ready():
 		CYCLE_DURATION = get_node("/root/Main").CYCLE_DURATION
 	randomize()
 	RAD_SQ = pow(radius, 2)
+	TRADING = [Actions.KEEPING, Actions.KEEPING, Actions.KEEPING, Actions.KEEPING] # TRADING[Goods.FOOD] = KEEPING etc.
 	prepare_population_arrays()
 	fill_POPULATION_by_age(population_total)
 	detect_neighbours()
@@ -74,8 +80,12 @@ func update_village():
 	calculate_workforce()
 	calculate_foodreq()
 	collect_resources()
-	consider_housing()  # set NEED_MORE_HOUSES (for next year)
+	consider_housing()  # set NEED_MORE_HOUSES (for next year) ?and trade
 	consider_starving() # set NEED_MORE_FOOD (for next year)
+	
+	prepare_for_trade()
+	trade()
+	
 	consider_accidents()#
 	consider_aging()#
 	consider_birth()#
@@ -227,6 +237,15 @@ func calculate_housing_req() -> float:
 	for i in range(100):
 		temp += POPULATION_by_age[i] * POPULATION_housing_req[i]
 	return temp
+
+
+func prepare_for_trade():
+	TRADING = [Actions.KEEPING, Actions.KEEPING, Actions.KEEPING, Actions.KEEPING]  # clear previous trade
+	pass
+
+
+func trade():
+	pass
 
 
 func consider_starving():
