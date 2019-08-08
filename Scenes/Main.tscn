@@ -21,11 +21,13 @@ script = ExtResource( 3 )
 [node name="House" parent="." instance=ExtResource( 4 )]
 position = Vector2( 238, 34 )
 stockpile_food = 2900.0
+stockpile_gold = 200.0
 population_total = 40
 
 [node name="House2" parent="." instance=ExtResource( 4 )]
 position = Vector2( 460, 380 )
 stockpile_food = 4000.0
+stockpile_gold = 400.0
 population_total = 70
 radius = 250
 _settlement_type = 1

@@ -14,6 +14,7 @@ var SettlementSprites = ["res://Sprites/Town/Church_5_2.png",
 export(float) var stockpile_food: float  = 0.0
 export(float) var stockpile_wood: float  = 0.0
 export(float) var stockpile_stone: float = 0.0
+export(float) var stockpile_gold: float  = 0.0
 export(int) var population_total: int    = 20
 export(int) var radius: int              = 300
 #pomysł: max stockpile, magazyn na surowce i rozbudowa magazynu

@@ -374,6 +374,7 @@ func send_peasants(where: Vector2, how_much: float = 1.0):
 			total_peasants -= (total_peasants - floor(0.5 * float(CYCLE_DURATION)/SPAWN_DELAY))
 	
 	if how_much_fifty > 0:
+		yield(get_tree().create_timer(SPAWN_DELAY), "timeout")
 		send_group(how_much_fifty, where, 1.6, Color(0, 0.5, 0.7, 1))
 	
 	if how_much_twenty > 0:
@@ -695,6 +696,7 @@ func on_hover_info():
 	globals.debug.text += "\nFood: " + str(stockpile_food) + "\n"
 	globals.debug.text += "Wood: " + str(stockpile_wood) + "\n"
 	globals.debug.text += "Stone: " + str(stockpile_stone) + "\n"
+	globals.debug.text += "Gold: " + str(stockpile_gold) + "\n"
 	globals.debug.text += "\nHousing: " + str(housing) + "\n"
 	globals.debug.text += "Housing req: " + str(housing_req_total) + "\n"
 	globals.debug.text += "Need more houses: " + str(NEED_MORE_HOUSES) + "\n"
