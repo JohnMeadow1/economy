@@ -112,7 +112,7 @@ func update_display():
 #	if available < 1: _set_resource_type(-1) # pomysl: opróżnione się zerują
 	if available_fluctuations < 0: $InfoTable/values.text += " (+" + str(-round(available_fluctuations*10)/10) + "/s)\n"
 	else: $InfoTable/values.text += " (" + str(-round(available_fluctuations*10)/10) + "/s)\n"
-	$InfoTable/values.text += str(round(harvest_cost*100)/100) + "\n"
+	$InfoTable/values.text += str(_resource_excav_cost) + "\n"
 	$InfoTable/values.text += str(regenerates_per_cycle) + "\n"
 #	$InfoTable/values.text += str(workers_total) + "/" + str(worker_capacity) + "\n"
 	$InfoTable/values.text += str(workforce_total) + "/" + str(workforce_capacity) + "\n"
@@ -128,24 +128,23 @@ func generate():
 
 
 #NOTE handled by house.gd, now obsolete
-func harvest():
-	available_fluctuations = available
-#	stockpile_fluctuations = previous_stockpile - stockpile
-#	previous_stockpile = stockpile
-	available += regenerates_per_cycle
-#	var hervested = workers_total / harvest_cost + auto_harvest
-	var hervested = workforce_total / harvest_cost + auto_harvest
-	hervested = min(hervested, harvestable_per_cycle)   #limit by max harvestable
-	hervested = min(hervested, available)               #limit by max available
-#	hervested = min(hervested, stockpile_max-stockpile) #limit by max storage
-#	stockpile += hervested
-	available -= hervested
-	available_fluctuations -= available
-	
-	update_depletion(hervested)
-
-
-func update_depletion(hervested):
-	harvest_cost += available_fluctuations * 0.1
-	harvest_cost = clamp(harvest_cost, 1, harvest_cost_max)
-
+#func harvest():
+#	available_fluctuations = available
+##	stockpile_fluctuations = previous_stockpile - stockpile
+##	previous_stockpile = stockpile
+#	available += regenerates_per_cycle
+##	var hervested = workers_total / harvest_cost + auto_harvest
+#	var hervested = workforce_total / harvest_cost + auto_harvest
+#	hervested = min(hervested, harvestable_per_cycle)   #limit by max harvestable
+#	hervested = min(hervested, available)               #limit by max available
+##	hervested = min(hervested, stockpile_max-stockpile) #limit by max storage
+##	stockpile += hervested
+#	available -= hervested
+#	available_fluctuations -= available
+#
+#	update_depletion(hervested)
+#
+#
+#func update_depletion(hervested):
+#	harvest_cost += available_fluctuations * 0.1
+#	harvest_cost = clamp(harvest_cost, 1, harvest_cost_max)

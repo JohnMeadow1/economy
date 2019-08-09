@@ -13,7 +13,6 @@ var ResourceSprites: Array   = ["res://Sprites/Plants/Yew_Tree.png",
 
 export(float) var available: float             = 10.0
 export(float) var harvestable_per_cycle: float = 1.0
-export(float) var harvest_cost: float          = 1.0
 export(float) var harvest_cost_max: float      = 10.0
 export(float) var auto_harvest: float          = 0.0
 export(float) var regenerates_per_cycle: float = 0.0
