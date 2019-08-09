@@ -17,6 +17,8 @@ export(SettlementType) var _settlement_type:int = 0 setget _set_settlement_type
 
 const SPAWN_DELAY: float = 0.035
 const DISTANCE_MULT: float = 0.01 # harvest cost distance multiplier
+const HOUSE_COST_WOOD: int = 180
+const HOUSE_COST_STONE: int = 100
 const BASIC_PRICES: Array = [0.1, 0.2, 0.3, 1.0] #goods value, BASIC_PRICES[Goods.FOOD] = 0.1 etc.
 
 var CYCLE_DURATION: float = -1.0
@@ -217,18 +219,18 @@ func consider_housing():
 	# jeśli w tym roku brakowało miejsca, to (jeśli są surki) zacznij budować domy (tak by na przyszły rok były gotowe)
 	if housing < housing_req_total:
 		var needed_houses = housing_req_total - housing
-		var possible_to_build = floor(stockpile_wood/180) + floor(stockpile_stone/100)
+		var possible_to_build = floor(stockpile_wood/HOUSE_COST_WOOD) + floor(stockpile_stone/HOUSE_COST_STONE)
 		if possible_to_build < needed_houses:
 			NEED_MORE_HOUSES = true
 		else:
 			NEED_MORE_HOUSES = false
 		if possible_to_build > 0:
 			for i in range(min(needed_houses, possible_to_build)):
-				if stockpile_wood >= 500:
-					stockpile_wood -= 500
+				if stockpile_wood >= HOUSE_COST_WOOD:
+					stockpile_wood -= HOUSE_COST_WOOD
 					housing += 1
-				elif stockpile_stone >= 300:
-					stockpile_stone -= 300
+				elif stockpile_stone >= HOUSE_COST_STONE:
+					stockpile_stone -= HOUSE_COST_STONE
 					housing += 1
 
 
@@ -320,6 +322,9 @@ func calculate_fluctuations():
 	
 	population_total_fluctuations = previous_population_total - population_total
 	previous_population_total = population_total
+	
+	stockpile_food_fluctuations = previous_stockpile_food - stockpile_food
+	previous_stockpile_food = stockpile_food
 
 
 """Decrement random cell in POPULATION_by_age by one, besides that affect population_total counter only.
@@ -712,7 +717,7 @@ func on_hover_info():
 	globals.debug.text += "calculated_workforce: " + append_calc_workforce_info()
 	globals.debug.text += "workforce used: " + append_workforce_used_info()
 	
-	globals.debug.text += "\nFood: " + str(stockpile_food) + "\n"
+	globals.debug.text += "\nFood: " + append_stockpile_food_info()
 	globals.debug.text += "Wood: " + str(stockpile_wood) + "\n"
 	globals.debug.text += "Stone: " + str(stockpile_stone) + "\n"
 	globals.debug.text += "Gold: " + str(stockpile_gold) + "\n"
@@ -742,9 +747,19 @@ func append_calc_workforce_info():
 	else: text += " (" + str(-stepify(calculated_workforce_fluctuations, 0.1))+")\n"
 	return text
 
+
 func append_workforce_used_info():
 	var text: String = ""
 	if calculated_workforce != 0:
 		text += str(stepify(100*((calculated_workforce - workforce)/calculated_workforce), 0.1))+"%\n"
 	else: text += "ALL DEAD\n"
+	return text
+
+
+func append_stockpile_food_info():
+	var text: String = ""
+	text += str(stockpile_food)
+	if stockpile_food_fluctuations < 0: 
+		text += " (+" + str(-stockpile_food_fluctuations)+")\n"
+	else: text += " (" + str(-stockpile_food_fluctuations)+")\n"
 	return text
