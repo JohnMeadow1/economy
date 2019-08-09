@@ -232,6 +232,8 @@ func consider_housing():
 				elif stockpile_stone >= HOUSE_COST_STONE:
 					stockpile_stone -= HOUSE_COST_STONE
 					housing += 1
+	else:
+		NEED_MORE_HOUSES = false
 
 
 func calculate_housing_req() -> float:
