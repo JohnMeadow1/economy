@@ -209,15 +209,15 @@ func generate():
 
 func consider_housing():
 	housing_req_total = calculate_housing_req()
-	if foodreq !=0:
+	if foodreq != 0:
 		population_birth_multiplier = clamp(stockpile_food/foodreq, 0.15, 0.5) + clamp(housing - housing_req_total, 0, 1)
 	else:
 		population_birth_multiplier = 0.5 + clamp(housing - housing_req_total, 0, 1)
-	# housing rośnie jak budujemy domy, 1 dom = 300 kamienia lub 500 drewna
+	# housing rośnie jak budujemy domy, 1 dom = 100 kamienia lub 180 drewna
 	# jeśli w tym roku brakowało miejsca, to (jeśli są surki) zacznij budować domy (tak by na przyszły rok były gotowe)
 	if housing < housing_req_total:
 		var needed_houses = housing_req_total - housing
-		var possible_to_build = floor(stockpile_wood/500) + floor(stockpile_stone/300)
+		var possible_to_build = floor(stockpile_wood/180) + floor(stockpile_stone/100)
 		if possible_to_build < needed_houses:
 			NEED_MORE_HOUSES = true
 		else:
