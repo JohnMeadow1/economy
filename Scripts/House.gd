@@ -683,7 +683,7 @@ func _draw():
 			elif position.distance_squared_to(resource.position) < 2 * RAD_SQ:
 				draw_line(Vector2(0,0), resource.position - position, Color(1, 0, 0, 1), 3.0) # red
 		# BUG OX and OY are rendered partially invisible after few update calls (best depicted with zoom > 2)
-		draw_population_chart(2) # zoom parameter 
+	draw_population_chart(2) # zoom parameter 
 
 
 """Called by _draw"""
