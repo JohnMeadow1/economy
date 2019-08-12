@@ -19,12 +19,14 @@ const SPAWN_DELAY: float = 0.035
 const DISTANCE_MULT: float = 0.01 # harvest cost distance multiplier
 const HOUSE_COST_WOOD: int = 180
 const HOUSE_COST_STONE: int = 100
-const BASIC_PRICES: Array = [0.1, 0.2, 0.3, 1.0] #goods value, BASIC_PRICES[Goods.FOOD] = 0.1 etc.
+const BASIC_PRICES: Array = [0.1, 0.2, 0.3] #goods value realted to gold, BASIC_PRICES[Goods.FOOD] = 0.1 etc.
 
 var CYCLE_DURATION: float = -1.0
 var RAD_SQ: int = -1
 var neighbours: Array = []
 var TRADING: Array = []
+var BUY_PRICES: Array = []
+var SELL_PRICES: Array = []
 var starving_factor: float = 0.5
 var NEED_MORE_FOOD: bool = false
 var NEED_MORE_HOUSES: bool = false
@@ -35,7 +37,8 @@ func _ready():
 		CYCLE_DURATION = get_node("/root/Main").CYCLE_DURATION
 	randomize()
 	RAD_SQ = pow(radius, 2)
-	TRADING = [Actions.KEEPING, Actions.KEEPING, Actions.KEEPING, Actions.KEEPING] # TRADING[Goods.FOOD] = KEEPING etc.
+	
+	prepare_trading_arrays()
 	prepare_population_arrays()
 	fill_POPULATION_by_age(population_total)
 	detect_neighbours()
@@ -244,7 +247,29 @@ func calculate_housing_req() -> float:
 
 
 func prepare_for_trade():
-	TRADING = [Actions.KEEPING, Actions.KEEPING, Actions.KEEPING, Actions.KEEPING]  # clear previous trade
+#	Założenia: 
+#	- płacimy zawsze "złotem", nie ma barteru
+#	- złoto ma wartość = 1.0
+#	- jedzenie chcemy kupować jak nam za szybko ubywa
+#	- kamień/drewno chcemy kupować jak mamy za mało domów
+#	- jedzenie chcemy sprzedawać jak nam przybywa (nie przejadamy)
+#	- kamień/drewno chcemy sprzedawać jak mamy dość domów
+#
+#   TRADING[Goods.FOOD] = TRADING[0]
+#                  FOOD              WOOD            STONE
+	TRADING = [Actions.KEEPING, Actions.KEEPING, Actions.KEEPING]  # clear previous trade
+	
+	# check bool flags to determine what village needs
+	# based on that set buying selling keepnig
+	
+	
+	
+#	for i in range(TRADING.size()):                                # set transaction prices (ranges)
+#		if TRADING[i] == Actions.SELLING:
+#			SELL_PRICES[i] = 
+#		elif TRADING[i] == Actions.BUYING:
+#			BUY_PRICES[i] = 
+	
 	pass
 
 
@@ -479,6 +504,18 @@ func send_group(how_many: int, where, size: float = 1.0, color: Color = Color(1,
 		peasant_instance.scale = Vector2(size, size)
 		peasant_instance.get_node("Sprite").modulate = color
 		add_child(peasant_instance)
+
+
+func prepare_trading_arrays():
+	TRADING = [Actions.KEEPING, Actions.KEEPING, Actions.KEEPING, Actions.KEEPING] # TRADING[Goods.FOOD] = KEEPING etc.
+	BUY_PRICES.clear()
+	SELL_PRICES.clear()
+	for i in range(BASIC_PRICES.size()):
+		var tuple = [0.9 * BASIC_PRICES[i], BASIC_PRICES[i]]
+		BUY_PRICES.append(tuple)
+		
+		tuple = [1.1 * BASIC_PRICES[i], BASIC_PRICES[i]]
+		SELL_PRICES.append(tuple)
 
 
 func prepare_population_arrays():
