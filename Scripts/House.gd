@@ -261,7 +261,14 @@ func prepare_for_trade():
 	
 	# check bool flags to determine what village needs
 	# based on that set buying selling keepnig
-	
+	if stockpile_food_fluctuations < 0: # operating on data from last year, fluct < 0 means "we are on + food income"
+		if NEED_MORE_FOOD:
+			TRADING[Goods.FOOD] = Actions.KEEPING
+		else:
+			TRADING[Goods.FOOD] = Actions.SELLING
+#			food_amount = stockpile_food - consumption_food # we want to keep safe 1yr margin of food in the village
+	else:
+		TRADING[Goods.FOOD] = Actions.BUYING
 	
 	
 #	for i in range(TRADING.size()):                                # set transaction prices (ranges)
@@ -279,7 +286,8 @@ func trade():
 
 func consider_starving():
 	if stockpile_food >= consumption_food: # dość jedzenia, nie rób nic
-		NEED_MORE_FOOD = false
+		if stockpile_food > 2 * consumption_food: NEED_MORE_FOOD = false
+		else: NEED_MORE_FOOD = true
 		stockpile_food -= consumption_food
 	elif population_total > 0: # za mało jedzenia, zjadają co jest i umierają proporcjonalnie do brakującej żywności
 		NEED_MORE_FOOD = true
@@ -764,6 +772,7 @@ func on_hover_info():
 	globals.debug.text += "Housing req: " + str(housing_req_total) + "\n"
 	globals.debug.text += "Need more houses: " + str(NEED_MORE_HOUSES) + "\n"
 	globals.debug.text += "Need more food: " + str(NEED_MORE_FOOD) + "\n"
+	globals.debug.text += "\nTrading info: " + append_trading_info()
 	globals.debug.text += "\nNEARBY RESOURCES\n" + neighbours_info() + "\n"
 #	                  + " = " + str(workforce_collecting + total_workforce_transporting_this_cycle) + "\n"
 
@@ -801,4 +810,11 @@ func append_stockpile_food_info():
 	if stockpile_food_fluctuations < 0: 
 		text += " (+" + str(-stockpile_food_fluctuations)+")\n"
 	else: text += " (" + str(-stockpile_food_fluctuations)+")\n"
+	return text
+
+
+func append_trading_info():
+	var text: String = ""
+	text += str(TRADING)+"\n"
+	
 	return text
