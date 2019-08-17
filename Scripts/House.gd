@@ -261,14 +261,8 @@ func prepare_for_trade():
 	
 	# check bool flags to determine what village needs
 	# based on that set buying selling keepnig
-	if stockpile_food_fluctuations < 0: # operating on data from last year, fluct < 0 means "we are on + food income"
-		if NEED_MORE_FOOD:
-			TRADING[Goods.FOOD] = Actions.KEEPING
-		else:
-			TRADING[Goods.FOOD] = Actions.SELLING
-#			food_amount = stockpile_food - consumption_food # we want to keep safe 1yr margin of food in the village
-	else:
-		TRADING[Goods.FOOD] = Actions.BUYING
+	check_food()
+	
 	
 	
 #	for i in range(TRADING.size()):                                # set transaction prices (ranges)
@@ -280,13 +274,24 @@ func prepare_for_trade():
 	pass
 
 
+func check_food():
+	if stockpile_food_fluctuations < 0: # operating on data from last year, fluct < 0 means "we are on + food income"
+		if NEED_MORE_FOOD:
+			TRADING[Goods.FOOD] = Actions.KEEPING
+		else:
+			TRADING[Goods.FOOD] = Actions.SELLING
+#			food_amount = stockpile_food - consumption_food # we want to keep safe 1yr margin of food in the village
+	else:
+		TRADING[Goods.FOOD] = Actions.BUYING
+
+
 func trade():
 	pass
 
 
 func consider_starving():
 	if stockpile_food >= consumption_food: # dość jedzenia, nie rób nic
-		if stockpile_food > 2 * consumption_food: NEED_MORE_FOOD = false
+		if stockpile_food > 2 * consumption_food: NEED_MORE_FOOD = false # chcemy miec zdrowy ~roczny zapaas
 		else: NEED_MORE_FOOD = true
 		stockpile_food -= consumption_food
 	elif population_total > 0: # za mało jedzenia, zjadają co jest i umierają proporcjonalnie do brakującej żywności
