@@ -24,6 +24,7 @@ const BASIC_PRICES: Array = [0.1, 0.2, 0.3] #goods value realted to gold, BASIC_
 var CYCLE_DURATION: float = -1.0
 var RAD_SQ: int = -1
 var neighbours: Array = []
+var traders: Array = []
 var TRADING: Array = []
 var BUY_PRICES: Array = []
 var SELL_PRICES: Array = []
@@ -43,6 +44,8 @@ func _ready():
 	fill_POPULATION_by_age(population_total)
 	detect_neighbours()
 	sort_neighbours()
+	detect_traders()
+	sort_traders()
 	create_cost_labels()
 	update_display()
 	sprite.material = sprite.material.duplicate()
@@ -207,6 +210,13 @@ func find_neighbour_idx(location: ResourceLocation) -> int:
 	return -1
 
 
+func find_trader_idx(location: House) -> int:
+	for idx in range(traders.size()):
+		if (traders[idx][0] as House) == location:
+			return idx
+	return -1
+
+
 func generate():
 	population_total = randi() % 100 + 1 # randi between 1 and 100
 	stockpile_food = randi() % 150 + 251
@@ -254,6 +264,8 @@ func prepare_for_trade():
 #	- kamień/drewno chcemy kupować jak mamy za mało domów
 #	- jedzenie chcemy sprzedawać jak nam przybywa (nie przejadamy)
 #	- kamień/drewno chcemy sprzedawać jak mamy dość domów
+#	- każdy rozpatruje handel z każdym, co symuluje sytuację "wezmę złoto/towar i pojadę do ciebie !!!
+#   (może się zdarzyć, że ludzie z wioski A jadą do B i z B jadą do A bo jedni mają u siebie coś a drudzy coś)
 #
 #   TRADING[Goods.FOOD] = TRADING[0]
 #                  FOOD              WOOD            STONE
@@ -262,16 +274,16 @@ func prepare_for_trade():
 	# check bool flags to determine what village needs
 	# based on that set buying selling keepnig
 	check_food()
+#	check_wood()
+#	check_stone()
 	
 	
-	
-#	for i in range(TRADING.size()):                                # set transaction prices (ranges)
+	# set transaction prices (ranges)
+#	for i in range(TRADING.size()):
 #		if TRADING[i] == Actions.SELLING:
 #			SELL_PRICES[i] = 
 #		elif TRADING[i] == Actions.BUYING:
 #			BUY_PRICES[i] = 
-	
-	pass
 
 
 func check_food():
@@ -280,12 +292,19 @@ func check_food():
 			TRADING[Goods.FOOD] = Actions.KEEPING
 		else:
 			TRADING[Goods.FOOD] = Actions.SELLING
-#			food_amount = stockpile_food - consumption_food # we want to keep safe 1yr margin of food in the village
 	else:
-		TRADING[Goods.FOOD] = Actions.BUYING
+		if stockpile_gold > 0:
+			TRADING[Goods.FOOD] = Actions.BUYING
+		else:
+			TRADING[Goods.FOOD] = Actions.KEEPING
 
 
 func trade():
+	
+	
+	
+	
+	
 	pass
 
 
@@ -632,6 +651,19 @@ func detect_neighbours(): # Neighbour = triple [Reosurce Node, distance, amount 
 				neighbours.remove(resource_idx)
 
 
+func detect_traders(): # Trader = triple [Village Node, distance, something maby]
+	traders.clear()
+	for village in get_tree().get_nodes_in_group("village"):
+		var village_idx = find_trader_idx(village)
+		if position.distance_squared_to(village.position) < 1.5 * RAD_SQ:
+			if village_idx == -1: # jest a zasięgu, nie ma w tablicy -> dodaj
+				var triple = [village, position.distance_to(village.position), 0]
+				traders.append(triple)
+		else:
+			if village_idx != -1: # jest w tablicy, nie ma w zasięgu -> usuń i wyzeruj workforce? tylko po co w sumie
+				traders.remove(village_idx)
+
+
 func create_cost_labels():
 	var node = Node2D.new()
 	node.name = "CostLabels"
@@ -715,6 +747,10 @@ func sort_neighbours():
 	neighbours.sort_custom(MyCustomSorter, "sort")
 
 
+func sort_traders():
+	traders.sort_custom(MyCustomSorter, "sort")
+
+
 """Return 'start'st/nd/rd/th cheapest resource, starting from 'start' index in sorted neighbours array"""
 func get_cheapest_resource(start = 0) -> Node2D:
 	return neighbours[start][0]
@@ -733,6 +769,14 @@ func _draw():
 			elif position.distance_squared_to(resource.position) < 2 * RAD_SQ:
 				draw_line(Vector2(0,0), resource.position - position, Color(1, 0, 0, 1), 3.0) # red
 		# BUG OX and OY are rendered partially invisible after few update calls (best depicted with zoom > 2)
+	
+#	for village in in get_tree().get_nodes_in_group("village"):
+#		var isTrader = false
+#		for i in range(traders.size()):
+#			if village == traders[][]:
+#				isTrader = true
+#		if isTrader:
+#			draw_line(Vector2(0,0), village.position - position, Color(1, 1, 0, 1), 3.0) # 
 	draw_population_chart(2) # zoom parameter 
 
 
