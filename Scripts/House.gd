@@ -657,7 +657,7 @@ func detect_traders(): # Trader = triple [Village Node, distance, something maby
 	for village in get_tree().get_nodes_in_group("village"):
 		var village_idx = find_trader_idx(village)
 		if position.distance_squared_to(village.position) < 1.9 * RAD_SQ:
-			if village_idx == -1: # jest a zasięgu, nie ma w tablicy -> dodaj
+			if village != self and village_idx == -1: # jest a zasięgu, nie ma w tablicy -> dodaj
 				var triple = [village, position.distance_to(village.position), 0]
 				traders.append(triple)
 		else:
@@ -710,6 +710,19 @@ func neighbours_info():
 		temp += "Excav cost = " + str(neighbour[0]._resource_excav_cost) + "\n"
 		temp += "Occupying " + str(neighbour[2]) + "/" + str(neighbour[0].workforce_capacity) + " wf space.\n"
 		temp += "Workforce share = " + calculate_workers_share(neighbour[2], neighbour[0].workforce_total) + "\n"
+	return temp
+
+
+func traders_info():
+	var temp: String = ""
+	var index: int = 0
+	for trader in traders:
+		index += 1
+		temp += str(index) + ". " + str(trader[0].house_name) + "\n"
+#		temp += "Harvest cost = " + str(trader[1] * DISTANCE_MULT * trader[0]._resource_excav_cost) + "\n"
+#		temp += "Excav cost = " + str(trader[0]._resource_excav_cost) + "\n"
+#		temp += "Occupying " + str(trader[2]) + "/" + str(trader[0].workforce_capacity) + " wf space.\n"
+#		temp += "Workforce share = " + calculate_workers_share(trader[2], trader[0].workforce_total) + "\n"
 	return temp
 
 
@@ -827,6 +840,7 @@ func on_hover_info():
 	globals.debug.text += "\nTrading info: " + append_trading_info()
 	globals.debug.text += "\nNEARBY RESOURCES\n" + neighbours_info() + "\n"
 #	                  + " = " + str(workforce_collecting + total_workforce_transporting_this_cycle) + "\n"
+	globals.debug.text += "\nNEARBY TRADERS\n" + traders_info() + "\n"
 
 
 """Append_*_info functions appends numerical values connected to some village parameter to given string.""" 
