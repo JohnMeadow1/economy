@@ -301,7 +301,8 @@ func check_food():
 
 func trade():
 	
-	
+	for trader in traders:
+		pass
 	
 	
 	
@@ -655,7 +656,7 @@ func detect_traders(): # Trader = triple [Village Node, distance, something maby
 	traders.clear()
 	for village in get_tree().get_nodes_in_group("village"):
 		var village_idx = find_trader_idx(village)
-		if position.distance_squared_to(village.position) < 1.5 * RAD_SQ:
+		if position.distance_squared_to(village.position) < 1.9 * RAD_SQ:
 			if village_idx == -1: # jest a zasięgu, nie ma w tablicy -> dodaj
 				var triple = [village, position.distance_to(village.position), 0]
 				traders.append(triple)
@@ -770,13 +771,15 @@ func _draw():
 				draw_line(Vector2(0,0), resource.position - position, Color(1, 0, 0, 1), 3.0) # red
 		# BUG OX and OY are rendered partially invisible after few update calls (best depicted with zoom > 2)
 	
-#	for village in in get_tree().get_nodes_in_group("village"):
-#		var isTrader = false
-#		for i in range(traders.size()):
-#			if village == traders[][]:
-#				isTrader = true
-#		if isTrader:
-#			draw_line(Vector2(0,0), village.position - position, Color(1, 1, 0, 1), 3.0) # 
+	draw_circle(Vector2(0,0), radius * sqrt(1.9), Color(1, 1, 0, 0.04))
+	for village in get_tree().get_nodes_in_group("village"): #NOTE jeśli miasto A widzi miasto B to niekoniecznie w 2 stronę
+		var isTrader = false
+		for i in range(traders.size()):
+			if village == traders[i][0]:
+				isTrader = true
+		if isTrader:
+			draw_line(Vector2(0,0), village.position - position, Color(1, 1, 0, 1), 3.0) # yellow
+#			draw_circle(village.position - position, 50, Color(1, 1, 0, 1))
 	draw_population_chart(2) # zoom parameter 
 
 

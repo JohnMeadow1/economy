@@ -25,6 +25,8 @@ func handle_mouse_motion_event(event):
 			for village in get_tree().get_nodes_in_group("village"):
 				village.detect_neighbours()
 				village.sort_neighbours()
+				village.detect_traders()
+				village.sort_traders()
 				village.update()
 		else: #nothing selected -> drag camera
 			position = lerp(position,previous_camera_position + previous_mouse_possition - get_local_mouse_position(), 0.5)
