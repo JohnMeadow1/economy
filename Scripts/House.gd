@@ -302,11 +302,38 @@ func check_food():
 func trade():
 	
 	for trader in traders:
-		pass
-	
-	
+		consider_food(trader[0])
+#		consider_wood(trader)
+#		consider_stone(trader)
 	
 	pass
+
+
+func consider_food(trader: House):
+	# póki co handlujemy z pierwszym z brzegu, bez porównywania cen
+	# ale będzie je trzeba robić gdzieś wcześniej na fazie wyboru
+	if TRADING[Goods.FOOD] == Actions.SELLING:
+		# porownaj swoje sell prices z location buy prices
+		if SELL_PRICES[Goods.FOOD][1] <= trader.BUY_PRICES[Goods.FOOD][0]: # gdy najtaniej jak sprzedam <= najdrożej jak kupię
+			# to się dogadamy wyliczając średnią z naszych (pokrywającyh się) przedziałów
+			var transaction_price = (SELL_PRICES[Goods.FOOD][1] + trader.BUY_PRICES[Goods.FOOD][0])/2
+			var max_sell_value_in_gold = stockpile_food * transaction_price
+			var max_buy_owned_gold = trader.stockpile_gold
+			var max_transaction = min(max_sell_value_in_gold, max_buy_owned_gold)
+			
+			# actual trade
+			stockpile_food -= max_transaction / transaction_price
+			stockpile_gold += max_transaction
+			
+			trader.stockpile_food += max_transaction / transaction_price
+			trader.stockpile_gold -= max_transaction
+			print("ACTUAL TRADE HAPPENING!!")
+		
+		
+		#todo dostosuj ceny w zależności od tego co się stało 
+		pass
+	elif TRADING[Goods.FOOD] == Actions.BUYING:
+		pass
 
 
 func consider_starving():
@@ -658,7 +685,7 @@ func detect_traders(): # Trader = triple [Village Node, distance, something maby
 		var village_idx = find_trader_idx(village)
 		if position.distance_squared_to(village.position) < 1.9 * RAD_SQ:
 			if village != self and village_idx == -1: # jest a zasięgu, nie ma w tablicy -> dodaj
-				var triple = [village, position.distance_to(village.position), 0]
+				var triple = [village, position.distance_to(village.position), village.BUY_PRICES]
 				traders.append(triple)
 		else:
 			if village_idx != -1: # jest w tablicy, nie ma w zasięgu -> usuń i wyzeruj workforce? tylko po co w sumie
