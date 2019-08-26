@@ -279,7 +279,7 @@ func prepare_for_trade():
 #	check_stone()
 	
 	
-	# set transaction prices (ranges)
+	#todo set transaction prices (ranges)
 #	for i in range(TRADING.size()):
 #		if TRADING[i] == Actions.SELLING:
 #			SELL_PRICES[i] = 
@@ -302,6 +302,8 @@ func check_food():
 
 func trade():
 	
+#	if TRADING[Goods.FOOD] == Actions.SELLING:
+#		sort_traders(BUY_PRICES[Goods.FOOD][0])
 	for trader in traders:
 		consider_food(trader[0])
 #		consider_wood(trader)
@@ -311,13 +313,13 @@ func trade():
 
 
 func consider_food(trader: House):
-	# póki co handlujemy z pierwszym z brzegu, bez porównywania cen
+	# póki co handlujemy z pierwszym akceptowalnym z brzegu, bez porównywania cen
 	# ale będzie je trzeba robić gdzieś wcześniej na fazie wyboru
 	if TRADING[Goods.FOOD] == Actions.SELLING:
 		# porownaj swoje sell prices z location buy prices
-		if SELL_PRICES[Goods.FOOD][1] <= trader.BUY_PRICES[Goods.FOOD][0]: # gdy najtaniej jak sprzedam <= najdrożej jak kupię
+		if SELL_PRICES[Goods.FOOD][1] <= trader.BUY_PRICES[Goods.FOOD][1]: # gdy najtaniej jak sprzedam <= najdrożej jak kupi
 			# to się dogadamy wyliczając średnią z naszych (pokrywającyh się) przedziałów
-			var transaction_price = (SELL_PRICES[Goods.FOOD][1] + trader.BUY_PRICES[Goods.FOOD][0])/2
+			var transaction_price = (SELL_PRICES[Goods.FOOD][1] + trader.BUY_PRICES[Goods.FOOD][1])/2
 			var max_sell_value_in_gold = stockpile_food * transaction_price
 			var max_buy_owned_gold = trader.stockpile_gold
 			var max_transaction = min(max_sell_value_in_gold, max_buy_owned_gold)
@@ -328,13 +330,24 @@ func consider_food(trader: House):
 			
 			trader.stockpile_food += max_transaction / transaction_price
 			trader.stockpile_gold -= max_transaction
-			print("ACTUAL TRADE HAPPENING!!")
-		
-		
+			print($name.text, " sold ", (max_transaction / transaction_price), " food to ", trader.get_node("name").text)
 		#todo dostosuj ceny w zależności od tego co się stało 
-		pass
-	elif TRADING[Goods.FOOD] == Actions.BUYING:
-		pass
+	elif TRADING[Goods.FOOD] == Actions.BUYING: # buy 0.9, 1    # sell 1.1, 1
+		# porownaj swoje buy prices z location sell prices
+		if BUY_PRICES[Goods.FOOD][1] <= trader.SELL_PRICES[Goods.FOOD][1]: # gdy najdrożej jak kupię <= najtaniej jak sprzeda
+			# to się dogadamy wyliczając średnią z naszych (pokrywającyh się) przedziałów
+			var transaction_price = (BUY_PRICES[Goods.FOOD][1] + trader.SELL_PRICES[Goods.FOOD][1])/2
+			var max_sell_value_in_gold = trader.stockpile_food * transaction_price
+			var max_buy_owned_gold = stockpile_gold
+			var max_transaction = min(max_sell_value_in_gold, max_buy_owned_gold)
+			
+			# actual trade
+			stockpile_food += max_transaction / transaction_price
+			stockpile_gold -= max_transaction
+			
+			trader.stockpile_food -= max_transaction / transaction_price
+			trader.stockpile_gold += max_transaction
+			print($name.text, " bought ", (max_transaction / transaction_price), " food from ", trader.get_node("name").text)
 
 
 func consider_starving():
