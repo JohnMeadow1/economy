@@ -47,6 +47,7 @@ func _ready():
 	detect_traders()
 	sort_traders()
 	create_cost_labels()
+	self.house_name += "_" + str(get_index())
 	update_display()
 	sprite.material = sprite.material.duplicate()
 
@@ -64,7 +65,7 @@ func _get_house_name():
 func _set_settlement_type(value):
 	_settlement_type = value
 	if value >= 0:
-		self.house_name = SettlementName[value]
+		_set_house_name(SettlementName[value])
 		if has_node("Sprite"):
 			$Sprite.texture = load(SettlementSprites[value])
 	else:
@@ -745,7 +746,7 @@ func traders_info():
 	var index: int = 0
 	for trader in traders:
 		index += 1
-		temp += str(index) + ". " + str(trader[0].house_name) + "\n"
+		temp += str(index) + ". " + str(trader[0].get_node("name").text) + "\n"
 #		temp += "Harvest cost = " + str(trader[1] * DISTANCE_MULT * trader[0]._resource_excav_cost) + "\n"
 #		temp += "Excav cost = " + str(trader[0]._resource_excav_cost) + "\n"
 #		temp += "Occupying " + str(trader[2]) + "/" + str(trader[0].workforce_capacity) + " wf space.\n"
