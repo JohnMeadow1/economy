@@ -866,9 +866,9 @@ func on_hover_info():
 	globals.debug.text += "Need more houses: " + str(NEED_MORE_HOUSES) + "\n"
 	globals.debug.text += "Need more food: " + str(NEED_MORE_FOOD) + "\n"
 	globals.debug.text += "\nTrading info: " + append_trading_info()
+	globals.debug.text += "\nNEARBY TRADERS\n" + traders_info() + "\n"
 	globals.debug.text += "\nNEARBY RESOURCES\n" + neighbours_info() + "\n"
 #	                  + " = " + str(workforce_collecting + total_workforce_transporting_this_cycle) + "\n"
-	globals.debug.text += "\nNEARBY TRADERS\n" + traders_info() + "\n"
 
 
 """Append_*_info functions appends numerical values connected to some village parameter to given string.""" 
@@ -909,6 +909,14 @@ func append_stockpile_food_info():
 
 func append_trading_info():
 	var text: String = ""
-	text += str(TRADING)+"\n"
-	
+	#enum Actions {KEEPING = -1, SELLING, BUYING}
+	for action in TRADING:
+		if action == -1:
+			text += "KEEP "
+		if action == 0:
+			text += "SELL "
+		if action == 1:
+			text += "BUY "
+	text += "\n"
+#	text += str(TRADING)+"\n"
 	return text
