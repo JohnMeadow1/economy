@@ -330,7 +330,8 @@ func consider_food(trader: House):
 			
 			trader.stockpile_food += max_transaction / transaction_price
 			trader.stockpile_gold -= max_transaction
-			print($name.text, " sold ", (max_transaction / transaction_price), " food to ", trader.get_node("name").text)
+			print($name.text, " sold ", (max_transaction / transaction_price), " food to ", trader.get_node("name").text,\
+			      " for ", max_transaction, " gold, unit price was ", transaction_price)
 		#todo dostosuj ceny w zależności od tego co się stało 
 	elif TRADING[Goods.FOOD] == Actions.BUYING: # buy 0.9, 1    # sell 1.1, 1
 		# porownaj swoje buy prices z location sell prices
@@ -347,7 +348,8 @@ func consider_food(trader: House):
 			
 			trader.stockpile_food -= max_transaction / transaction_price
 			trader.stockpile_gold += max_transaction
-			print($name.text, " bought ", (max_transaction / transaction_price), " food from ", trader.get_node("name").text)
+			print($name.text, " bought ", (max_transaction / transaction_price), " food from ", trader.get_node("name").text,\
+			      " for ", max_transaction, " gold, unit price was ", transaction_price)
 
 
 func consider_starving():
