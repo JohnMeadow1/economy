@@ -300,16 +300,38 @@ func check_food():
 			TRADING[Goods.FOOD] = Actions.KEEPING
 
 
+#func check_wood():
+#	if stockpile_wood_fluctuations < 0: # operating on data from last year, fluct < 0 means "we are on + food income"
+#		if NEED_MORE_WOOD:
+#			TRADING[Goods.WOOD] = Actions.KEEPING
+#		else:
+#			TRADING[Goods.WOOD] = Actions.SELLING
+#	else:
+#		if stockpile_gold > 0:
+#			TRADING[Goods.WOOD] = Actions.BUYING
+#		else:
+#			TRADING[Goods.WOOD] = Actions.KEEPING
+#
+#
+#func check_stone():
+#	if stockpile_stone_fluctuations < 0: # operating on data from last year, fluct < 0 means "we are on + food income"
+#		if NEED_MORE_STONE:
+#			TRADING[Goods.STONE] = Actions.KEEPING
+#		else:
+#			TRADING[Goods.STONE] = Actions.SELLING
+#	else:
+#		if stockpile_gold > 0:
+#			TRADING[Goods.STONE] = Actions.BUYING
+#		else:
+#			TRADING[Goods.STONE] = Actions.KEEPING
+
+
 func trade():
-	
-	# sort nearby traders by buy/sell resource value (depending on your own action)
-	
-#	if TRADING[Goods.FOOD] == Actions.SELLING:
-#		sort_traders(BUY_PRICES[Goods.FOOD][0])
-	
-	for i in range(3): # for every resource
+	#for i in range(3):
+	for i in range(1): # for every resource, i = 0 ~ Goods.FOOD etc.
+		#sort nearby traders by buy/sell resource value (depending on your own action)
+		trade_sort(i)
 		for trader in traders:
-#			sort_traders(BUY_PRICES[Goods.FOOD][0])
 			consider_resource(trader, i)
 	
 	
@@ -317,6 +339,13 @@ func trade():
 #		consider_resource(trader, Goods.FOOD)
 	
 	pass
+
+
+func trade_sort(res_idx):
+	if TRADING[res_idx] == Actions.SELLING: # chcemy iść najpierw do tych, co najdrożej kupią
+		sort_traders(2, res_idx) # więc sortujemy malejąco po cenach kupna #NOTE po niższych czy wyższych potem ogarnij
+	elif TRADING[res_idx] == Actions.BUYING: # chcemy iść najpierw do tych, co najtaniej sprzedadzą
+		sort_traders(3, res_idx) # więc sortujemy rosnąco po cenach sprzedaży
 
 
 func consider_resource(trader, res_idx):
@@ -353,7 +382,8 @@ func consider_resource(trader, res_idx):
 			
 			print($name.text, " sold ", (max_transaction / transaction_price), " resource ", res_idx, " to ",\
 			      trader[0].get_node("name").text, " for ", max_transaction, " gold, unit price was ", transaction_price)
-		#todo dostosuj ceny w zależności od tego co się stało 
+		#TODO dostosuj ceny w zależności od tego co się stało 
+		#TODO check NEED MORE flags (if satisfied stop buying/selling)
 	elif TRADING[res_idx] == Actions.BUYING: # buy 0.9, 1    # sell 1.1, 1
 		# porownaj swoje buy prices z location sell prices
 		if BUY_PRICES[res_idx][1] <= trader[0].SELL_PRICES[res_idx][1]: # najdrożej jak kupię <= najtaniej jak sprzeda
@@ -729,14 +759,14 @@ func detect_neighbours(): # Neighbour = triple [Reosurce Node, distance, amount 
 				neighbours.remove(resource_idx)
 
 
-func detect_traders(): # Trader = triple [Village Node, distance, something maby]
+func detect_traders(): # Trader = triple [Village Node, distance, buy prices, sell prices]
 	traders.clear()
 	for village in get_tree().get_nodes_in_group("village"):
 		var village_idx = find_trader_idx(village)
 		if position.distance_squared_to(village.position) < 1.9 * RAD_SQ:
 			if village != self and village_idx == -1: # jest a zasięgu, nie ma w tablicy -> dodaj
-				var triple = [village, position.distance_to(village.position), village.BUY_PRICES]
-				traders.append(triple)
+				var quadruple = [village, position.distance_to(village.position), village.BUY_PRICES, village.SELL_PRICES]
+				traders.append(quadruple)
 		else:
 			if village_idx != -1: # jest w tablicy, nie ma w zasięgu -> usuń i wyzeruj workforce? tylko po co w sumie
 				traders.remove(village_idx)
@@ -811,6 +841,18 @@ class MyCustomSorter:
 		return false
 
 
+"""Sort traders by buy/sell value"""
+class MyCustomTraderSorter:
+	static func sort_buy_food(a, b): #sortujemy po cenach "za ile kupię", chcemy by kupowali drogo -> desc
+		if a[2][0][0] > b[2][0][0]:
+			return true
+		return false
+	static func sort_sell_food(a, b): #asc
+		if a[3][0][0] < b[3][0][0]:
+			return true
+		return false
+
+
 """ mean = mean human age, deviation in years too"""
 func fill_POPULATION_by_age(pop, mean: float = 30.0, deviation: float = 5.0): # 68% [25, 35] 95% [20, 40], 99.7% [15, 45]
 	var temp
@@ -838,8 +880,15 @@ func sort_neighbours():
 	neighbours.sort_custom(MyCustomSorter, "sort")
 
 
-func sort_traders():
-	traders.sort_custom(MyCustomSorter, "sort")
+func sort_traders(idx = 1, resource = 0): #idx = 2 ~ buy, idx = 3 ~ sell
+	if idx == 1:
+		traders.sort_custom(MyCustomSorter, "sort")
+	elif idx == 2:
+		if resource == 0:
+			traders.sort_custom(MyCustomTraderSorter, "sort_buy_food")
+	elif idx == 3:
+		if resource == 0:
+			traders.sort_custom(MyCustomTraderSorter, "sort_sell_food")
 
 
 """Return 'start'st/nd/rd/th cheapest resource, starting from 'start' index in sorted neighbours array"""
