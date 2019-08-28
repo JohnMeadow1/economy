@@ -353,9 +353,9 @@ func consider_resource(trader, res_idx):
 	# ale będzie je trzeba robić gdzieś wcześniej na fazie wyboru
 	if TRADING[res_idx] == Actions.SELLING:
 		# porownaj swoje sell prices z location buy prices
-		if SELL_PRICES[res_idx][1] <= trader[0].BUY_PRICES[res_idx][1]: # najtaniej jak sprzedam <= najdrożej jak kupi
+		if SELL_PRICES[res_idx] <= trader[0].BUY_PRICES[res_idx]: # najtaniej jak sprzedam <= najdrożej jak kupi
 			# to się dogadamy wyliczając średnią z naszych (pokrywającyh się) przedziałów
-			var transaction_price = (SELL_PRICES[res_idx][1] + trader[0].BUY_PRICES[res_idx][1])/2
+			var transaction_price = (SELL_PRICES[res_idx] + trader[0].BUY_PRICES[res_idx])/2
 			var max_sell_value_in_gold
 			if res_idx == Goods.FOOD:
 				max_sell_value_in_gold = stockpile_food * transaction_price
@@ -386,9 +386,9 @@ func consider_resource(trader, res_idx):
 		#TODO check NEED MORE flags (if satisfied stop buying/selling)
 	elif TRADING[res_idx] == Actions.BUYING: # buy 0.9, 1    # sell 1.1, 1
 		# porownaj swoje buy prices z location sell prices
-		if BUY_PRICES[res_idx][1] <= trader[0].SELL_PRICES[res_idx][1]: # najdrożej jak kupię <= najtaniej jak sprzeda
+		if BUY_PRICES[res_idx] >= trader[0].SELL_PRICES[res_idx]: # najdrożej jak kupię >= najtaniej jak sprzeda
 			# to się dogadamy wyliczając średnią z naszych (pokrywającyh się) przedziałów
-			var transaction_price = (BUY_PRICES[res_idx][1] + trader[0].SELL_PRICES[res_idx][1])/2
+			var transaction_price = (BUY_PRICES[res_idx] + trader[0].SELL_PRICES[res_idx])/2
 			var max_sell_value_in_gold
 			if res_idx == Goods.FOOD:
 				max_sell_value_in_gold = trader[0].stockpile_food * transaction_price
@@ -418,7 +418,7 @@ func consider_resource(trader, res_idx):
 
 func consider_starving():
 	if stockpile_food >= consumption_food: # dość jedzenia, nie rób nic
-		if stockpile_food > 2 * consumption_food: NEED_MORE_FOOD = false # chcemy miec zdrowy ~roczny zapaas
+		if stockpile_food > 4 * consumption_food: NEED_MORE_FOOD = false # chcemy miec zdrowy 3 letni zapaas
 		else: NEED_MORE_FOOD = true
 		stockpile_food -= consumption_food
 	elif population_total > 0: # za mało jedzenia, zjadają co jest i umierają proporcjonalnie do brakującej żywności
@@ -651,11 +651,13 @@ func prepare_trading_arrays():
 	BUY_PRICES.clear()
 	SELL_PRICES.clear()
 	for i in range(BASIC_PRICES.size()):
-		var tuple = [0.9 * BASIC_PRICES[i], BASIC_PRICES[i]]
-		BUY_PRICES.append(tuple)
-		
-		tuple = [1.1 * BASIC_PRICES[i], BASIC_PRICES[i]]
-		SELL_PRICES.append(tuple)
+#		var tuple = [0.9 * BASIC_PRICES[i], BASIC_PRICES[i]]
+#		BUY_PRICES.append(tuple)
+#
+#		tuple = [1.1 * BASIC_PRICES[i], BASIC_PRICES[i]]
+#		SELL_PRICES.append(tuple)
+		BUY_PRICES.append(2*BASIC_PRICES[i]) # max gold this village is willling to buy for
+		SELL_PRICES.append(BASIC_PRICES[i])  # min gold this village is willing to sell for
 
 
 func prepare_population_arrays():
@@ -844,11 +846,13 @@ class MyCustomSorter:
 """Sort traders by buy/sell value"""
 class MyCustomTraderSorter:
 	static func sort_buy_food(a, b): #sortujemy po cenach "za ile kupię", chcemy by kupowali drogo -> desc
-		if a[2][0][0] > b[2][0][0]:
+#		if a[2][0][0] > b[2][0][0]:
+		if a[2][0] > b[2][0]:
 			return true
 		return false
 	static func sort_sell_food(a, b): #asc
-		if a[3][0][0] < b[3][0][0]:
+#		if a[3][0][0] < b[3][0][0]:
+		if a[3][0] < b[3][0]:
 			return true
 		return false
 
