@@ -407,8 +407,12 @@ func consider_resource(trader, res_idx):
 
 
 func check_need_more_flags():
-	if stockpile_food > 3 * consumption_food: NEED_MORE_FOOD = false # chcemy miec zdrowy 3 letni zapaas
-	else: NEED_MORE_FOOD = true
+	if stockpile_food > 3 * consumption_food:
+		NEED_MORE_FOOD = false # chcemy miec zdrowy 3 letni zapaas
+		check_resource(Goods.FOOD)
+	else:
+		NEED_MORE_FOOD = true
+		
 #	if stockpile_food > 3 * consumption_food: NEED_MORE_FOOD = false # chcemy miec zdrowy 3 letni zapaas
 #	else: NEED_MORE_FOOD = true
 #	if stockpile_food > 3 * consumption_food: NEED_MORE_FOOD = false # chcemy miec zdrowy 3 letni zapaas
@@ -650,13 +654,11 @@ func prepare_trading_arrays():
 	BUY_PRICES.clear()
 	SELL_PRICES.clear()
 	for i in range(BASIC_PRICES.size()):
-#		var tuple = [0.9 * BASIC_PRICES[i], BASIC_PRICES[i]]
-#		BUY_PRICES.append(tuple)
-#
-#		tuple = [1.1 * BASIC_PRICES[i], BASIC_PRICES[i]]
-#		SELL_PRICES.append(tuple)
-		BUY_PRICES.append(2*BASIC_PRICES[i]) # max gold this village is willling to buy for
-		SELL_PRICES.append(BASIC_PRICES[i])  # min gold this village is willing to sell for
+		var buy_price = BASIC_PRICES[i] * (1 + 2*randf()) # max gold this village is willling to buy for [BP, 3BP]
+		BUY_PRICES.append(buy_price)
+		
+		var sell_price = BASIC_PRICES[i] * (0.9 + 0.2*randf()) # min gold this village is willing to sell for [0.9BP, 1.1BP]
+		SELL_PRICES.append(sell_price)
 
 
 func prepare_population_arrays():
