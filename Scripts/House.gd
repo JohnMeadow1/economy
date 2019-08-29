@@ -3,7 +3,7 @@ extends "res://Scripts/base_classes/Dwelling.gd"
 class_name House
 
 
-enum Actions {KEEPING = -1, SELLING, BUYING}
+enum Actions {KEEPING = -1, BUYING, SELLING}
 enum Goods   {FOOD, WOOD, STONE, GOLD}# raczej dict zamaist enuma + basic prices
 
 onready var peasant = load("res://Nodes/Peasant.tscn")
@@ -89,11 +89,11 @@ func update_village():
 	calculate_workforce()
 	calculate_foodreq()
 	collect_resources()
-	consider_housing()  # set NEED_MORE_HOUSES (for next year) ?and trade
-	consider_starving() # set NEED_MORE_FOOD (for next year)
+	consider_housing()  # set NEED_MORE_HOUSES (for next year) and NEED_MORE WOOD/STONE for trade
+	consider_starving() # set NEED_MORE_FOOD (for next year and trade)
 	
 	prepare_for_trade()
-	trade()
+	trade() # during trade NEED_MORE flags could be overrided
 	
 	consider_accidents()#
 	consider_aging()#
@@ -276,12 +276,8 @@ func prepare_for_trade():
 	# based on that set buying selling keepnig
 	for i in range(1):
 		check_resource(i)
-#	check_food()
-#	check_wood()
-#	check_stone()
 	
-	
-	#todo set transaction prices (ranges)
+	#maby mess with transaction prices
 #	for i in range(TRADING.size()):
 #		if TRADING[i] == Actions.SELLING:
 #			SELL_PRICES[i] = 
@@ -408,6 +404,16 @@ func consider_resource(trader, res_idx):
 			
 			print($name.text, " bought ", (max_transaction / transaction_price), " resource ", res_idx, " from ",\
 			      trader[0].get_node("name").text, " for ", max_transaction, " gold, unit price was ", transaction_price)
+
+
+func check_need_more_flags():
+	if stockpile_food > 3 * consumption_food: NEED_MORE_FOOD = false # chcemy miec zdrowy 3 letni zapaas
+	else: NEED_MORE_FOOD = true
+#	if stockpile_food > 3 * consumption_food: NEED_MORE_FOOD = false # chcemy miec zdrowy 3 letni zapaas
+#	else: NEED_MORE_FOOD = true
+#	if stockpile_food > 3 * consumption_food: NEED_MORE_FOOD = false # chcemy miec zdrowy 3 letni zapaas
+#	else: NEED_MORE_FOOD = true
+
 
 func consider_starving():
 	if stockpile_food >= consumption_food: # dość jedzenia, nie rób nic
