@@ -274,7 +274,9 @@ func prepare_for_trade():
 	
 	# check bool flags to determine what village needs
 	# based on that set buying selling keepnig
-	check_food()
+	for i in range(1):
+		check_resource(i)
+#	check_food()
 #	check_wood()
 #	check_stone()
 	
@@ -285,6 +287,30 @@ func prepare_for_trade():
 #			SELL_PRICES[i] = 
 #		elif TRADING[i] == Actions.BUYING:
 #			BUY_PRICES[i] = 
+
+
+func check_resource(res_idx):
+	var stockpile_fluctuations
+	var NEED_MORE
+	if res_idx == 0:
+		stockpile_fluctuations = stockpile_food_fluctuations
+		NEED_MORE = NEED_MORE_FOOD
+#	elif res_idx == 1:
+#		stockpile_fluctuations = stockpile_wood_fluctuations
+#		NEED_MORE = NEED_MORE_WOOD
+#	elif res_idx == 2:
+#		stockpile_fluctuations = stockpile_stone_fluctuations
+#		NEED_MORE = NEED_MORE_STONE
+	if stockpile_fluctuations < 0: # operating on data from last year, fluct < 0 means "we are on + food income"
+		if NEED_MORE:
+			TRADING[res_idx] = Actions.KEEPING
+		else:
+			TRADING[res_idx] = Actions.SELLING
+	else:
+		if stockpile_gold > 0:
+			TRADING[res_idx] = Actions.BUYING
+		else:
+			TRADING[res_idx] = Actions.KEEPING
 
 
 func check_food():
@@ -333,11 +359,6 @@ func trade():
 		trade_sort(i)
 		for trader in traders:
 			consider_resource(trader, i)
-	
-	
-#	for trader in traders:
-#		consider_resource(trader, Goods.FOOD)
-	
 	pass
 
 
@@ -414,7 +435,8 @@ func consider_resource(trader, res_idx):
 			trader[0].stockpile_gold += max_transaction
 			print($name.text, " bought ", (max_transaction / transaction_price), " resource ", res_idx, " from ",\
 			      trader[0].get_node("name").text, " for ", max_transaction, " gold, unit price was ", transaction_price)
-
+		#TODO dostosuj ceny w zależności od tego co się stało 
+		#TODO check NEED MORE flags (if satisfied stop buying/selling)
 
 func consider_starving():
 	if stockpile_food >= consumption_food: # dość jedzenia, nie rób nic
