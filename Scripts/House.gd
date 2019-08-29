@@ -313,45 +313,6 @@ func check_resource(res_idx):
 			TRADING[res_idx] = Actions.KEEPING
 
 
-func check_food():
-	if stockpile_food_fluctuations < 0: # operating on data from last year, fluct < 0 means "we are on + food income"
-		if NEED_MORE_FOOD:
-			TRADING[Goods.FOOD] = Actions.KEEPING
-		else:
-			TRADING[Goods.FOOD] = Actions.SELLING
-	else:
-		if stockpile_gold > 0:
-			TRADING[Goods.FOOD] = Actions.BUYING
-		else:
-			TRADING[Goods.FOOD] = Actions.KEEPING
-
-
-#func check_wood():
-#	if stockpile_wood_fluctuations < 0: # operating on data from last year, fluct < 0 means "we are on + food income"
-#		if NEED_MORE_WOOD:
-#			TRADING[Goods.WOOD] = Actions.KEEPING
-#		else:
-#			TRADING[Goods.WOOD] = Actions.SELLING
-#	else:
-#		if stockpile_gold > 0:
-#			TRADING[Goods.WOOD] = Actions.BUYING
-#		else:
-#			TRADING[Goods.WOOD] = Actions.KEEPING
-#
-#
-#func check_stone():
-#	if stockpile_stone_fluctuations < 0: # operating on data from last year, fluct < 0 means "we are on + food income"
-#		if NEED_MORE_STONE:
-#			TRADING[Goods.STONE] = Actions.KEEPING
-#		else:
-#			TRADING[Goods.STONE] = Actions.SELLING
-#	else:
-#		if stockpile_gold > 0:
-#			TRADING[Goods.STONE] = Actions.BUYING
-#		else:
-#			TRADING[Goods.STONE] = Actions.KEEPING
-
-
 func trade():
 	#for i in range(3):
 	for i in range(1): # for every resource, i = 0 ~ Goods.FOOD etc.
@@ -375,7 +336,7 @@ func consider_resource(trader, res_idx):
 	if TRADING[res_idx] == Actions.SELLING:
 		# porownaj swoje sell prices z location buy prices
 		if SELL_PRICES[res_idx] <= trader[0].BUY_PRICES[res_idx]: # najtaniej jak sprzedam <= najdrożej jak kupi
-			# to się dogadamy wyliczając średnią z naszych (pokrywającyh się) przedziałów
+			# to się dogadamy wyliczając średnią z naszych (pokrywających się) przedziałów
 			var transaction_price = (SELL_PRICES[res_idx] + trader[0].BUY_PRICES[res_idx])/2
 			var max_sell_value_in_gold
 			if res_idx == Goods.FOOD:
@@ -401,10 +362,16 @@ func consider_resource(trader, res_idx):
 			stockpile_gold += max_transaction
 			trader[0].stockpile_gold -= max_transaction
 			
+			#dostosuj ceny w zależności od tego co się stało 
+			#  SELL_PRICE = 0.2, trader/BUY_PRICE = 0.4 -> transaction_price = 0.3
+			#        0.2         += 0.2 * (       0.3        -         0.2         )
+			SELL_PRICES[res_idx] += 0.2 * (transaction_price - SELL_PRICES[res_idx])
+			trader[0].BUY_PRICES[res_idx] -= 0.2 * (trader[0].BUY_PRICES[res_idx] - transaction_price)
+			
+			#TODO check NEED MORE flags (if satisfied stop buying/selling)
+			
 			print($name.text, " sold ", (max_transaction / transaction_price), " resource ", res_idx, " to ",\
 			      trader[0].get_node("name").text, " for ", max_transaction, " gold, unit price was ", transaction_price)
-		#TODO dostosuj ceny w zależności od tego co się stało 
-		#TODO check NEED MORE flags (if satisfied stop buying/selling)
 	elif TRADING[res_idx] == Actions.BUYING: # buy 0.9, 1    # sell 1.1, 1
 		# porownaj swoje buy prices z location sell prices
 		if BUY_PRICES[res_idx] >= trader[0].SELL_PRICES[res_idx]: # najdrożej jak kupię >= najtaniej jak sprzeda
@@ -433,10 +400,14 @@ func consider_resource(trader, res_idx):
 				trader[0].stockpile_stone -= max_transaction / transaction_price
 			stockpile_gold -= max_transaction
 			trader[0].stockpile_gold += max_transaction
+			
+			BUY_PRICES[res_idx] -= 0.2 * (BUY_PRICES[res_idx] - transaction_price)
+			trader[0].SELL_PRICES[res_idx] += 0.2 * (transaction_price - trader[0].SELL_PRICES[res_idx])
+			
+			#TODO check NEED MORE flags (if satisfied stop buying/selling)
+			
 			print($name.text, " bought ", (max_transaction / transaction_price), " resource ", res_idx, " from ",\
 			      trader[0].get_node("name").text, " for ", max_transaction, " gold, unit price was ", transaction_price)
-		#TODO dostosuj ceny w zależności od tego co się stało 
-		#TODO check NEED MORE flags (if satisfied stop buying/selling)
 
 func consider_starving():
 	if stockpile_food >= consumption_food: # dość jedzenia, nie rób nic
@@ -1041,6 +1012,14 @@ func append_trading_info():
 			text += "SELL "
 		if action == 1:
 			text += "BUY "
+	
+	text += "\nBuying info: "
+	for i in range(3):
+		text += "  " + str(BUY_PRICES[i]) + "  "
+	
+	text += "\nSelling info: "
+	for i in range(3):
+		text += "  " + str(SELL_PRICES[i]) + "  "
 	text += "\n"
-#	text += str(TRADING)+"\n"
+	
 	return text
