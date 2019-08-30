@@ -364,7 +364,8 @@ func consider_resource(trader, res_idx):
 			SELL_PRICES[res_idx] += 0.2 * (transaction_price - SELL_PRICES[res_idx])
 			trader[0].BUY_PRICES[res_idx] -= 0.2 * (trader[0].BUY_PRICES[res_idx] - transaction_price)
 			
-			#TODO check NEED MORE flags (if satisfied stop buying/selling)
+			#actualize NEED MORE flags (if satisfied stop buying/selling)
+			check_need_more_flags(res_idx)
 			
 			print($name.text, " sold ", (max_transaction / transaction_price), " resource ", res_idx, " to ",\
 			      trader[0].get_node("name").text, " for ", max_transaction, " gold, unit price was ", transaction_price)
@@ -400,23 +401,25 @@ func consider_resource(trader, res_idx):
 			BUY_PRICES[res_idx] -= 0.2 * (BUY_PRICES[res_idx] - transaction_price)
 			trader[0].SELL_PRICES[res_idx] += 0.2 * (transaction_price - trader[0].SELL_PRICES[res_idx])
 			
-			#TODO check NEED MORE flags (if satisfied stop buying/selling)
+			#actualize NEED MORE flags (if satisfied stop buying/selling)
+			check_need_more_flags(res_idx)
 			
 			print($name.text, " bought ", (max_transaction / transaction_price), " resource ", res_idx, " from ",\
 			      trader[0].get_node("name").text, " for ", max_transaction, " gold, unit price was ", transaction_price)
 
 
-func check_need_more_flags():
-	if stockpile_food > 3 * consumption_food:
-		NEED_MORE_FOOD = false # chcemy miec zdrowy 3 letni zapaas
+func check_need_more_flags(res_idx):
+	if res_idx == 0:
+		if stockpile_food > 3 * consumption_food: NEED_MORE_FOOD = false # chcemy miec zdrowy 3 letni zapaas
+		else: NEED_MORE_FOOD = true
 		check_resource(Goods.FOOD)
-	else:
-		NEED_MORE_FOOD = true
-		
-#	if stockpile_food > 3 * consumption_food: NEED_MORE_FOOD = false # chcemy miec zdrowy 3 letni zapaas
-#	else: NEED_MORE_FOOD = true
-#	if stockpile_food > 3 * consumption_food: NEED_MORE_FOOD = false # chcemy miec zdrowy 3 letni zapaas
-#	else: NEED_MORE_FOOD = true
+#	elif res_idx == 1:
+#		if stockpile_wood > 3 * consumption_wood: NEED_MORE_WOOD = false # chcemy miec zdrowy 3 letni zapaas
+#		else: NEED_MORE_WOOD = true
+#		check_resource(Goods.WOOD)
+#	elif res_idx == 2:
+#		
+	#NOTE trades messing with resource_fluctuation prob needed workaround
 
 
 func consider_starving():
