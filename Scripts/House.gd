@@ -345,30 +345,31 @@ func consider_resource(trader, res_idx):
 			var max_transaction = min(max_sell_value_in_gold, max_buy_owned_gold)
 			
 			# actual trade
-			if res_idx == Goods.FOOD:
-				stockpile_food -= max_transaction / transaction_price
-				trader[0].stockpile_food += max_transaction / transaction_price
-			elif res_idx == Goods.WOOD:
-				stockpile_wood -= max_transaction / transaction_price
-				trader[0].stockpile_wood += max_transaction / transaction_price
-			elif res_idx == Goods.STONE:
-				stockpile_stone -= max_transaction / transaction_price
-				trader[0].stockpile_stone += max_transaction / transaction_price
-			
-			stockpile_gold += max_transaction
-			trader[0].stockpile_gold -= max_transaction
-			
-			#dostosuj ceny w zależności od tego co się stało 
-			#  SELL_PRICE = 0.2, trader/BUY_PRICE = 0.4 -> transaction_price = 0.3
-			#        0.2         += 0.2 * (       0.3        -         0.2         )
-			SELL_PRICES[res_idx] += 0.2 * (transaction_price - SELL_PRICES[res_idx])
-			trader[0].BUY_PRICES[res_idx] -= 0.2 * (trader[0].BUY_PRICES[res_idx] - transaction_price)
-			
-			#actualize NEED MORE flags (if satisfied stop buying/selling)
-			check_need_more_flags(res_idx)
-			
-			print($name.text, " sold ", (max_transaction / transaction_price), " resource ", res_idx, " to ",\
-			      trader[0].get_node("name").text, " for ", max_transaction, " gold, unit price was ", transaction_price)
+			if max_transaction >= 0.01: # the smallest deal system will accept
+				if res_idx == Goods.FOOD:
+					stockpile_food -= max_transaction / transaction_price
+					trader[0].stockpile_food += max_transaction / transaction_price
+				elif res_idx == Goods.WOOD:
+					stockpile_wood -= max_transaction / transaction_price
+					trader[0].stockpile_wood += max_transaction / transaction_price
+				elif res_idx == Goods.STONE:
+					stockpile_stone -= max_transaction / transaction_price
+					trader[0].stockpile_stone += max_transaction / transaction_price
+				
+				stockpile_gold += max_transaction
+				trader[0].stockpile_gold -= max_transaction
+				
+				#dostosuj ceny w zależności od tego co się stało 
+				#  SELL_PRICE = 0.2, trader/BUY_PRICE = 0.4 -> transaction_price = 0.3
+				#        0.2         += 0.2 * (       0.3        -         0.2         )
+				SELL_PRICES[res_idx] += 0.2 * (transaction_price - SELL_PRICES[res_idx])
+				trader[0].BUY_PRICES[res_idx] -= 0.2 * (trader[0].BUY_PRICES[res_idx] - transaction_price)
+				
+				#actualize NEED MORE flags (if satisfied stop buying/selling)
+				check_need_more_flags(res_idx)
+				
+				print($name.text, " sold ", (max_transaction / transaction_price), " resource ", res_idx, " to ",\
+				      trader[0].get_node("name").text, " for ", max_transaction, " gold, unit price was ", transaction_price)
 	elif TRADING[res_idx] == Actions.BUYING: # buy 0.9, 1    # sell 1.1, 1
 		# porownaj swoje buy prices z location sell prices
 		if BUY_PRICES[res_idx] >= trader[0].SELL_PRICES[res_idx]: # najdrożej jak kupię >= najtaniej jak sprzeda
@@ -386,26 +387,27 @@ func consider_resource(trader, res_idx):
 			var max_transaction = min(max_sell_value_in_gold, max_buy_owned_gold)
 			
 			# actual trade
-			if res_idx == Goods.FOOD:
-				stockpile_food += max_transaction / transaction_price
-				trader[0].stockpile_food -= max_transaction / transaction_price
-			elif res_idx == Goods.WOOD:
-				stockpile_wood += max_transaction / transaction_price
-				trader[0].stockpile_wood -= max_transaction / transaction_price
-			elif res_idx == Goods.STONE:
-				stockpile_stone += max_transaction / transaction_price
-				trader[0].stockpile_stone -= max_transaction / transaction_price
-			stockpile_gold -= max_transaction
-			trader[0].stockpile_gold += max_transaction
-			
-			BUY_PRICES[res_idx] -= 0.2 * (BUY_PRICES[res_idx] - transaction_price)
-			trader[0].SELL_PRICES[res_idx] += 0.2 * (transaction_price - trader[0].SELL_PRICES[res_idx])
-			
-			#actualize NEED MORE flags (if satisfied stop buying/selling)
-			check_need_more_flags(res_idx)
-			
-			print($name.text, " bought ", (max_transaction / transaction_price), " resource ", res_idx, " from ",\
-			      trader[0].get_node("name").text, " for ", max_transaction, " gold, unit price was ", transaction_price)
+			if max_transaction >= 0.01: # the smallest deal system will accept
+				if res_idx == Goods.FOOD:
+					stockpile_food += max_transaction / transaction_price
+					trader[0].stockpile_food -= max_transaction / transaction_price
+				elif res_idx == Goods.WOOD:
+					stockpile_wood += max_transaction / transaction_price
+					trader[0].stockpile_wood -= max_transaction / transaction_price
+				elif res_idx == Goods.STONE:
+					stockpile_stone += max_transaction / transaction_price
+					trader[0].stockpile_stone -= max_transaction / transaction_price
+				stockpile_gold -= max_transaction
+				trader[0].stockpile_gold += max_transaction
+				
+				BUY_PRICES[res_idx] -= 0.2 * (BUY_PRICES[res_idx] - transaction_price)
+				trader[0].SELL_PRICES[res_idx] += 0.2 * (transaction_price - trader[0].SELL_PRICES[res_idx])
+				
+				#actualize NEED MORE flags (if satisfied stop buying/selling)
+				check_need_more_flags(res_idx)
+				
+				print($name.text, " bought ", (max_transaction / transaction_price), " resource ", res_idx, " from ",\
+				      trader[0].get_node("name").text, " for ", max_transaction, " gold, unit price was ", transaction_price)
 
 
 func check_need_more_flags(res_idx):
