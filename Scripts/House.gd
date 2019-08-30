@@ -274,7 +274,7 @@ func prepare_for_trade():
 	
 	# check bool flags to determine what village needs
 	# based on that set buying selling keepnig
-	for i in range(1):
+	for i in range(1): #TODO i in range(3), but need wood/stone fluctuations nad NEED_MORE flags
 		check_resource(i)
 	
 	#maby mess with transaction prices
@@ -814,7 +814,6 @@ func calculate_workers_share(our_workers: int, total_workers: int):
 	else:
 		return "0%"
 
-#BUG workforce total displayed in village window is 1 cycle behind, sent peasants and neighb_info are ok
 func neighbours_info():
 	var temp: String = ""
 	var index: int = 0
