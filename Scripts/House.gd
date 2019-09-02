@@ -263,8 +263,10 @@ func prepare_for_trade():
 #	- złoto ma wartość = 1.0
 #	- jedzenie chcemy kupować jak nam za szybko ubywa
 #	- kamień/drewno chcemy kupować jak mamy za mało domów
+#	- wtedy "naiwnie" skupujemy i drewno i kamień
 #	- jedzenie chcemy sprzedawać jak nam przybywa (nie przejadamy)
 #	- kamień/drewno chcemy sprzedawać jak mamy dość domów
+#	- chcemy zachowywać minimalny zapas towarów, nie sprzedawać do zera
 #	- każdy rozpatruje handel z każdym, co symuluje sytuację "wezmę złoto/towar i pojadę do ciebie !!!
 #   (może się zdarzyć, że ludzie z wioski A jadą do B i z B jadą do A bo jedni mają u siebie coś a drudzy coś)
 #
@@ -272,9 +274,8 @@ func prepare_for_trade():
 #                  FOOD              WOOD            STONE
 	TRADING = [Actions.KEEPING, Actions.KEEPING, Actions.KEEPING]  # clear previous trade
 	
-	# check bool flags to determine what village needs
-	# based on that set buying selling keepnig
-	for i in range(1): #TODO i in range(3), but need wood/stone fluctuations nad NEED_MORE flags
+	# check bool flags to determine what village needs, based on that set buying selling keepnig
+	for i in range(3):
 		check_resource(i)
 	
 	#maby mess with transaction prices
@@ -291,12 +292,12 @@ func check_resource(res_idx):
 	if res_idx == 0:
 		stockpile_fluctuations = stockpile_food_fluctuations
 		NEED_MORE = NEED_MORE_FOOD
-#	elif res_idx == 1:
-#		stockpile_fluctuations = stockpile_wood_fluctuations
-#		NEED_MORE = NEED_MORE_WOOD
-#	elif res_idx == 2:
-#		stockpile_fluctuations = stockpile_stone_fluctuations
-#		NEED_MORE = NEED_MORE_STONE
+	elif res_idx == 1:
+		stockpile_fluctuations = stockpile_wood_fluctuations
+		NEED_MORE = NEED_MORE_HOUSES
+	elif res_idx == 2:
+		stockpile_fluctuations = stockpile_stone_fluctuations
+		NEED_MORE = NEED_MORE_HOUSES
 	if stockpile_fluctuations < 0: # operating on data from last year, fluct < 0 means "we are on + food income"
 		if NEED_MORE:
 			TRADING[res_idx] = Actions.KEEPING
@@ -310,8 +311,7 @@ func check_resource(res_idx):
 
 
 func trade():
-	#for i in range(3):
-	for i in range(1): # for every resource, i = 0 ~ Goods.FOOD etc.
+	for i in range(3): # for every resource, i = 0 ~ Goods.FOOD etc.
 		#sort nearby traders by buy/sell resource value (depending on your own action)
 		trade_sort(i)
 		for trader in traders:
@@ -415,12 +415,15 @@ func check_need_more_flags(res_idx):
 		if stockpile_food > 3 * consumption_food: NEED_MORE_FOOD = false # chcemy miec zdrowy 3 letni zapaas
 		else: NEED_MORE_FOOD = true
 		check_resource(Goods.FOOD)
-#	elif res_idx == 1:
-#		if stockpile_wood > 3 * consumption_wood: NEED_MORE_WOOD = false # chcemy miec zdrowy 3 letni zapaas
-#		else: NEED_MORE_WOOD = true
-#		check_resource(Goods.WOOD)
-#	elif res_idx == 2:
-#		
+	elif res_idx == 1:
+		if stockpile_wood >= HOUSE_COST_WOOD: NEED_MORE_HOUSES = false # chcemy miec zdrowy 1 domowy zapas
+		else: NEED_MORE_HOUSES = true
+		check_resource(Goods.WOOD)
+	elif res_idx == 2:
+		if stockpile_stone >= HOUSE_COST_STONE: NEED_MORE_HOUSES = false # chcemy miec zdrowy 1 domowy zapas
+		else: NEED_MORE_HOUSES = true
+		check_resource(Goods.STONE)
+		
 	#NOTE trades messing with resource_fluctuation prob needed workaround
 
 
@@ -500,6 +503,12 @@ func calculate_fluctuations():
 	
 	stockpile_food_fluctuations = previous_stockpile_food - stockpile_food
 	previous_stockpile_food = stockpile_food
+	
+	stockpile_wood_fluctuations = previous_stockpile_wood - stockpile_wood
+	previous_stockpile_wood = stockpile_wood
+	
+	stockpile_stone_fluctuations = previous_stockpile_stone - stockpile_stone
+	previous_stockpile_stone = stockpile_stone
 
 
 """Decrement random cell in POPULATION_by_age by one, besides that affect population_total counter only.
