@@ -56,6 +56,10 @@ globals="*res://globals.gd"
 
 gdscript/warnings/enable=false
 
+[display]
+
+window/vsync/use_vsync=false
+
 [editor_plugins]
 
 enabled=PoolStringArray( "todo" )
@@ -135,5 +139,4 @@ print_resources={
 
 [rendering]
 
-quality/2d/use_pixel_snap=true
 environment/default_environment="res://default_env.tres"
