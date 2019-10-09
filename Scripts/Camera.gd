@@ -9,16 +9,17 @@ const zoom_levels = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4]
 var current_zoom_index = 3
 var current_zoom_level = zoom_levels[current_zoom_index]
 
-func _process(_delta):
+func _process(delta):
 	globals.debug.text += "MOUSE POSITION (Camera.gd)\nGlobal:" + str(get_global_mouse_position().floor())
 	globals.debug.text += "\nLocal:" + str(get_local_mouse_position().floor())
 	globals.debug.text += "\nViewport:" + str(get_viewport().get_mouse_position().floor()) + "\n"
+	globals.debug.text += "\nCAMERA ZOOM: %4.2f" % zoom.x + "\n"
 	if globals.selected_node != null and globals.selected_node.has_method("on_hover_info"):
 		globals.selected_node.on_hover_info()
-		
-	position = lerp(position, target_position, 10 * _delta)
-	zoom     = lerp(zoom, target_zoom, 10 * _delta)
-#func _physics_process(delta):
+
+func _physics_process(delta):
+	position = lerp(position, target_position, 20 * delta)
+	zoom     = lerp(zoom, target_zoom, 20 * delta)
 	
 func _input(event):
 	""" Mouse picking """
