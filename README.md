@@ -9,4 +9,4 @@ Economy simulation project made in [Godot Engine 3.1.1](https://github.com/godot
 ## Camera Controls:
 
     Scroll up/down - Zoom in/out (focus on the cursor)
-    Click LPM and drag
+    Hold LPM and drag - Move camera
